@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ReactNode, useState, MouseEvent, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import { ReactNode, useState, MouseEvent, useRef, useEffect } from "react";
+import Link from "next/link";
 
 interface CardProps {
   title: string;
@@ -16,9 +16,9 @@ export default function Card({
   title,
   description,
   icon,
-  hoverColor = '#3b82f6',
+  hoverColor = "#3b82f6",
   href,
-  route
+  route,
 }: CardProps) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [lightPosition, setLightPosition] = useState({ x: 0, y: 0 });
@@ -48,7 +48,7 @@ export default function Card({
     if (!isHovered) return;
 
     const animateLight = () => {
-      setLightPosition(prev => {
+      setLightPosition((prev) => {
         const dx = mousePosition.x - prev.x;
         const dy = mousePosition.y - prev.y;
 
@@ -80,15 +80,15 @@ export default function Card({
     style: {
       background: isHovered
         ? `radial-gradient(500px circle at ${lightPosition.x}px ${lightPosition.y}px, ${hoverColor}15, black 40%)`
-        : 'black',
-    }
+        : "black",
+    },
   };
 
   const CardVisualContent = (
     <>
       <div
         className={`absolute pointer-events-none transition-opacity duration-300 ${
-          isHovered ? 'opacity-20' : 'opacity-0'
+          isHovered ? "opacity-20" : "opacity-0"
         }`}
         style={{
           left: lightPosition.x - 100,
@@ -96,7 +96,7 @@ export default function Card({
           width: 200,
           height: 200,
           background: `radial-gradient(circle, ${hoverColor}, transparent 70%)`,
-          filter: 'blur(40px)',
+          filter: "blur(40px)",
         }}
       />
 
@@ -119,7 +119,10 @@ export default function Card({
   if (route) {
     return (
       <Link href={route} className="block h-full group">
-        <div {...commonCardProps} className={`${commonCardProps.className} cursor-pointer`}>
+        <div
+          {...commonCardProps}
+          className={`${commonCardProps.className} cursor-pointer`}
+        >
           {CardVisualContent}
         </div>
       </Link>
@@ -128,17 +131,21 @@ export default function Card({
 
   if (href) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className="block h-full group">
-        <div {...commonCardProps} className={`${commonCardProps.className} cursor-pointer`}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block h-full group"
+      >
+        <div
+          {...commonCardProps}
+          className={`${commonCardProps.className} cursor-pointer`}
+        >
           {CardVisualContent}
         </div>
       </a>
     );
   }
 
-  return (
-    <div {...commonCardProps}>
-      {CardVisualContent}
-    </div>
-  );
+  return <div {...commonCardProps}>{CardVisualContent}</div>;
 }

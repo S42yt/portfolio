@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --font-jetbrains-mono: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-jetbrains-mono:
+    "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
 }
 
 * {
@@ -31,7 +32,8 @@ body {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -40,7 +42,8 @@ body {
 }
 
 @keyframes glow-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.1;
   }
   50% {
@@ -66,13 +69,16 @@ body {
 }
 
 .bg-pattern {
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.15) 1px,
+    transparent 0
+  );
   background-size: 20px 20px;
 }
 
 .noise-overlay::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
