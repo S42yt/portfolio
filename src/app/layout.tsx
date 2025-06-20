@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="icon" href="emojis/kuromi_hey.gif" type="image/gif" />
+        <link rel="icon" href="emojis/kuromi_love.gif" type="image/gif" />
       </head>
       <body
         className={`${jetbrainsMono.variable} antialiased bg-black relative overflow-x-hidden`}

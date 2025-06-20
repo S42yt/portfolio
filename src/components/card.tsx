@@ -7,6 +7,7 @@ interface CardProps {
   title: string;
   description: string;
   icon?: ReactNode;
+  image?: string;
   hoverColor?: string;
   href?: string;
   route?: string;
@@ -16,6 +17,7 @@ export default function Card({
   title,
   description,
   icon,
+  image,
   hoverColor = "#3b82f6",
   href,
   route,
@@ -106,9 +108,19 @@ export default function Card({
             {icon}
           </div>
         )}
-        <h3 className="text-lg font-medium text-white mb-2 group-hover:text-white transition-colors duration-300">
-          {title}
-        </h3>
+        <div className="flex items-center gap-2 mb-2">
+          <h3 className="text-lg font-medium text-white group-hover:text-white transition-colors duration-300">
+            {title}
+          </h3>
+          {image && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={image}
+              alt={`${title} icon`}
+              className="w-6 h-6 object-contain"
+            />
+          )}
+        </div>
         <p className="text-sm text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors duration-300">
           {description}
         </p>
