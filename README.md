@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# S42.site - Personal Portfolio
+
+A portfolio website built with Next.js, showcasing my development projects and skills.
+
+## Overview
+
+This portfolio features a dark, minimalist design with interactive elements and smooth animations. It includes detailed pages for my major projects including TradeCycle, Biogg.net, and CuteCraft, along with information about my skills and experience.
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with TypeScript
+- **Styling**: Tailwind CSS 4
+- **Icons**: FontAwesome
+- **Fonts**: JetBrains Mono
+- **Animations**: Custom CSS animations and transitions
+
+## Developement
 
 ## Getting Started
 
-First, run the development server:
+Clone the repository and install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/S42yt/portfolio.git
+cd portfolio
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run the development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) to view the portfolio.
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+- `bun run dev` - Start development server with Turbopack
+- `bun run build` - Build for production
+- `bun run start` - Start production server
+- `bun run lint` - Run ESLint
+- `bun run format` - Format code with Prettier
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The site is optimized for deployment on Vercel. Simply connect your GitHub repository to Vercel for automatic deployments.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License - see LICENSE file for
