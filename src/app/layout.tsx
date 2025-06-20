@@ -8,15 +8,22 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
 });
-
 export const metadata: Metadata = {
   title: "S42.site",
-  description: "Portfolio of S42",
+  description: "Personal Dev Portfolio of S42",
   icons: {
-    icon: "emojis/kuromi_hey.gif",
-    shortcut: "emojis/kuromi_hey.gif",
-    apple: "emojis/kuromi_hey.gif",
+    icon: "emojis/kuromi_love.gif",
+    shortcut: "emojis/kuromi_love.gif",
+    apple: "emojis/kuromi_love.gif",
   },
+  openGraph: {
+    images: ['/thumbnail/page.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/thumbnail/page.png'],
+  },
+  themeColor: "#6416c9", 
 };
 
 export default function RootLayout({
