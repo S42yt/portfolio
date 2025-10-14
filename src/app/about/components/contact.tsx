@@ -1,6 +1,6 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 export default function ContactSection() {
   return (
@@ -14,9 +14,7 @@ export default function ContactSection() {
               icon={faEnvelope}
               className="w-6 h-6 text-green-400"
             />
-            <h2 className="text-2xl font-medium text-white">
-              Get In Touch
-            </h2>
+            <h2 className="text-2xl font-medium text-white">Get In Touch</h2>
           </div>
 
           <div className="flex flex-wrap gap-4">

@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShield } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShield } from "@fortawesome/free-solid-svg-icons";
 
 export default function PrivacySecuritySection() {
   return (
@@ -9,10 +9,7 @@ export default function PrivacySecuritySection() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
-            <FontAwesomeIcon
-              icon={faShield}
-              className="w-6 h-6 text-red-400"
-            />
+            <FontAwesomeIcon icon={faShield} className="w-6 h-6 text-red-400" />
             <h2 className="text-2xl font-medium text-white">
               Privacy & Security
             </h2>
@@ -26,9 +23,7 @@ export default function PrivacySecuritySection() {
 
             <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
               <h3 className="font-medium text-white mb-2">🛡️ GDPR</h3>
-              <p className="text-sm text-zinc-400">
-                Compliant data handling
-              </p>
+              <p className="text-sm text-zinc-400">Compliant data handling</p>
             </div>
 
             <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">

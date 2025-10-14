@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface Feature {
   icon: IconDefinition;
@@ -34,9 +34,7 @@ export default function FeaturesSection({ features }: FeaturesSectionProps) {
                     icon={feature.icon}
                     className={`w-6 h-6 ${feature.color} group-hover/feature:scale-110 transition-transform duration-300`}
                   />
-                  <h3 className="font-medium text-white">
-                    {feature.title}
-                  </h3>
+                  <h3 className="font-medium text-white">{feature.title}</h3>
                 </div>
                 <p className="text-sm text-zinc-400 leading-relaxed">
                   {feature.description}

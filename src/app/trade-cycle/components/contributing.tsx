@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers } from "@fortawesome/free-solid-svg-icons";
 
 export default function ContributingSection() {
   return (
@@ -9,13 +9,8 @@ export default function ContributingSection() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
-            <FontAwesomeIcon
-              icon={faUsers}
-              className="w-6 h-6 text-pink-400"
-            />
-            <h2 className="text-2xl font-medium text-white">
-              Contributing 🩷
-            </h2>
+            <FontAwesomeIcon icon={faUsers} className="w-6 h-6 text-pink-400" />
+            <h2 className="text-2xl font-medium text-white">Contributing 🩷</h2>
           </div>
 
           <div className="space-y-4 text-zinc-300">

@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRocket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRocket } from "@fortawesome/free-solid-svg-icons";
 
 export default function CurrentWorkSection() {
   return (
@@ -21,7 +21,7 @@ export default function CurrentWorkSection() {
           <div className="space-y-3 text-zinc-300">
             <div className="flex items-center gap-2">
               <span className="text-green-400">🔭</span>
-              <span>Building </span>
+              <span>I&apos;m currently working on </span>
               <a
                 href="https://discord.gg/cutecraft"
                 target="_blank"
@@ -30,7 +30,15 @@ export default function CurrentWorkSection() {
               >
                 CuteCraft.net
               </a>
-              <span> and developing a plugin network for Minecraft</span>
+              <span> and </span>
+              <a
+                href="https://norisk.gg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors duration-300 underline"
+              >
+                NoRisk Client
+              </a>
             </div>
           </div>
         </div>

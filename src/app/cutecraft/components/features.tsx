@@ -7,7 +7,9 @@ interface ServerFeaturesSectionProps {
   features: Feature[];
 }
 
-export default function ServerFeaturesSection({ features }: ServerFeaturesSectionProps) {
+export default function ServerFeaturesSection({
+  features,
+}: ServerFeaturesSectionProps) {
   return (
     <div className="mb-16">
       <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
@@ -24,9 +26,7 @@ export default function ServerFeaturesSection({ features }: ServerFeaturesSectio
                 key={index}
                 className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg hover:border-zinc-600 transition-all duration-300"
               >
-                <h3 className="font-medium text-white mb-2">
-                  {feature.title}
-                </h3>
+                <h3 className="font-medium text-white mb-2">{feature.title}</h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">
                   {feature.description}
                 </p>

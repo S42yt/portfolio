@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { faCog } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function ConfigurationSection() {
   return (
@@ -9,10 +9,7 @@ export default function ConfigurationSection() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
-            <FontAwesomeIcon
-              icon={faCog}
-              className="w-6 h-6 text-purple-400"
-            />
+            <FontAwesomeIcon icon={faCog} className="w-6 h-6 text-purple-400" />
             <h2 className="text-2xl font-medium text-white">Configuration</h2>
           </div>
 

@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 export default function HeroSection() {
   return (
@@ -8,11 +8,11 @@ export default function HeroSection() {
 
       <div className="relative z-10">
         <h1 className="text-4xl md:text-6xl font-light text-white mb-4 tracking-tight font-mono">
-          Biogg.net
+          Burnt.net
         </h1>
         <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed font-mono max-w-3xl mx-auto mb-6">
-          Create beautiful online profiles with Discord integration for
-          gamers and streamers
+          Create beautiful online profiles with Discord integration for gamers
+          and streamers
         </p>
 
         <div className="flex flex-wrap justify-center gap-3 mb-6">
@@ -28,13 +28,13 @@ export default function HeroSection() {
         </div>
 
         <a
-          href="https://biogg.net"
+          href="https://burnt.rip"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 font-medium"
         >
           <FontAwesomeIcon icon={faGlobe} className="w-5 h-5" />
-          Visit Biogg.net
+          Visit Burnt.net
         </a>
       </div>
     </div>

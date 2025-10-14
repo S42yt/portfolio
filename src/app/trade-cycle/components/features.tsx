@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 export default function FeaturesSection() {
   return (
@@ -9,10 +9,7 @@ export default function FeaturesSection() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
-            <FontAwesomeIcon
-              icon={faBook}
-              className="w-6 h-6 text-blue-400"
-            />
+            <FontAwesomeIcon icon={faBook} className="w-6 h-6 text-blue-400" />
             <h2 className="text-2xl font-medium text-white">Features</h2>
           </div>
 

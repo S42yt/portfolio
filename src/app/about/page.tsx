@@ -5,7 +5,6 @@ import ContactSection from "./components/contact";
 import SkillsSection from "./components/skills";
 import GitHubStatsSection from "./components/githubStats";
 
-
 export default function AboutPage() {
   const skills = [
     {

@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     apple: "emojis/kuromi_love.gif",
   },
   openGraph: {
-    images: ['/thumbnail/page.png'],
+    images: ["/thumbnail/page.png"],
   },
   twitter: {
-    card: 'summary_large_image',
-    images: ['/thumbnail/page.png'],
+    card: "summary_large_image",
+    images: ["/thumbnail/page.png"],
   },
-  themeColor: "#6416c9", 
+  themeColor: "#6416c9",
 };
 
 export default function RootLayout({

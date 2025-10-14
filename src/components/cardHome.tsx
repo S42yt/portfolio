@@ -3,10 +3,12 @@ import Card from "./card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faUser, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 
-const ImageIcons = {
+export const ImageIcons = {
   tradeCycle: "/icons/trade-cycle.png",
   biogg: "/icons/biogg.png",
+  nrc: "/icons/nrc.png",
   cutecraft: "/icons/cutecraft-icon.png",
 };
 
@@ -33,10 +35,10 @@ export default function CardHome() {
 
       <Card
         icon={
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={ImageIcons.tradeCycle}
-            className="w-8 h-8"
+            width={32}
+            height={32}
             alt="Trade Cycle"
           />
         }
@@ -48,19 +50,24 @@ export default function CardHome() {
       />
 
       <Card
-        // eslint-disable-next-line @next/next/no-img-element
-        icon={<img src={ImageIcons.biogg} className="w-8 h-8" alt="Biogg" />}
-        title="Biogg"
+        icon={
+          <Image src={ImageIcons.biogg} width={32} height={32} alt="Burnt" />
+        }
+        title="Burnt"
         image="emojis/kuromi_snort.gif"
-        description="Biogg is a bio page i worked on and still use till this day."
-        hoverColor="#42D1CD"
-        route="/biogg"
+        description="Burnt is a bio page i worked on and still use till this day."
+        hoverColor="#A41212"
+        route="/burnt"
       />
 
       <Card
         icon={
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={ImageIcons.cutecraft} className="w-8 h-8" alt="CuteCraft" />
+          <Image
+            src={ImageIcons.cutecraft}
+            width={32}
+            height={32}
+            alt="CuteCraft"
+          />
         }
         title="CuteCraft"
         image="emojis/kuromi_laugh.gif"
@@ -70,11 +77,27 @@ export default function CardHome() {
       />
 
       <Card
+        icon={
+          <Image
+            src={ImageIcons.nrc}
+            width={32}
+            height={32}
+            alt="NoRisk Client"
+          />
+        }
+        title="NoRisk Client"
+        image="emojis/kuromi_ghost.gif"
+        description="NoRisk Client is a Minecraft client with community in the foreground."
+        hoverColor="#42D1CD"
+        route="/nrc"
+      />
+
+      <Card
         icon={<FontAwesomeIcon icon={faCodeBranch} className="w-8 h-8" />}
         title="Source Code"
         image="emojis/kuromi_blush.gif"
         description="This is the source code of this website, feel free to check it out and understand how it works."
-        hoverColor="#7a0fd1"
+        hoverColor="#9C1EE9"
         href="https://github.com/S42yt/portfolio"
       />
     </CardGrid>

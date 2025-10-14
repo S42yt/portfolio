@@ -8,7 +8,8 @@ export default function HeroSection() {
           Hi there 👋, I&apos;m S42
         </h1>
         <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed font-mono max-w-3xl mx-auto">
-          I&apos;m a developer with a focus on UI/UX and creating beautiful applications.
+          I&apos;m a developer with a focus on UI/UX and creating beautiful
+          applications.
         </p>
       </div>
     </div>

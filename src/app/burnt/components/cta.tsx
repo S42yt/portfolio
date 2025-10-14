@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 export default function CTASection() {
   return (
@@ -13,12 +13,12 @@ export default function CTASection() {
           </h2>
           <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
             Join thousands of gamers and streamers who have already created
-            their beautiful bio pages with Biogg.net
+            their beautiful bio pages with Burnt.net
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="https://biogg.net"
+              href="https://burnt.rip"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 font-medium"

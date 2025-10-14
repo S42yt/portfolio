@@ -1,6 +1,6 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface Contribution {
   icon: IconDefinition;
@@ -21,10 +21,7 @@ export default function MyRoleSection({ contributions }: MyRoleSectionProps) {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
-            <FontAwesomeIcon
-              icon={faUsers}
-              className="w-6 h-6 text-cyan-400"
-            />
+            <FontAwesomeIcon icon={faUsers} className="w-6 h-6 text-cyan-400" />
             <h2 className="text-2xl font-medium text-white">
               My Role at CuteCraft
             </h2>
@@ -34,7 +31,7 @@ export default function MyRoleSection({ contributions }: MyRoleSectionProps) {
             <p>
               As a core member of the CuteCraft development team, I focus
               primarily on the
-              <strong className="text-white"> web development</strong> and{' '}
+              <strong className="text-white"> web development</strong> and{" "}
               <strong className="text-white">design aspects</strong> of the
               network. My work spans across multiple areas to ensure players
               have the best possible experience both in-game and on our web

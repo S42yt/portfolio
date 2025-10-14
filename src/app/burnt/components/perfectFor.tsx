@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 export default function PerfectForSection() {
   return (
@@ -33,12 +33,10 @@ export default function PerfectForSection() {
             <div className="flex items-start gap-4 p-4 bg-zinc-900/30 rounded-lg border border-zinc-800">
               <div className="w-2 h-2 bg-cyan-400 rounded-full mt-3 flex-shrink-0"></div>
               <div>
-                <h3 className="font-medium text-white mb-2">
-                  👥 Communities
-                </h3>
+                <h3 className="font-medium text-white mb-2">👥 Communities</h3>
                 <p className="text-sm text-zinc-400">
-                  Share your presence across multiple platforms in a
-                  stylish, simple way.
+                  Share your presence across multiple platforms in a stylish,
+                  simple way.
                 </p>
               </div>
             </div>
@@ -50,8 +48,8 @@ export default function PerfectForSection() {
                   📱 Content Creators
                 </h3>
                 <p className="text-sm text-zinc-400">
-                  Replace multiple bio links with one beautiful,
-                  comprehensive profile page.
+                  Replace multiple bio links with one beautiful, comprehensive
+                  profile page.
                 </p>
               </div>
             </div>

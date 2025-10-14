@@ -40,9 +40,7 @@ export default function SkillsSection({ skills }: SkillsSectionProps) {
             ))}
           </div>
 
-          <p className="text-center text-zinc-400 text-sm">
-            and much more...
-          </p>
+          <p className="text-center text-zinc-400 text-sm">and much more...</p>
         </div>
       </div>
     </div>

@@ -1,5 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpotify, faTwitch, faYoutube, faDiscord } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSpotify,
+  faTwitch,
+  faYoutube,
+  faDiscord,
+} from "@fortawesome/free-brands-svg-icons";
 
 export default function HowItWorksSection() {
   return (
@@ -15,7 +20,7 @@ export default function HowItWorksSection() {
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
             <div className="text-center mb-4">
               <span className="text-lg font-mono text-cyan-400">
-                biogg.net/username
+                burnt.rip/username
               </span>
             </div>
 

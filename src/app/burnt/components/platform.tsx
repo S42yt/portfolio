@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface Platform {
   name: string;
@@ -32,9 +32,7 @@ export default function PlatformsSection({ platforms }: PlatformsSectionProps) {
                   icon={platform.icon}
                   className={`w-8 h-8 ${platform.color} mb-2 group-hover/platform:scale-110 transition-transform duration-300`}
                 />
-                <span className="text-sm text-zinc-300">
-                  {platform.name}
-                </span>
+                <span className="text-sm text-zinc-300">{platform.name}</span>
               </div>
             ))}
           </div>

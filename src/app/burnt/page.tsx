@@ -13,7 +13,7 @@ import {
   faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
 import HeroSection from "./components/hero";
-import WhatIsBioggSection from "./components/whatIsBiogg";
+import WhatIsBurntSection from "./components/whatIsBurnt";
 import FeaturesSection from "./components/features";
 import PlatformsSection from "./components/platform";
 import PerfectForSection from "./components/perfectFor";
@@ -21,7 +21,7 @@ import HowItWorksSection from "./components/howItWorks";
 import CTASection from "./components/cta";
 import PrivacySecuritySection from "./components/privacy";
 
-export default function BioggPage() {
+export default function BurntPage() {
   const features = [
     {
       icon: faDiscord,
@@ -54,7 +54,7 @@ export default function BioggPage() {
     {
       icon: faGlobe,
       title: "Public Profiles",
-      description: "Share your custom biogg.net/username page with everyone",
+      description: "Share your custom burnt.rip/username page with everyone",
       color: "text-blue-400",
     },
     {
@@ -77,7 +77,7 @@ export default function BioggPage() {
     <div className="min-h-screen py-20 noise-overlay">
       <div className="max-w-4xl mx-auto px-6">
         <HeroSection />
-        <WhatIsBioggSection />
+        <WhatIsBurntSection />
         <FeaturesSection features={features} />
         <PlatformsSection platforms={platforms} />
         <PerfectForSection />

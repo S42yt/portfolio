@@ -37,8 +37,19 @@ export default function ContactPage() {
           />
           <span>GitHub</span>
         </a>
+
+        <a
+          href="mailto:songoku42@outlook.de?subject=Hello%20from%20your%20portfolio&body=Hi%20there,%0D%0A%0D%0AI%20found%20your%20portfolio%20and%20wanted%20to%20get%20in%20touch!"
+          className="flex items-center gap-2 text-zinc-400 hover:text-green-400 transition-colors duration-300 group/link"
+        >
+          <FontAwesomeIcon
+            icon={faEnvelope}
+            className="w-5 h-5 group-hover/link:scale-110 transition-transform duration-300"
+          />
+          <span>E Mail</span>
+        </a>
       </div>
-        <BackHome />
+      <BackHome />
     </div>
   );
 }
