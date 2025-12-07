@@ -13,7 +13,7 @@ export default function CTASection() {
           </h2>
           <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
             Join thousands of gamers and streamers who have already created
-            their beautiful bio pages with Burnt.net
+            their beautiful bio pages with Burnt.rip
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

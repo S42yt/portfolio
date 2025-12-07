@@ -11,6 +11,7 @@ interface CardProps {
   hoverColor?: string;
   href?: string;
   route?: string;
+  archived?: boolean;
 }
 
 export default function Card({
@@ -21,6 +22,7 @@ export default function Card({
   hoverColor = "#3b82f6",
   href,
   route,
+  archived = false,
 }: CardProps) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [lightPosition, setLightPosition] = useState({ x: 0, y: 0 });
@@ -75,7 +77,7 @@ export default function Card({
   }, [mousePosition, isHovered]);
 
   const commonCardProps = {
-    className: `relative p-4 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group h-full`,
+    className: `${archived ? "filter grayscale saturate-50 brightness-90 opacity-85 group-hover:grayscale-0 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100" : ""} relative p-4 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group h-full`,
     onMouseMove: handleMouseMove,
     onMouseEnter: handleMouseEnter,
     onMouseLeave: handleMouseLeave,
@@ -104,12 +106,24 @@ export default function Card({
 
       <div className="relative z-10">
         {icon && (
-          <div className="mb-3 text-zinc-400 group-hover:text-white transition-colors duration-300">
+          <div
+            className={`mb-3 transition-colors duration-300 ${
+              archived
+                ? "text-zinc-500 group-hover:text-white"
+                : "text-zinc-400 group-hover:text-white"
+            }`}
+          >
             {icon}
           </div>
         )}
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="text-lg font-medium text-white group-hover:text-white transition-colors duration-300">
+          <h3
+            className={`text-lg font-medium transition-colors duration-300 ${
+              archived
+                ? "text-zinc-300 group-hover:text-white"
+                : "text-white group-hover:text-white"
+            }`}
+          >
             {title}
           </h3>
           {image && (
@@ -117,11 +131,13 @@ export default function Card({
             <img
               src={image}
               alt={`${title} icon`}
-              className="w-6 h-6 object-contain"
+              className="w-6 h-6 object-contain transition-all duration-300"
             />
           )}
         </div>
-        <p className="text-sm text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors duration-300">
+        <p
+          className={`text-sm leading-relaxed transition-colors duration-300 ${archived ? "text-zinc-500 group-hover:text-zinc-300" : "text-zinc-400 group-hover:text-zinc-300"}`}
+        >
           {description}
         </p>
       </div>
@@ -131,11 +147,22 @@ export default function Card({
   if (route) {
     return (
       <Link href={route} className="block h-full group">
-        <div
-          {...commonCardProps}
-          className={`${commonCardProps.className} cursor-pointer`}
-        >
-          {CardVisualContent}
+        <div className="relative h-full">
+          <div
+            {...commonCardProps}
+            className={`${commonCardProps.className} cursor-pointer`}
+          >
+            {CardVisualContent}
+          </div>
+
+          {archived && (
+            <span
+              className="absolute top-3 right-3 px-2 py-0.5 text-xs font-medium rounded-full border-2 border-yellow-400 text-yellow-400 bg-yellow-400/20"
+              aria-label="Archived"
+            >
+              Archived
+            </span>
+          )}
         </div>
       </Link>
     );
@@ -149,15 +176,39 @@ export default function Card({
         rel="noopener noreferrer"
         className="block h-full group"
       >
-        <div
-          {...commonCardProps}
-          className={`${commonCardProps.className} cursor-pointer`}
-        >
-          {CardVisualContent}
+        <div className="relative h-full">
+          <div
+            {...commonCardProps}
+            className={`${commonCardProps.className} cursor-pointer`}
+          >
+            {CardVisualContent}
+          </div>
+
+          {archived && (
+            <span
+              className="absolute top-3 right-3 px-2 py-0.5 text-xs font-medium rounded-full border-2 border-yellow-400 text-yellow-400 bg-yellow-400/20"
+              aria-label="Archived"
+            >
+              Archived
+            </span>
+          )}
         </div>
       </a>
     );
   }
 
-  return <div {...commonCardProps}>{CardVisualContent}</div>;
+  return (
+    <div className="relative h-full">
+      <div {...commonCardProps}>{CardVisualContent}</div>
+
+      {archived && (
+        <span
+          className="absolute top-3 right-3 px-2 py-0.5 text-xs font-medium rounded-full border-2 border-yellow-400 text-yellow-400 bg-yellow-400/20"
+          aria-label="Archived"
+        >
+          Archived
+        </span>
+      )}
+    </div>
+  );
 }

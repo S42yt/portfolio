@@ -4,7 +4,7 @@ A portfolio website built with Next.js, showcasing my development projects and s
 
 ## Overview
 
-This portfolio features a dark, minimalist design with interactive elements and smooth animations. It includes detailed pages for my major projects including TradeCycle, Burnt.net, and CuteCraft, along with information about my skills and experience.
+This portfolio features a dark, minimalist design with interactive elements and smooth animations. It includes detailed pages for my major projects including TradeCycle, Burnt.rip, and CuteCraft, along with information about my skills and experience.
 
 ## Tech Stack
 

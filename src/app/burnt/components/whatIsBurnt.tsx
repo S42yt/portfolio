@@ -11,13 +11,13 @@ export default function WhatIsBurntSection() {
           <div className="flex items-center gap-3 mb-4">
             <FontAwesomeIcon icon={faGlobe} className="w-6 h-6 text-cyan-400" />
             <h2 className="text-2xl font-medium text-white">
-              What is Burnt.net?
+              What is Burnt.rip?
             </h2>
           </div>
 
           <div className="space-y-4 text-zinc-300">
             <p>
-              Burnt.net is an online profile platform designed specifically for{" "}
+              Burnt.rip is an online profile platform designed specifically for{" "}
               <strong className="text-white">
                 gamers, streamers, and social media users
               </strong>

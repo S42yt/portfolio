@@ -6,7 +6,11 @@ import {
   faTwitch,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import { faUser, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUser,
+  faCodeBranch,
+  faQuestion,
+} from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 
 export const ImageIcons = {
@@ -55,33 +59,6 @@ export default function CardHome() {
 
       <Card
         icon={
-          <Image src={ImageIcons.biogg} width={32} height={32} alt="Burnt" />
-        }
-        title="Burnt"
-        image="emojis/kuromi_snort.gif"
-        description="Burnt is a bio page i worked on and still use till this day."
-        hoverColor="#A41212"
-        route="/burnt"
-      />
-
-      <Card
-        icon={
-          <Image
-            src={ImageIcons.cutecraft}
-            width={32}
-            height={32}
-            alt="CuteCraft"
-          />
-        }
-        title="CuteCraft"
-        image="emojis/kuromi_laugh.gif"
-        description="CuteCraft is a German Minecraft CityBuild network where i mainly focus on the websites and designs of the items."
-        hoverColor="#F3A5BE"
-        route="/cutecraft"
-      />
-
-      <Card
-        icon={
           <Image
             src={ImageIcons.nrc}
             width={32}
@@ -105,6 +82,43 @@ export default function CardHome() {
         description="Big names i worked for."
         hoverColor="#42D1CD"
         route="/worked-for"
+      />
+
+      <Card
+        icon={<FontAwesomeIcon icon={faQuestion} className="w-8 h-8" />}
+        title="Soon"
+        image="emojis/kuromi_love.gif"
+        description="???"
+        hoverColor="#9C1EE9"
+        route="/soon"
+      />
+
+      <Card
+        icon={
+          <Image src={ImageIcons.biogg} width={32} height={32} alt="Burnt" />
+        }
+        title="Burnt"
+        image="emojis/kuromi_snort.gif"
+        description="Burnt is a bio page i worked on and still use till this day."
+        hoverColor="#A41212"
+        route="/burnt"
+      />
+
+      <Card
+        icon={
+          <Image
+            src={ImageIcons.cutecraft}
+            width={32}
+            height={32}
+            alt="CuteCraft"
+          />
+        }
+        title="CuteCraft"
+        image="emojis/kuromi_laugh.gif"
+        description="RIP! CuteCraft is a German Minecraft CityBuild network where i mainly focus on the websites and designs of the items."
+        hoverColor="#F3A5BE"
+        route="/cutecraft"
+        archived={true}
       />
 
       <Card

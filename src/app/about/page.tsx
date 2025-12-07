@@ -3,7 +3,6 @@ import HeroSection from "./components/hero";
 import CurrentWorkSection from "./components/currentWork";
 import ContactSection from "./components/contact";
 import SkillsSection from "./components/skills";
-import GitHubStatsSection from "./components/githubStats";
 
 export default function AboutPage() {
   const skills = [
@@ -48,7 +47,6 @@ export default function AboutPage() {
         <CurrentWorkSection />
         <ContactSection />
         <SkillsSection skills={skills} />
-        <GitHubStatsSection />
         <BackHome />
       </div>
     </div>

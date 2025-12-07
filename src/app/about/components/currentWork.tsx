@@ -23,15 +23,6 @@ export default function CurrentWorkSection() {
               <span className="text-green-400">🔭</span>
               <span>I&apos;m currently working on </span>
               <a
-                href="https://discord.gg/cutecraft"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 transition-colors duration-300 underline"
-              >
-                CuteCraft.net
-              </a>
-              <span> and </span>
-              <a
                 href="https://norisk.gg"
                 target="_blank"
                 rel="noopener noreferrer"
