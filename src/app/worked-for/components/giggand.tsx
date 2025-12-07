@@ -29,8 +29,10 @@ export default function GiggandSection() {
                   Giggand Collaboration
                 </h2>
                 <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed font-mono mb-6">
-                  I made a skin with my friend <span className="text-purple-400">einp2pe</span> for the famous
-                  German Twitch streamer <span className="text-purple-400">Giggand</span>.
+                  I made a skin with my friend{" "}
+                  <span className="text-purple-400">einp2pe</span> for the
+                  famous German Twitch streamer{" "}
+                  <span className="text-purple-400">Giggand</span>.
                 </p>
 
                 <a

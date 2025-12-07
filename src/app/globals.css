@@ -64,6 +64,10 @@ body {
   animation: marquee 30s linear infinite;
 }
 
+.marquee-container:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }

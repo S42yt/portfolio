@@ -4,7 +4,6 @@ import MarqueeSection from "./components/marquee";
 import GiggandSection from "./components/giggand";
 
 export default function WorkedForPage() {
-  // Get all profile pictures
   const pfpImages = ["giggand.png"];
 
   return (
