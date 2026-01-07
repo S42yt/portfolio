@@ -1,11 +1,11 @@
-import BackHome from "@/components/backHome";
+import BackHome from "@/components/back-home";
 import {
   faCode,
   faPalette,
   faGamepad,
 } from "@fortawesome/free-solid-svg-icons";
 import HeroSection from "./components/hero";
-import WhatIsCuteCraftSection from "./components/whatIsCuteCraft";
+import WhatIsCuteCraftSection from "./components/what-is-cutecraft";
 import ServerFeaturesSection from "./components/features";
 import MyRoleSection from "./components/contribution";
 import TechnologiesSection from "./components/techs";

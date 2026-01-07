@@ -1,4 +1,4 @@
-import BackHome from "@/components/backHome";
+import BackHome from "@/components/back-home";
 
 export default function SoonPage() {
   return (

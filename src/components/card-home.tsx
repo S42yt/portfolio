@@ -1,9 +1,8 @@
-import CardGrid from "./cardGrid";
+import CardGrid from "./card-grid";
 import Card from "./card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGithub,
-  faTwitch,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import {
@@ -30,15 +29,6 @@ export default function CardHome() {
         description="Here you can see my GitHub profile and all my projects i published so far."
         hoverColor="#431266"
         href="https://github.com/S42yt"
-      />
-
-      <Card
-        icon={<FontAwesomeIcon icon={faUser} className="w-8 h-8" />}
-        title="About Me"
-        image="emojis/kuromi_spin.gif"
-        description="Here is a small about me that shows off my skills and preferences."
-        hoverColor="#381ee3"
-        route="/about"
       />
 
       <Card
@@ -71,17 +61,6 @@ export default function CardHome() {
         description="NoRisk Client is a Minecraft client with community in the foreground."
         hoverColor="#42D1CD"
         route="/nrc"
-      />
-
-      <Card
-        icon={
-          <FontAwesomeIcon icon={faTwitch} className="w-8 h-8 text-[#9146FF]" />
-        }
-        title="Worked For"
-        image="emojis/kuromi_twerk.gif"
-        description="Big names i worked for."
-        hoverColor="#42D1CD"
-        route="/worked-for"
       />
 
       <Card

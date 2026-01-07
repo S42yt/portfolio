@@ -7,11 +7,11 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 export default function Footer() {
   return (
-    <footer className="relative z-10 py-8 px-6">
+    <footer className="relative z-10 py-8 px-6" id="footer">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-center">
           <a
-            href="https://discord.gg/PEaPfgB5uT"
+            href="https://discord.gg/HMsWZPANAd"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-zinc-400 hover:text-blue-400 transition-colors duration-300 group"

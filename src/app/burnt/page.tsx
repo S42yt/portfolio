@@ -1,4 +1,4 @@
-import BackHome from "@/components/backHome";
+import BackHome from "@/components/back-home";
 import {
   faDiscord,
   faSpotify,
@@ -13,11 +13,11 @@ import {
   faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
 import HeroSection from "./components/hero";
-import WhatIsBurntSection from "./components/whatIsBurnt";
+import WhatIsBurntSection from "./components/what-is-burn";
 import FeaturesSection from "./components/features";
 import PlatformsSection from "./components/platform";
-import PerfectForSection from "./components/perfectFor";
-import HowItWorksSection from "./components/howItWorks";
+import PerfectForSection from "./components/perfect-for";
+import HowItWorksSection from "./components/how-it-works";
 import CTASection from "./components/cta";
 import PrivacySecuritySection from "./components/privacy";
 

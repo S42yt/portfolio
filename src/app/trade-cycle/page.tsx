@@ -1,4 +1,4 @@
-import BackHome from "@/components/backHome";
+import BackHome from "@/components/back-home";
 import HeroSection from "./components/hero";
 import DemoSection from "./components/demo";
 import FeaturesSection from "./components/features";

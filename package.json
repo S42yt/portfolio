@@ -21,7 +21,8 @@
     "next": "16.0.10",
     "prettier": "^3.7.4",
     "react": "^19.2.1",
-    "react-dom": "^19.2.1"
+    "react-dom": "^19.2.1",
+    "react-fast-marquee": "^1.6.5"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

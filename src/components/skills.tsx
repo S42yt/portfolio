@@ -9,7 +9,7 @@ interface SkillsSectionProps {
 
 export default function SkillsSection({ skills }: SkillsSectionProps) {
   return (
-    <div className="mb-16">
+    <div className="mb-8">
       <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 via-transparent to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
