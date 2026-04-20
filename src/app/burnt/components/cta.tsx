@@ -4,31 +4,32 @@ import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 export default function CTASection() {
   return (
     <div className="mb-16">
-      <div className="relative p-8 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group text-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 via-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        Create Your Profile
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <h2 className="text-3xl font-medium text-white mb-4">
-            Ready to Create Your Profile?
-          </h2>
-          <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
-            Join thousands of gamers and streamers who have already created
-            their beautiful bio pages with Burnt.rip
-          </p>
+      <p
+        className="text-sm font-mono font-light mb-6 max-w-md"
+        style={{ color: "var(--text-muted)" }}
+      >
+        Join thousands of gamers and streamers who have already created their
+        beautiful bio pages with Burnt.rip.
+      </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="https://burnt.rip"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 font-medium"
-            >
-              <FontAwesomeIcon icon={faGlobe} className="w-5 h-5" />
-              Get Started
-            </a>
-          </div>
-        </div>
-      </div>
+      <a
+        href="https://burnt.rip"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-mono transition-opacity duration-200 hover:opacity-80"
+        style={{ background: "var(--accent)", color: "oklch(95% 0.006 285)" }}
+      >
+        <FontAwesomeIcon icon={faGlobe} className="w-4 h-4" />
+        Get Started
+      </a>
     </div>
   );
 }

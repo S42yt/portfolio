@@ -4,35 +4,31 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 export default function DownloadSection() {
   return (
     <div className="mb-16">
-      <div className="relative p-8 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group text-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 via-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        Get Started
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <h2 className="text-3xl font-medium text-white mb-4">
-            Ready to Get Started?
-          </h2>
-          <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
-            Download NoRisk Client today and experience Minecraft with enhanced
-            features and better performance.
-          </p>
+      <p
+        className="text-sm font-mono font-light mb-6"
+        style={{ color: "var(--text-muted)" }}
+      >
+        Free to download · Regular updates · Community driven
+      </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="https://norisk.gg"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:from-green-500 hover:to-blue-500 transition-all duration-300 font-medium text-lg"
-            >
-              <FontAwesomeIcon icon={faDownload} className="w-5 h-5" />
-              norisk.gg
-            </a>
-          </div>
-
-          <p className="text-zinc-500 text-sm mt-4">
-            Free to download • Regular updates • Community driven
-          </p>
-        </div>
-      </div>
+      <a
+        href="https://norisk.gg"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-mono transition-opacity duration-200 hover:opacity-80"
+        style={{ background: "var(--accent)", color: "oklch(95% 0.006 285)" }}
+      >
+        <FontAwesomeIcon icon={faDownload} className="w-4 h-4" />
+        norisk.gg
+      </a>
     </div>
   );
 }

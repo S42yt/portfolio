@@ -56,28 +56,35 @@ export default function FloatingNav() {
 
   return (
     <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50 hidden md:block">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => scrollToSection(item.id)}
-            className={`group relative transition-all duration-300 ${
-              activeSection === item.id
-                ? "text-purple-400"
-                : "text-zinc-500 hover:text-zinc-300"
-            }`}
+            className="group relative flex items-center justify-end"
             aria-label={item.label}
           >
-            <div
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                activeSection === item.id
-                  ? "bg-purple-400 scale-125"
-                  : "bg-zinc-600 group-hover:bg-zinc-400"
-              }`}
-            />
-            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 whitespace-nowrap text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/90 border border-zinc-800 px-3 py-1 rounded-md">
+            <span
+              className="absolute right-5 whitespace-nowrap text-xs font-mono tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-2 py-1"
+              style={{
+                color: "var(--text-muted)",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+              }}
+            >
               {item.label}
             </span>
+            <div
+              className="transition-all duration-300"
+              style={{
+                width: activeSection === item.id ? "20px" : "8px",
+                height: "2px",
+                background:
+                  activeSection === item.id
+                    ? "var(--accent)"
+                    : "var(--border)",
+              }}
+            />
           </button>
         ))}
       </div>

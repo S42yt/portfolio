@@ -1,5 +1,4 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface Contribution {
@@ -16,51 +15,49 @@ interface MyRoleSectionProps {
 export default function MyRoleSection({ contributions }: MyRoleSectionProps) {
   return (
     <div className="mb-16">
-      <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 via-transparent to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        My Role
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-6">
-            <FontAwesomeIcon icon={faUsers} className="w-6 h-6 text-cyan-400" />
-            <h2 className="text-2xl font-medium text-white">
-              My Role at CuteCraft
-            </h2>
-          </div>
+      <p
+        className="text-sm font-mono font-light mb-6 max-w-xl leading-[1.75]"
+        style={{ color: "var(--text-muted)" }}
+      >
+        As a core member of the CuteCraft development team, I focus on web
+        development and design across multiple areas.
+      </p>
 
-          <div className="space-y-4 text-zinc-300 mb-8">
-            <p>
-              As a core member of the CuteCraft development team, I focus
-              primarily on the
-              <strong className="text-white"> web development</strong> and{" "}
-              <strong className="text-white">design aspects</strong> of the
-              network. My work spans across multiple areas to ensure players
-              have the best possible experience both in-game and on our web
-              platforms.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {contributions.map((contribution, index) => (
-              <div
-                key={index}
-                className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg hover:border-zinc-600 transition-all duration-300 group/item"
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+        {contributions.map((item, index) => (
+          <div
+            key={index}
+            className="flex items-start gap-4 py-5 pr-6"
+            style={{ borderBottom: "1px solid var(--border-subtle)" }}
+          >
+            <FontAwesomeIcon
+              icon={item.icon}
+              className={`w-4 h-4 shrink-0 mt-0.5 ${item.color}`}
+            />
+            <div>
+              <h3
+                className="text-sm font-mono font-medium mb-1"
+                style={{ color: "var(--text)" }}
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <FontAwesomeIcon
-                    icon={contribution.icon}
-                    className={`w-6 h-6 ${contribution.color} group-hover/item:scale-110 transition-transform duration-300`}
-                  />
-                  <h3 className="font-medium text-white">
-                    {contribution.title}
-                  </h3>
-                </div>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  {contribution.description}
-                </p>
-              </div>
-            ))}
+                {item.title}
+              </h3>
+              <p
+                className="text-xs font-mono font-light leading-relaxed"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {item.description}
+              </p>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

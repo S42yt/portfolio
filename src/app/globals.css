@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+@theme {
+  --font-display: var(--font-big-shoulders);
+}
+
 :root {
-  --font-jetbrains-mono:
-    "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
+  --font-jetbrains-mono: "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
+  --bg: oklch(7% 0.01 285);
+  --surface: oklch(10.5% 0.012 285);
+  --border: oklch(19% 0.012 285);
+  --border-subtle: oklch(14% 0.009 285);
+  --text: oklch(94% 0.006 285);
+  --text-muted: oklch(52% 0.012 285);
+  --text-faint: oklch(36% 0.009 285);
+  --accent: oklch(62% 0.22 290);
 }
 
 * {
@@ -14,21 +25,12 @@ html {
 }
 
 body {
-  background: #000000;
-  color: #ffffff;
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-jetbrains-mono);
   font-weight: 300;
-  line-height: 1.6;
+  line-height: 1.65;
   position: relative;
-}
-
-@keyframes grid-move {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(50px, 50px);
-  }
 }
 
 @keyframes float {
@@ -38,16 +40,6 @@ body {
   }
   50% {
     transform: translateY(-20px);
-  }
-}
-
-@keyframes glow-pulse {
-  0%,
-  100% {
-    opacity: 0.1;
-  }
-  50% {
-    opacity: 0.3;
   }
 }
 
@@ -69,29 +61,20 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #111111;
+  background: oklch(9% 0.008 285);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333333;
-  border-radius: 4px;
+  background: oklch(24% 0.014 285);
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555555;
-}
-
-.bg-pattern {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    rgba(255, 255, 255, 0.15) 1px,
-    transparent 0
-  );
-  background-size: 20px 20px;
+  background: oklch(34% 0.016 285);
 }
 
 .noise-overlay::before {
@@ -101,8 +84,14 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.03;
+  opacity: 0.045;
   z-index: 1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.section-rule {
+  border: none;
+  height: 1px;
+  background: var(--border);
 }

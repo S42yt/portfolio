@@ -1,37 +1,41 @@
+const info = [
+  { label: "Server IP", value: "cutecraft.net" },
+  { label: "Version", value: "1.21.5" },
+  { label: "Game Mode", value: "CityBuild" },
+];
+
 export default function ServerInfoSection() {
   return (
     <div className="mb-16">
-      <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/10 via-transparent to-yellow-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        Server Info
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <h2 className="text-2xl font-medium text-white mb-6 text-center">
-            Server Information
-          </h2>
-
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6 text-center">
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium text-white mb-2">Server IP</h3>
-                <code className="text-lg font-mono text-cyan-400 bg-zinc-800 px-3 py-1 rounded">
-                  cutecraft.net
-                </code>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                <div>
-                  <h4 className="font-medium text-white mb-1">Version</h4>
-                  <p className="text-sm text-zinc-400">1.21.5</p>
-                </div>
-
-                <div>
-                  <h4 className="font-medium text-white mb-1">Game Mode</h4>
-                  <p className="text-sm text-zinc-400">CityBuild</p>
-                </div>
-              </div>
-            </div>
+      <div className="space-y-0">
+        {info.map((item) => (
+          <div
+            key={item.label}
+            className="flex items-center justify-between py-4"
+            style={{ borderBottom: "1px solid var(--border-subtle)" }}
+          >
+            <span
+              className="text-xs tracking-[0.2em] uppercase font-mono"
+              style={{ color: "var(--text-faint)" }}
+            >
+              {item.label}
+            </span>
+            <code
+              className="text-sm font-mono"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {item.value}
+            </code>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

@@ -1,33 +1,38 @@
 export default function TechnicalDetailsSection() {
+  const details = [
+    { label: "Language", value: "Kotlin" },
+    { label: "Platforms", value: "Spigot, Paper" },
+    { label: "Compatibility", value: "Java & Bedrock (via Geyser)" },
+  ];
+
   return (
     <div className="mb-16">
-      <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 via-transparent to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        Technical Details
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <h2 className="text-2xl font-medium text-white mb-6 text-center">
-            Technical Details
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-              <h3 className="font-medium text-white mb-2">Language</h3>
-              <p className="text-sm text-zinc-400">Kotlin</p>
-            </div>
-
-            <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-              <h3 className="font-medium text-white mb-2">Platforms</h3>
-              <p className="text-sm text-zinc-400">Spigot, Paper</p>
-            </div>
-
-            <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-              <h3 className="font-medium text-white mb-2">Compatibility</h3>
-              <p className="text-sm text-zinc-400">
-                Java and Bedrock (via Geyser)
-              </p>
-            </div>
+      <div className="space-y-0">
+        {details.map((item) => (
+          <div
+            key={item.label}
+            className="flex items-center justify-between py-4"
+            style={{ borderBottom: "1px solid var(--border-subtle)" }}
+          >
+            <span
+              className="text-xs tracking-[0.2em] uppercase font-mono"
+              style={{ color: "var(--text-faint)" }}
+            >
+              {item.label}
+            </span>
+            <span className="text-sm font-mono" style={{ color: "var(--text-muted)" }}>
+              {item.value}
+            </span>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

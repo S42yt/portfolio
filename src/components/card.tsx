@@ -77,14 +77,15 @@ export default function Card({
   }, [mousePosition, isHovered]);
 
   const commonCardProps = {
-    className: `${archived ? "filter grayscale saturate-50 brightness-90 opacity-85 group-hover:grayscale-0 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100" : ""} relative p-4 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group h-full`,
+    className: `${archived ? "filter grayscale saturate-50 brightness-90 opacity-85 group-hover:grayscale-0 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100" : ""} relative p-4 overflow-hidden transition-all duration-300 group h-full`,
     onMouseMove: handleMouseMove,
     onMouseEnter: handleMouseEnter,
     onMouseLeave: handleMouseLeave,
     style: {
       background: isHovered
-        ? `radial-gradient(500px circle at ${lightPosition.x}px ${lightPosition.y}px, ${hoverColor}15, black 40%)`
-        : "black",
+        ? `radial-gradient(500px circle at ${lightPosition.x}px ${lightPosition.y}px, ${hoverColor}18, var(--bg) 40%)`
+        : "var(--surface)",
+      border: "1px solid var(--border)",
     },
   };
 
@@ -92,7 +93,7 @@ export default function Card({
     <>
       <div
         className={`absolute pointer-events-none transition-opacity duration-300 ${
-          isHovered ? "opacity-20" : "opacity-0"
+          isHovered ? "opacity-25" : "opacity-0"
         }`}
         style={{
           left: lightPosition.x - 100,

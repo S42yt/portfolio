@@ -1,40 +1,39 @@
-import { faCog } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 export default function ConfigurationSection() {
   return (
     <div className="mb-16">
-      <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-transparent to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        Configuration
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-4">
-            <FontAwesomeIcon icon={faCog} className="w-6 h-6 text-purple-400" />
-            <h2 className="text-2xl font-medium text-white">Configuration</h2>
-          </div>
+      <p
+        className="text-sm font-mono font-light mb-4"
+        style={{ color: "var(--text-muted)" }}
+      >
+        Choose which method (or both) should be used to cycle through trades:
+      </p>
 
-          <div className="space-y-4">
-            <p className="text-zinc-300">
-              You can configure which method (or both) should be used to cycle
-              through trades:
-            </p>
+      <pre
+        className="text-sm font-mono p-5 leading-relaxed"
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          color: "var(--text-muted)",
+        }}
+      >
+        {`strategy:\n  - KEYBOARD\n# - SHIFT_INTERACT`}
+      </pre>
 
-            <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 font-mono text-sm">
-              <pre className="text-zinc-300">
-                {`strategy:
-  - KEYBOARD
-# - SHIFT_INTERACT`}
-              </pre>
-            </div>
-
-            <p className="text-zinc-400 text-sm">
-              &apos;#&apos; in front of a method will disable it. The
-              SHIFT_INTERACT was made with Bedrock and Geyser in mind so you can
-              also cycle trades on the bedrock edition.
-            </p>
-          </div>
-        </div>
-      </div>
+      <p
+        className="text-xs font-mono mt-4"
+        style={{ color: "var(--text-faint)" }}
+      >
+        Prefix a method with &apos;#&apos; to disable it. SHIFT_INTERACT
+        supports Bedrock via Geyser.
+      </p>
     </div>
   );
 }

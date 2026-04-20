@@ -32,7 +32,7 @@ export default function TradeCyclePage() {
     },
     {
       name: "GitHub Releases",
-      url: "https://github.com/CuteCraft-Network/TradeCycle/releases/latest",
+      url: "https://github.com/S42yt/TradeCycle/releases/latest",
       description: "Paper and Spigot Version",
     },
   ];

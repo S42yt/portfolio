@@ -1,31 +1,38 @@
+const tech = [
+  { label: "Frontend", value: "Next.js, Astro.js" },
+  { label: "Design", value: "Aseprite, Figma" },
+  { label: "Minecraft", value: "Java Plugins, Paper" },
+];
+
 export default function TechnologiesSection() {
   return (
     <div className="mb-16">
-      <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 via-transparent to-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        Technologies
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <h2 className="text-2xl font-medium text-white mb-6 text-center">
-            Technologies & Tools
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-              <h3 className="font-medium text-white mb-2">Frontend</h3>
-              <p className="text-sm text-zinc-400">Next.js, Astro.js</p>
-            </div>
-
-            <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-              <h3 className="font-medium text-white mb-2">Design</h3>
-              <p className="text-sm text-zinc-400">Aseprite, Figma</p>
-            </div>
-
-            <div className="text-center p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-              <h3 className="font-medium text-white mb-2">Minecraft</h3>
-              <p className="text-sm text-zinc-400">Java Plugins, Paper</p>
-            </div>
+      <div className="space-y-0">
+        {tech.map((item) => (
+          <div
+            key={item.label}
+            className="flex items-center justify-between py-4"
+            style={{ borderBottom: "1px solid var(--border-subtle)" }}
+          >
+            <span
+              className="text-xs tracking-[0.2em] uppercase font-mono"
+              style={{ color: "var(--text-faint)" }}
+            >
+              {item.label}
+            </span>
+            <span className="text-sm font-mono" style={{ color: "var(--text-muted)" }}>
+              {item.value}
+            </span>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

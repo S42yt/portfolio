@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Big_Shoulders } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
 
@@ -8,6 +8,13 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
 });
+
+const bigShoulders = Big_Shoulders({
+  variable: "--font-big-shoulders",
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+});
+
 export const metadata: Metadata = {
   title: "S42.site",
   description: "Personal Dev Portfolio of S42",
@@ -37,24 +44,42 @@ export default function RootLayout({
         <link rel="icon" href="emojis/kuromi_love.gif" type="image/gif" />
       </head>
       <body
-        className={`${jetbrainsMono.variable} antialiased bg-black relative overflow-x-hidden`}
+        className={`${jetbrainsMono.variable} ${bigShoulders.variable} antialiased relative overflow-x-hidden`}
       >
-        <div className="fixed inset-0 bg-black">
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-black"></div>
+        <div className="fixed inset-0" style={{ background: "var(--bg)" }}>
           <div
-            className="absolute inset-0 opacity-20"
+            className="absolute inset-0 pointer-events-none"
             style={{
-              backgroundImage: `
-                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: "50px 50px",
-              animation: "grid-move 20s linear infinite",
+              background:
+                "radial-gradient(ellipse 100% 60% at 50% -10%, oklch(22% 0.08 288) 0%, transparent 60%)",
             }}
-          ></div>
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-56 h-56 bg-cyan-600/15 rounded-full blur-3xl animate-pulse delay-2000"></div>
+          />
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              width: "600px",
+              height: "600px",
+              top: "10%",
+              left: "60%",
+              background:
+                "radial-gradient(circle, oklch(18% 0.06 300) 0%, transparent 70%)",
+              filter: "blur(80px)",
+              opacity: 0.7,
+            }}
+          />
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              width: "500px",
+              height: "500px",
+              top: "30%",
+              left: "-10%",
+              background:
+                "radial-gradient(circle, oklch(16% 0.05 275) 0%, transparent 70%)",
+              filter: "blur(80px)",
+              opacity: 0.6,
+            }}
+          />
         </div>
 
         <div className="relative z-10 min-h-screen flex flex-col">

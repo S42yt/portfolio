@@ -44,26 +44,36 @@ export default function Home() {
     <>
       <FloatingNav />
       <div id="home" className="min-h-screen noise-overlay">
-        <div className="py-20">
-          <Hero />
-          <section id="about" className="max-w-4xl mx-auto px-6">
-            <SkillsSection skills={skills} />
-          </section>
-        </div>
+        <Hero />
+
+        <section id="about" className="max-w-5xl mx-auto px-6 md:px-12 pb-16">
+          <SkillsSection skills={skills} />
+        </section>
+
         <section id="projects" className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-6xl font-light text-white mb-4 tracking-tight font-mono">
+            <div className="mb-12 pl-0">
+              <h2
+                className="font-display font-black leading-none tracking-tight mb-4"
+                style={{
+                  fontSize: "clamp(3rem, 8vw, 6rem)",
+                  color: "var(--text)",
+                }}
+              >
                 Projects
               </h2>
-              <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed font-mono max-w-3xl mx-auto">
-                These are by far not all projects I have worked on. To see more,
-                check out my GitHub linked at the top!
+              <div className="section-rule mb-4" />
+              <p
+                className="text-sm font-mono"
+                style={{ color: "var(--text-faint)" }}
+              >
+                A selection of things I&apos;ve built. More on GitHub.
               </p>
             </div>
             <CardHome />
           </div>
         </section>
+
         <WorkedFor />
       </div>
     </>

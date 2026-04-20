@@ -2,67 +2,57 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
+const links = [
+  { label: "Website", sub: "cutecraft.net", href: "https://shop.cutecraft.net", icon: faGlobe },
+  { label: "Discord", sub: "Join the community", href: "https://discord.gg/cutecraft", icon: faDiscord },
+  { label: "GitHub", sub: "Open source projects", href: "https://github.com/CuteCraft-Network", icon: faGithub },
+];
+
 export default function CommunityLinksSection() {
   return (
     <div className="mb-16">
-      <div className="relative p-6 bg-black border border-zinc-800 overflow-hidden transition-all duration-300 hover:border-zinc-700 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-transparent to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <h2
+        className="font-display font-black leading-none mb-4"
+        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+      >
+        Community
+      </h2>
+      <div className="section-rule mb-6" />
 
-        <div className="relative z-10">
-          <h2 className="text-2xl font-medium text-white mb-6 text-center">
-            Join the Community
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a
-              href="https://shop.cutecraft.net"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg hover:border-zinc-600 transition-all duration-300 group/link"
-            >
+      <div className="space-y-0">
+        {links.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between py-4 transition-opacity duration-200 hover:opacity-60"
+            style={{ borderBottom: "1px solid var(--border-subtle)" }}
+          >
+            <div className="flex items-center gap-3">
               <FontAwesomeIcon
-                icon={faGlobe}
-                className="w-6 h-6 text-pink-400 group-hover/link:scale-110 transition-transform duration-300"
+                icon={link.icon}
+                className="w-4 h-4"
+                style={{ color: "var(--text-faint)" }}
               />
               <div>
-                <h3 className="font-medium text-white">Main Website</h3>
-                <p className="text-sm text-zinc-400">cutecraft.net</p>
+                <span
+                  className="text-sm font-mono font-medium"
+                  style={{ color: "var(--text)" }}
+                >
+                  {link.label}
+                </span>
+                <span
+                  className="text-xs font-mono ml-3"
+                  style={{ color: "var(--text-faint)" }}
+                >
+                  {link.sub}
+                </span>
               </div>
-            </a>
-
-            <a
-              href="https://discord.gg/cutecraft"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg hover:border-zinc-600 transition-all duration-300 group/link"
-            >
-              <FontAwesomeIcon
-                icon={faDiscord}
-                className="w-6 h-6 text-indigo-400 group-hover/link:scale-110 transition-transform duration-300"
-              />
-              <div>
-                <h3 className="font-medium text-white">Discord Server</h3>
-                <p className="text-sm text-zinc-400">Join our community</p>
-              </div>
-            </a>
-
-            <a
-              href="https://github.com/CuteCraft-Network"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg hover:border-zinc-600 transition-all duration-300 group/link"
-            >
-              <FontAwesomeIcon
-                icon={faGithub}
-                className="w-6 h-6 text-zinc-400 group-hover/link:text-white transition-colors duration-300"
-              />
-              <div>
-                <h3 className="font-medium text-white">GitHub</h3>
-                <p className="text-sm text-zinc-400">Open source projects</p>
-              </div>
-            </a>
-          </div>
-        </div>
+            </div>
+            <span style={{ color: "var(--text-faint)" }}>↗</span>
+          </a>
+        ))}
       </div>
     </div>
   );
