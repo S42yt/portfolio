@@ -13,7 +13,7 @@ export default function TradeCyclePage() {
     {
       name: "Spigot",
       url: "https://www.spigotmc.org/resources/tradecycle.122805/",
-      description: "Spigot Version",
+      description: "Paper and Spigot Version",
     },
     {
       name: "Modrinth",
@@ -23,12 +23,12 @@ export default function TradeCyclePage() {
     {
       name: "Hangar",
       url: "https://hangar.papermc.io/S42yt/TradeCycle",
-      description: "Paper Version",
+      description: "Paper and Spigot Version",
     },
     {
       name: "CurseForge",
       url: "https://www.curseforge.com/minecraft/bukkit-plugins/tradecycle",
-      description: "Paper Version",
+      description: "Paper and Spigot Version",
     },
     {
       name: "GitHub Releases",

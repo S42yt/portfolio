@@ -5,7 +5,7 @@ import Link from "next/link";
 import Marquee from "react-fast-marquee";
 
 export default function WorkedFor() {
-  const pfpImages = ["giggand.png", "tuubaa.png", "norisk.png", "holzi.png"];
+  const pfpImages = ["giggand.png", "tuubaa.png", "norisk.png", "holzi.png", "mr.png"];
 
   return (
     <section id="worked-for" className="py-20">
@@ -45,12 +45,14 @@ export default function WorkedFor() {
                 const isTuubaa = imageName === "tuubaa";
                 const isNorisk = imageName === "norisk";
                 const isHolzi = imageName === "holzi";
+                const isRen = imageName === "mr";
 
                 const getLink = () => {
                   if (isGiggand) return "https://twitch.tv/giggand";
                   if (isTuubaa)  return "https://youtube.com/@tuubaa";
                   if (isNorisk)  return "https://youtube.com/@NoRiskk";
                   if (isHolzi)   return "https://www.youtube.com/@einHolzkopf";
+                  if (isRen)     return "https://github.com/tsundosika";
                   return null;
                 };
 

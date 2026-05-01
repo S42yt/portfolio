@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono, Big_Shoulders } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
+import KofiToast from "@/components/kofi-toast";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -16,7 +17,7 @@ const bigShoulders = Big_Shoulders({
 });
 
 export const metadata: Metadata = {
-  title: "S42.site",
+  title: "S42 and Friends",
   description: "Personal Dev Portfolio of S42",
   icons: {
     icon: "emojis/kuromi_love.gif",
@@ -86,6 +87,8 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
+        
+        <KofiToast />
       </body>
     </html>
   );
