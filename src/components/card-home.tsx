@@ -81,6 +81,7 @@ export default function CardHome() {
         description="Burnt is a bio page i worked on and still use till this day."
         hoverColor="#A41212"
         route="/burnt"
+	archived={true}
       />
 
       <Card
