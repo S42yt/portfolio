@@ -7,12 +7,17 @@ interface ServerFeaturesSectionProps {
   features: Feature[];
 }
 
-export default function ServerFeaturesSection({ features }: ServerFeaturesSectionProps) {
+export default function ServerFeaturesSection({
+  features,
+}: ServerFeaturesSectionProps) {
   return (
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         Server Features
       </h2>
@@ -26,13 +31,13 @@ export default function ServerFeaturesSection({ features }: ServerFeaturesSectio
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             <h3
-              className="text-sm font-mono font-medium mb-1"
+              className="text-sm font-medium mb-1"
               style={{ color: "var(--text)" }}
             >
               {feature.title}
             </h3>
             <p
-              className="text-xs font-mono font-light leading-relaxed"
+              className="text-xs leading-relaxed"
               style={{ color: "var(--text-muted)" }}
             >
               {feature.description}

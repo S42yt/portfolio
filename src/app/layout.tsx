@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Big_Shoulders } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
@@ -7,7 +7,7 @@ import KofiToast from "@/components/kofi-toast";
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const bigShoulders = Big_Shoulders({
@@ -17,12 +17,13 @@ const bigShoulders = Big_Shoulders({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://s42.site"),
   title: "S42 and Friends",
   description: "Personal Dev Portfolio of S42",
   icons: {
-    icon: "emojis/kuromi_love.gif",
-    shortcut: "emojis/kuromi_love.gif",
-    apple: "emojis/kuromi_love.gif",
+    icon: "/emojis/kuromi_love.gif",
+    shortcut: "/emojis/kuromi_love.gif",
+    apple: "/emojis/kuromi_love.gif",
   },
   openGraph: {
     images: ["/thumbnail/page.png"],
@@ -31,7 +32,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["/thumbnail/page.png"],
   },
-  themeColor: "#6416c9",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7348e2",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -40,54 +45,59 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="icon" href="emojis/kuromi_love.gif" type="image/gif" />
-      </head>
+    <html lang="en">
       <body
         className={`${jetbrainsMono.variable} ${bigShoulders.variable} antialiased relative overflow-x-hidden`}
       >
-        <div className="fixed inset-0" style={{ background: "var(--bg)" }}>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
+
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 -z-10"
+          style={{ background: "var(--bg)" }}
+        >
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse 100% 60% at 50% -10%, oklch(22% 0.08 288) 0%, transparent 60%)",
+                "radial-gradient(ellipse 110% 55% at 50% -8%, oklch(28% 0.1 288 / 0.55) 0%, transparent 62%)",
             }}
           />
           <div
-            className="absolute pointer-events-none"
+            className="absolute"
             style={{
-              width: "600px",
-              height: "600px",
-              top: "10%",
-              left: "60%",
+              width: "min(60vw, 640px)",
+              aspectRatio: "1",
+              top: "8%",
+              left: "58%",
               background:
-                "radial-gradient(circle, oklch(18% 0.06 300) 0%, transparent 70%)",
-              filter: "blur(80px)",
-              opacity: 0.7,
+                "radial-gradient(circle, oklch(24% 0.09 300 / 0.6) 0%, transparent 70%)",
+              filter: "blur(90px)",
             }}
           />
           <div
-            className="absolute pointer-events-none"
+            className="absolute"
             style={{
-              width: "500px",
-              height: "500px",
-              top: "30%",
-              left: "-10%",
+              width: "min(52vw, 540px)",
+              aspectRatio: "1",
+              top: "34%",
+              left: "-12%",
               background:
-                "radial-gradient(circle, oklch(16% 0.05 275) 0%, transparent 70%)",
-              filter: "blur(80px)",
-              opacity: 0.6,
+                "radial-gradient(circle, oklch(21% 0.07 275 / 0.55) 0%, transparent 70%)",
+              filter: "blur(90px)",
             }}
           />
         </div>
 
         <div className="relative z-10 min-h-screen flex flex-col">
-          <main className="flex-1">{children}</main>
+          <main id="main" className="flex-1">
+            {children}
+          </main>
           <Footer />
         </div>
-        
+
         <KofiToast />
       </body>
     </html>

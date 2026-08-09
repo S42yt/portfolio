@@ -21,7 +21,10 @@ export default function PerfectForSection() {
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         Perfect For
       </h2>
@@ -35,13 +38,13 @@ export default function PerfectForSection() {
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             <h3
-              className="text-sm font-mono font-medium mb-1"
+              className="text-sm font-medium mb-1"
               style={{ color: "var(--text)" }}
             >
               {item.label}
             </h3>
             <p
-              className="text-sm font-mono font-light leading-relaxed"
+              className="text-sm leading-relaxed"
               style={{ color: "var(--text-muted)" }}
             >
               {item.description}

@@ -6,12 +6,7 @@ import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 export default function HeroSection() {
   return (
     <div className="mb-16">
-      <p
-        className="text-xs tracking-[0.3em] uppercase font-mono mb-6"
-        style={{ color: "var(--text-faint)" }}
-      >
-        Minecraft Server · German · Archived
-      </p>
+      <p className="eyebrow mb-6">Minecraft Server · German · Archived</p>
 
       <div className="flex items-end gap-4 mb-8 flex-wrap">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -34,10 +29,7 @@ export default function HeroSection() {
 
       <div className="section-rule mb-8" />
 
-      <p
-        className="text-base md:text-lg leading-[1.75] font-mono font-light max-w-2xl mb-8"
-        style={{ color: "var(--text-muted)" }}
-      >
+      <p className="prose-body text-base md:text-lg max-w-2xl mb-8">
         A premium German Minecraft CityBuild network. I worked on the website,
         UI/UX design, and custom item designs.
       </p>
@@ -46,8 +38,7 @@ export default function HeroSection() {
         href="https://cutecraft.net"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-mono transition-opacity duration-200 hover:opacity-60"
-        style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}
+        className="btn"
       >
         <FontAwesomeIcon icon={faGlobe} className="w-4 h-4" />
         Visit Website ↗

@@ -17,14 +17,17 @@ export default function MyRoleSection({ contributions }: MyRoleSectionProps) {
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         My Role
       </h2>
       <div className="section-rule mb-6" />
 
       <p
-        className="text-sm font-mono font-light mb-6 max-w-xl leading-[1.75]"
+        className="text-sm mb-6 max-w-xl leading-[1.75]"
         style={{ color: "var(--text-muted)" }}
       >
         As a core member of the CuteCraft development team, I focus on web
@@ -44,13 +47,13 @@ export default function MyRoleSection({ contributions }: MyRoleSectionProps) {
             />
             <div>
               <h3
-                className="text-sm font-mono font-medium mb-1"
+                className="text-sm font-medium mb-1"
                 style={{ color: "var(--text)" }}
               >
                 {item.title}
               </h3>
               <p
-                className="text-xs font-mono font-light leading-relaxed"
+                className="text-xs leading-relaxed"
                 style={{ color: "var(--text-muted)" }}
               >
                 {item.description}

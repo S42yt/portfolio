@@ -3,7 +3,10 @@ export default function FeaturesSection() {
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         Features
       </h2>
@@ -14,13 +17,13 @@ export default function FeaturesSection() {
           className="py-5"
           style={{ borderBottom: "1px solid var(--border-subtle)" }}
         >
-          <h3
-            className="font-mono font-medium mb-2"
-            style={{ color: "var(--text)" }}
-          >
+          <h3 className="font-medium mb-2" style={{ color: "var(--text)" }}>
             Press F (default)
           </h3>
-          <p className="text-sm font-mono font-light leading-relaxed" style={{ color: "var(--text-muted)" }}>
+          <p
+            className="text-sm leading-relaxed"
+            style={{ color: "var(--text-muted)" }}
+          >
             Press the button associated with swapping items to your offhand. The
             cursor needs to be in the inventory due to Minecraft limitations.
           </p>
@@ -30,13 +33,13 @@ export default function FeaturesSection() {
           className="py-5"
           style={{ borderBottom: "1px solid var(--border-subtle)" }}
         >
-          <h3
-            className="font-mono font-medium mb-2"
-            style={{ color: "var(--text)" }}
-          >
+          <h3 className="font-medium mb-2" style={{ color: "var(--text)" }}>
             Shift Right Click
           </h3>
-          <p className="text-sm font-mono font-light leading-relaxed" style={{ color: "var(--text-muted)" }}>
+          <p
+            className="text-sm leading-relaxed"
+            style={{ color: "var(--text-muted)" }}
+          >
             Shift right-click on the villager to cycle through trades. Disabled
             by default but can be enabled in config. Made with Bedrock and
             Geyser in mind.
@@ -44,10 +47,7 @@ export default function FeaturesSection() {
         </div>
       </div>
 
-      <p
-        className="text-xs font-mono mt-5"
-        style={{ color: "var(--text-faint)" }}
-      >
+      <p className="text-xs mt-5" style={{ color: "var(--text-faint)" }}>
         Note: If a villager has no profession or has been traded with, cycling
         is unavailable.
       </p>

@@ -1,12 +1,7 @@
 export default function HeroSection() {
   return (
     <div className="mb-16">
-      <p
-        className="text-xs tracking-[0.3em] uppercase font-mono mb-6"
-        style={{ color: "var(--text-faint)" }}
-      >
-        Minecraft Plugin · Kotlin
-      </p>
+      <p className="eyebrow mb-6">Minecraft Plugin · Kotlin</p>
 
       <h1
         className="font-display font-black leading-[0.85] tracking-tight mb-8"
@@ -17,12 +12,9 @@ export default function HeroSection() {
 
       <div className="section-rule mb-8" />
 
-      <p
-        className="text-base md:text-lg leading-[1.75] font-mono font-light max-w-2xl mb-8"
-        style={{ color: "var(--text-muted)" }}
-      >
-        A multiplatform plugin written in Kotlin to cycle through Villager trades
-        from the UI. Inspired by{" "}
+      <p className="prose-body text-base md:text-lg max-w-2xl mb-8">
+        A multiplatform plugin written in Kotlin to cycle through Villager
+        trades from the UI. Inspired by{" "}
         <a
           href="https://modrinth.com/user/henkelmax"
           target="_blank"

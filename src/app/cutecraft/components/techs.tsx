@@ -9,7 +9,10 @@ export default function TechnologiesSection() {
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         Technologies
       </h2>
@@ -23,12 +26,12 @@ export default function TechnologiesSection() {
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             <span
-              className="text-xs tracking-[0.2em] uppercase font-mono"
+              className="text-xs tracking-[0.2em] uppercase"
               style={{ color: "var(--text-faint)" }}
             >
               {item.label}
             </span>
-            <span className="text-sm font-mono" style={{ color: "var(--text-muted)" }}>
+            <span className="text-sm" style={{ color: "var(--text-muted)" }}>
               {item.value}
             </span>
           </div>

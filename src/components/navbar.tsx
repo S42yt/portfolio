@@ -1,93 +1,97 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
+const NAV_ITEMS = [
+  { id: "home", label: "About" },
+  { id: "projects", label: "Projects" },
+  { id: "worked-for", label: "Worked For" },
+];
 
 export default function FloatingNav() {
-  const [activeSection, setActiveSection] = useState("home");
+  const [activeSection, setActiveSection] = useState(NAV_ITEMS[0].id);
+  const [indicator, setIndicator] = useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+  });
+  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    const sections = ["home", "projects", "worked-for"];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const mostVisible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-    const handleScroll = () => {
-      const sectionPositions = sections
-        .map((id) => {
-          const element = document.getElementById(id);
-          if (!element) return null;
-          const rect = element.getBoundingClientRect();
-          return {
-            id,
-            top: rect.top + window.scrollY,
-            bottom: rect.bottom + window.scrollY,
-          };
-        })
-        .filter(Boolean);
+        if (mostVisible) setActiveSection(mostVisible.target.id);
+      },
+      { rootMargin: "-45% 0px -45% 0px" },
+    );
 
-      const currentScroll = window.scrollY + 200;
+    NAV_ITEMS.forEach(({ id }) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
 
-      for (let i = sectionPositions.length - 1; i >= 0; i--) {
-        const section = sectionPositions[i];
-        if (section && currentScroll >= section.top) {
-          setActiveSection(section.id);
-          return;
-        }
-      }
-
-      setActiveSection("home");
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => observer.disconnect();
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  useLayoutEffect(() => {
+    const measure = () => {
+      const activeItem = listRef.current?.querySelector<HTMLElement>(
+        '[data-active="true"]',
+      );
 
-  const navItems = [
-    { id: "home", label: "About Me" },
-    { id: "projects", label: "Projects" },
-    { id: "worked-for", label: "Worked For" },
-  ];
+      if (activeItem) {
+        setIndicator({
+          left: activeItem.offsetLeft,
+          top: activeItem.offsetTop,
+          width: activeItem.offsetWidth,
+          height: activeItem.offsetHeight,
+        });
+      }
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [activeSection]);
 
   return (
-    <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50 hidden md:block">
-      <div className="flex flex-col gap-5">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => scrollToSection(item.id)}
-            className="group relative flex items-center justify-end"
-            aria-label={item.label}
-          >
-            <span
-              className="absolute right-5 whitespace-nowrap text-xs font-mono tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-2 py-1"
-              style={{
-                color: "var(--text-muted)",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-              }}
+    <nav
+      aria-label="Section navigation"
+      className="fixed inset-x-0 bottom-5 z-50 flex justify-center px-4 md:bottom-auto md:top-5"
+    >
+      <ul
+        ref={listRef}
+        className="glass relative flex items-center gap-1 rounded-[var(--radius-md)] p-1.5"
+      >
+        <span
+          aria-hidden="true"
+          className="nav-indicator"
+          style={{
+            width: `${indicator.width}px`,
+            height: `${indicator.height}px`,
+            transform: `translate(${indicator.left}px, ${indicator.top}px)`,
+            opacity: indicator.width ? 1 : 0,
+          }}
+        />
+
+        {NAV_ITEMS.map(({ id, label }) => (
+          <li key={id}>
+            <a
+              href={`#${id}`}
+              className="nav-link"
+              data-active={activeSection === id}
+              aria-current={activeSection === id ? "true" : undefined}
             >
-              {item.label}
-            </span>
-            <div
-              className="transition-all duration-300"
-              style={{
-                width: activeSection === item.id ? "20px" : "8px",
-                height: "2px",
-                background:
-                  activeSection === item.id
-                    ? "var(--accent)"
-                    : "var(--border)",
-              }}
-            />
-          </button>
+              {label}
+            </a>
+          </li>
         ))}
-      </div>
+      </ul>
     </nav>
   );
 }

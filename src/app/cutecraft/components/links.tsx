@@ -3,9 +3,24 @@ import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 const links = [
-  { label: "Website", sub: "cutecraft.net", href: "https://shop.cutecraft.net", icon: faGlobe },
-  { label: "Discord", sub: "Join the community", href: "https://discord.gg/cutecraft", icon: faDiscord },
-  { label: "GitHub", sub: "Open source projects", href: "https://github.com/CuteCraft-Network", icon: faGithub },
+  {
+    label: "Website",
+    sub: "cutecraft.net",
+    href: "https://shop.cutecraft.net",
+    icon: faGlobe,
+  },
+  {
+    label: "Discord",
+    sub: "Join the community",
+    href: "https://discord.gg/cutecraft",
+    icon: faDiscord,
+  },
+  {
+    label: "GitHub",
+    sub: "Open source projects",
+    href: "https://github.com/CuteCraft-Network",
+    icon: faGithub,
+  },
 ];
 
 export default function CommunityLinksSection() {
@@ -13,7 +28,10 @@ export default function CommunityLinksSection() {
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         Community
       </h2>
@@ -26,7 +44,7 @@ export default function CommunityLinksSection() {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between py-4 transition-opacity duration-200 hover:opacity-60"
+            className="row-link flex items-center justify-between px-4 py-4"
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             <div className="flex items-center gap-3">
@@ -37,13 +55,13 @@ export default function CommunityLinksSection() {
               />
               <div>
                 <span
-                  className="text-sm font-mono font-medium"
+                  className="text-sm font-medium"
                   style={{ color: "var(--text)" }}
                 >
                   {link.label}
                 </span>
                 <span
-                  className="text-xs font-mono ml-3"
+                  className="text-xs ml-3"
                   style={{ color: "var(--text-faint)" }}
                 >
                   {link.sub}

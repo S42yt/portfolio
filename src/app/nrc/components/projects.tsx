@@ -13,7 +13,11 @@ const projects = [
       "Create server-specific experiences",
     ],
     links: [
-      { label: "GitHub", href: "https://github.com/NoRiskClient/nrc-server-api", icon: faGithub },
+      {
+        label: "GitHub",
+        href: "https://github.com/NoRiskClient/nrc-server-api",
+        icon: faGithub,
+      },
       { label: "Docs", href: "https://docs.norisk.gg", icon: faBook },
     ],
   },
@@ -27,8 +31,16 @@ const projects = [
       "Disable modules without coding",
     ],
     links: [
-      { label: "GitHub", href: "https://github.com/NoRiskClient/nrc-server-mappings", icon: faGithub },
-      { label: "Docs", href: "https://github.com/NoRiskClient/nrc-server-mappings/tree/main/docs", icon: faBook },
+      {
+        label: "GitHub",
+        href: "https://github.com/NoRiskClient/nrc-server-mappings",
+        icon: faGithub,
+      },
+      {
+        label: "Docs",
+        href: "https://github.com/NoRiskClient/nrc-server-mappings/tree/main/docs",
+        icon: faBook,
+      },
     ],
   },
 ];
@@ -38,7 +50,10 @@ export default function ProjectsSection() {
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         Related Projects
       </h2>
@@ -46,19 +61,15 @@ export default function ProjectsSection() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {projects.map((project) => (
-          <div
-            key={project.title}
-            className="p-5"
-            style={{ border: "1px solid var(--border)" }}
-          >
+          <div key={project.title} className="panel p-5">
             <h3
-              className="text-sm font-mono font-medium mb-3"
+              className="text-sm font-medium mb-3"
               style={{ color: "var(--text)" }}
             >
               {project.title}
             </h3>
             <p
-              className="text-xs font-mono font-light leading-relaxed mb-4"
+              className="text-xs leading-relaxed mb-4"
               style={{ color: "var(--text-muted)" }}
             >
               {project.description}
@@ -67,7 +78,7 @@ export default function ProjectsSection() {
               {project.features.map((f) => (
                 <li
                   key={f}
-                  className="text-xs font-mono"
+                  className="text-xs"
                   style={{ color: "var(--text-faint)" }}
                 >
                   · {f}
@@ -81,8 +92,7 @@ export default function ProjectsSection() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono transition-opacity duration-200 hover:opacity-60"
-                  style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                  className="btn btn-sm"
                 >
                   <FontAwesomeIcon icon={link.icon} className="w-3 h-3" />
                   {link.label}

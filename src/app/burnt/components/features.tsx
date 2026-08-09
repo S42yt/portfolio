@@ -17,7 +17,10 @@ export default function FeaturesSection({ features }: FeaturesSectionProps) {
     <div className="mb-16">
       <h2
         className="font-display font-black leading-none mb-4"
-        style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", color: "var(--text)" }}
+        style={{
+          fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+          color: "var(--text)",
+        }}
       >
         Key Features
       </h2>
@@ -36,13 +39,13 @@ export default function FeaturesSection({ features }: FeaturesSectionProps) {
             />
             <div>
               <h3
-                className="text-sm font-mono font-medium mb-1"
+                className="text-sm font-medium mb-1"
                 style={{ color: "var(--text)" }}
               >
                 {feature.title}
               </h3>
               <p
-                className="text-xs font-mono font-light leading-relaxed"
+                className="text-xs leading-relaxed"
                 style={{ color: "var(--text-muted)" }}
               >
                 {feature.description}

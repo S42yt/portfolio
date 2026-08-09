@@ -1,3 +1,5 @@
+import { CSSProperties } from "react";
+
 interface Skill {
   name: string;
   icon: string;
@@ -9,34 +11,32 @@ interface SkillsSectionProps {
 
 export default function SkillsSection({ skills }: SkillsSectionProps) {
   return (
-    <div className="mb-4">
-      <p
-        className="text-xs tracking-[0.3em] uppercase font-mono mb-5"
-        style={{ color: "var(--text-faint)" }}
-      >
-        Stack
-      </p>
-      <div className="flex flex-wrap gap-x-7 gap-y-4">
-        {skills.map((skill) => (
-          <div key={skill.name} className="flex items-center gap-2 group">
+    <div>
+      <p className="eyebrow mb-5">Stack</p>
+      <ul className="flex flex-wrap gap-2">
+        {skills.map((skill, index) => (
+          <li
+            key={skill.name}
+            className="chip"
+            style={{ "--chip-index": index } as CSSProperties}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={skill.icon}
-              alt={skill.name}
-              className="w-4 h-4 object-contain opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+              alt=""
+              aria-hidden="true"
+              className="w-4 h-4 object-contain"
             />
-            <span
-              className="text-sm font-mono transition-colors duration-200 group-hover:text-[oklch(72%_0.014_285)]"
-              style={{ color: "var(--text-muted)" }}
-            >
-              {skill.name}
-            </span>
-          </div>
+            {skill.name}
+          </li>
         ))}
-        <span className="text-sm font-mono" style={{ color: "var(--text-faint)" }}>
+        <li
+          className="inline-flex items-center px-3.5 py-2 text-sm"
+          style={{ color: "var(--text-tertiary)" }}
+        >
           + more
-        </span>
-      </div>
+        </li>
+      </ul>
     </div>
   );
 }
