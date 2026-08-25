@@ -15,6 +15,7 @@ const COLLABORATORS = [
   },
   { file: "ren.png", name: "Ren", href: "https://github.com/tsundosika" },
   { file: "nrc.png", name: "NoRisk Client", href: "https://norisk.gg" },
+  { file: "rtl.png", name: "RTL", href: "https://www.rtl.de" },
 ];
 
 const MARQUEE_REPEATS = 4;

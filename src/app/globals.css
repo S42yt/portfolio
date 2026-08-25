@@ -475,7 +475,6 @@ body {
   background: linear-gradient(to right, var(--border), transparent);
 }
 
-/* full-bleed ticker band */
 .ticker {
   overflow: hidden;
   width: 100vw;
@@ -514,7 +513,6 @@ body {
   }
 }
 
-/* giant outlined ghost words behind sections */
 .giant-text {
   position: absolute;
   left: 0;
@@ -532,7 +530,6 @@ body {
   -webkit-text-stroke: 1px oklch(34% 0.02 285 / 0.55);
 }
 
-/* masked wrapper for hero char reveal */
 .char-mask {
   display: inline-block;
   overflow: hidden;

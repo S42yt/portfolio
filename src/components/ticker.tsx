@@ -5,9 +5,7 @@ interface TickerProps {
 }
 
 export default function Ticker({ items, reverse, className }: TickerProps) {
-  const line = items
-    .map((item) => `${item} ✦ `)
-    .join("");
+  const line = items.map((item) => `${item} ✦ `).join("");
   return (
     <div
       aria-hidden="true"
@@ -15,7 +13,6 @@ export default function Ticker({ items, reverse, className }: TickerProps) {
       className={`ticker ${className ?? ""}`}
     >
       <div className={`ticker-track ${reverse ? "ticker-track-reverse" : ""}`}>
-        {/* two copies for a seamless -50% loop */}
         <span>{line.repeat(4)}</span>
         <span>{line.repeat(4)}</span>
       </div>

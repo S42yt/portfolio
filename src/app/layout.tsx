@@ -3,6 +3,7 @@ import { JetBrains_Mono, Big_Shoulders } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
 import KofiToast from "@/components/kofi-toast";
+import SmokeBg from "@/components/smoke-bg";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -89,6 +90,7 @@ export default function RootLayout({
               filter: "blur(90px)",
             }}
           />
+          <SmokeBg />
         </div>
 
         <div className="relative z-10 min-h-screen flex flex-col">

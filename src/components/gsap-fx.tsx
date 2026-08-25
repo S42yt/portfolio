@@ -10,8 +10,11 @@ export default function GsapFx() {
   useEffect(() => {
     const mm = gsap.matchMedia();
 
+    const refresh = () => ScrollTrigger.refresh();
+    document.fonts?.ready.then(refresh);
+    addEventListener("load", refresh);
+
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // hero headline: masked char rise
       gsap.from("[data-gsap='hero-char']", {
         yPercent: 110,
         stagger: 0.06,
@@ -19,7 +22,6 @@ export default function GsapFx() {
         ease: "power4.out",
       });
 
-      // hero support lines: soft fade-up
       gsap.from("[data-gsap='hero-item']", {
         y: 28,
         opacity: 0,
@@ -29,7 +31,6 @@ export default function GsapFx() {
         ease: "power3.out",
       });
 
-      // hero drifts up + fades slightly as you scroll past it
       const hero = document.querySelector("[data-gsap='hero']");
       if (hero) {
         gsap.to(hero, {
@@ -45,7 +46,6 @@ export default function GsapFx() {
         });
       }
 
-      // section titles: rise in
       gsap.utils
         .toArray<HTMLElement>("[data-gsap='section-title']")
         .forEach((el) => {
@@ -54,24 +54,20 @@ export default function GsapFx() {
             opacity: 0,
             duration: 0.9,
             ease: "power3.out",
-            scrollTrigger: { trigger: el, start: "top 86%" },
+            scrollTrigger: { trigger: el, start: "top 92%", once: true },
           });
         });
 
-      // section subtitles / blocks: gentle fade-up
-      gsap.utils
-        .toArray<HTMLElement>("[data-gsap='fade-up']")
-        .forEach((el) => {
-          gsap.from(el, {
-            y: 26,
-            opacity: 0,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: { trigger: el, start: "top 88%" },
-          });
+      gsap.utils.toArray<HTMLElement>("[data-gsap='fade-up']").forEach((el) => {
+        gsap.from(el, {
+          y: 26,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 95%", once: true },
         });
+      });
 
-      // skill chips: springy pop
       gsap.from("[data-gsap='chips'] .chip", {
         y: 18,
         scale: 0.7,
@@ -79,21 +75,23 @@ export default function GsapFx() {
         stagger: 0.05,
         duration: 0.7,
         ease: "back.out(1.6)",
-        scrollTrigger: { trigger: "[data-gsap='chips']", start: "top 88%" },
+        scrollTrigger: {
+          trigger: "[data-gsap='chips']",
+          start: "top 95%",
+          once: true,
+        },
       });
 
-      // project cards: staggered rise, each on its own trigger
       gsap.utils.toArray<HTMLElement>("[data-gsap='card']").forEach((el) => {
         gsap.from(el, {
           y: 64,
           opacity: 0,
           duration: 0.8,
           ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 92%" },
+          scrollTrigger: { trigger: el, start: "top 95%", once: true },
         });
       });
 
-      // giant ghost words: slow horizontal scrub for depth
       gsap.utils.toArray<HTMLElement>("[data-gsap='giant']").forEach((el) => {
         gsap.fromTo(
           el,
@@ -111,7 +109,6 @@ export default function GsapFx() {
         );
       });
 
-      // background blobs: parallax scrub
       gsap.utils.toArray<HTMLElement>(".bg-blob").forEach((el, i) => {
         gsap.to(el, {
           yPercent: (i + 1) * 10,
@@ -125,7 +122,6 @@ export default function GsapFx() {
         });
       });
 
-      // tickers: slight skew from scroll velocity
       const tickers = gsap.utils.toArray<HTMLElement>("[data-gsap='ticker']");
       if (tickers.length) {
         const proxy = { skew: 0 };
@@ -150,7 +146,10 @@ export default function GsapFx() {
       }
     });
 
-    return () => mm.revert();
+    return () => {
+      removeEventListener("load", refresh);
+      mm.revert();
+    };
   }, []);
 
   return null;
