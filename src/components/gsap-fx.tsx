@@ -69,12 +69,10 @@ export default function GsapFx() {
       });
 
       gsap.from("[data-gsap='chips'] .chip", {
-        y: 18,
-        scale: 0.7,
         opacity: 0,
         stagger: 0.05,
-        duration: 0.7,
-        ease: "back.out(1.6)",
+        duration: 0.6,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: "[data-gsap='chips']",
           start: "top 95%",

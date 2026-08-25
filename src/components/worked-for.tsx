@@ -4,7 +4,12 @@ import Image from "next/image";
 import Marquee from "react-fast-marquee";
 import { useEffect, useState } from "react";
 
-const COLLABORATORS = [
+const COLLABORATORS: {
+  file: string;
+  name: string;
+  href: string;
+  contain?: boolean;
+}[] = [
   { file: "giggand.png", name: "Giggand", href: "https://twitch.tv/giggand" },
   { file: "tuubaa.png", name: "Tuubaa", href: "https://youtube.com/@tuubaa" },
   { file: "norisk.png", name: "NoRisk", href: "https://youtube.com/@NoRiskk" },
@@ -15,7 +20,7 @@ const COLLABORATORS = [
   },
   { file: "ren.png", name: "Ren", href: "https://github.com/tsundosika" },
   { file: "nrc.png", name: "NoRisk Client", href: "https://norisk.gg" },
-  { file: "rtl.png", name: "RTL", href: "https://www.rtl.de" },
+  { file: "rtl.png", name: "RTL", href: "https://www.rtl.de", contain: true },
 ];
 
 const MARQUEE_REPEATS = 4;
@@ -74,7 +79,11 @@ export default function WorkedFor() {
                     alt={person.name}
                     width={128}
                     height={128}
-                    className="h-24 w-24 object-cover md:h-32 md:w-32"
+                    className={
+                      person.contain
+                        ? "h-24 w-24 bg-[var(--surface)] object-contain p-3 md:h-32 md:w-32"
+                        : "h-24 w-24 object-cover md:h-32 md:w-32"
+                    }
                   />
                 </a>
               ))}

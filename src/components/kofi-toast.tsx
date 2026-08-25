@@ -9,7 +9,8 @@ export default function KofiToast() {
   const [isDismissed, setIsDismissed] = useState(true);
 
   useEffect(() => {
-    if (localStorage.getItem(DISMISS_KEY)) return;
+    localStorage.removeItem(DISMISS_KEY);
+    if (sessionStorage.getItem(DISMISS_KEY)) return;
 
     setIsDismissed(false);
     const timer = setTimeout(() => setIsVisible(true), 2500);
@@ -17,7 +18,7 @@ export default function KofiToast() {
   }, []);
 
   const dismiss = () => {
-    localStorage.setItem(DISMISS_KEY, "true");
+    sessionStorage.setItem(DISMISS_KEY, "true");
     setIsDismissed(true);
   };
 
