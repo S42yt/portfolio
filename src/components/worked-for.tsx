@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
 import { useEffect, useState } from "react";
-import Reveal from "./reveal";
 
 const COLLABORATORS = [
   { file: "giggand.png", name: "Giggand", href: "https://twitch.tv/giggand" },
@@ -33,17 +32,26 @@ export default function WorkedFor() {
   }, []);
 
   return (
-    <section id="worked-for" className="py-20">
+    <section id="worked-for" className="relative py-20">
+      <span data-gsap="giant" aria-hidden="true" className="giant-text top-4">
+        Friends
+      </span>
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <Reveal className="mb-12">
-          <h2 className="section-title mb-4">Worked For</h2>
+        <div className="mb-12">
+          <h2 data-gsap="section-title" className="section-title mb-4">
+            Worked For
+          </h2>
           <div className="section-rule mb-4" />
-          <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+          <p
+            data-gsap="fade-up"
+            className="text-sm"
+            style={{ color: "var(--text-tertiary)" }}
+          >
             People and projects I&apos;ve had the pleasure to collaborate with
           </p>
-        </Reveal>
+        </div>
 
-        <div className="mb-20">
+        <div className="mb-20" data-gsap="fade-up">
           <Marquee
             gradient={false}
             speed={40}
@@ -77,7 +85,7 @@ export default function WorkedFor() {
           style={{ borderTop: "1px solid var(--border)" }}
         >
           <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
-            <Reveal>
+            <div data-gsap="fade-up">
               <a
                 href="https://namemc.com/skin/6ddb655c5b495314"
                 target="_blank"
@@ -92,9 +100,9 @@ export default function WorkedFor() {
                   className="h-auto w-full object-contain"
                 />
               </a>
-            </Reveal>
+            </div>
 
-            <Reveal delay={120}>
+            <div data-gsap="fade-up">
               <p className="eyebrow mb-4">Collaboration</p>
               <h3
                 className="font-display font-black leading-none tracking-tight mb-5"
@@ -127,7 +135,7 @@ export default function WorkedFor() {
               >
                 View on NameMC ↗
               </a>
-            </Reveal>
+            </div>
           </div>
         </div>
       </div>

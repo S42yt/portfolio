@@ -11,7 +11,7 @@ interface SkillsSectionProps {
 
 export default function SkillsSection({ skills }: SkillsSectionProps) {
   return (
-    <div>
+    <div data-gsap="chips">
       <p className="eyebrow mb-5">Stack</p>
       <ul className="flex flex-wrap gap-2">
         {skills.map((skill, index) => (

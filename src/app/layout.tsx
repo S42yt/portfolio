@@ -66,7 +66,7 @@ export default function RootLayout({
             }}
           />
           <div
-            className="absolute"
+            className="absolute bg-blob"
             style={{
               width: "min(60vw, 640px)",
               aspectRatio: "1",
@@ -78,7 +78,7 @@ export default function RootLayout({
             }}
           />
           <div
-            className="absolute"
+            className="absolute bg-blob"
             style={{
               width: "min(52vw, 540px)",
               aspectRatio: "1",

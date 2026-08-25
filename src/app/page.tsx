@@ -3,7 +3,8 @@ import WorkedFor from "@/components/worked-for";
 import FloatingNav from "@/components/navbar";
 import Hero from "@/components/hero";
 import SkillsSection from "@/components/skills";
-import Reveal from "@/components/reveal";
+import Ticker from "@/components/ticker";
+import GsapFx from "@/components/gsap-fx";
 
 export default function Home() {
   const skills = [
@@ -43,28 +44,68 @@ export default function Home() {
 
   return (
     <>
+      <GsapFx />
       <FloatingNav />
-      <div className="min-h-screen noise-overlay">
+      <div className="min-h-screen noise-overlay overflow-x-clip">
         <section id="home">
           <Hero />
 
-          <Reveal className="max-w-5xl mx-auto px-6 md:px-12 pb-20">
+          <div
+            data-gsap="fade-up"
+            className="max-w-5xl mx-auto px-6 md:px-12 pb-14"
+          >
             <SkillsSection skills={skills} />
-          </Reveal>
+          </div>
+
+          <Ticker
+            items={[
+              "Developer",
+              "UI/UX",
+              "Performance",
+              "TypeScript",
+              "Rust",
+              "Next.js",
+            ]}
+          />
         </section>
 
-        <section id="projects" className="py-20">
+        <section id="projects" className="relative py-20">
+          <span
+            data-gsap="giant"
+            aria-hidden="true"
+            className="giant-text top-4"
+          >
+            Projects
+          </span>
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <Reveal className="mb-12">
-              <h2 className="section-title mb-4">Projects</h2>
+            <div className="mb-12">
+              <h2 data-gsap="section-title" className="section-title mb-4">
+                Projects
+              </h2>
               <div className="section-rule mb-4" />
-              <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+              <p
+                data-gsap="fade-up"
+                className="text-sm"
+                style={{ color: "var(--text-tertiary)" }}
+              >
                 A selection of things I&apos;ve built. More on GitHub.
               </p>
-            </Reveal>
+            </div>
             <CardHome />
           </div>
         </section>
+
+        <Ticker
+          reverse
+          items={[
+            "NoRisk Client",
+            "Trade Cycle",
+            "Burnt",
+            "CuteCraft",
+            "Open Source",
+            "S42",
+          ]}
+        />
 
         <WorkedFor />
       </div>

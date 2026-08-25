@@ -475,6 +475,70 @@ body {
   background: linear-gradient(to right, var(--border), transparent);
 }
 
+/* full-bleed ticker band */
+.ticker {
+  overflow: hidden;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-tertiary);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  padding: 0.9em 0;
+  user-select: none;
+}
+
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  width: max-content;
+  animation: ticker-scroll 70s linear infinite;
+}
+
+.ticker-track-reverse {
+  animation-direction: reverse;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* giant outlined ghost words behind sections */
+.giant-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(5rem, 18vw, 15rem);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px oklch(34% 0.02 285 / 0.55);
+}
+
+/* masked wrapper for hero char reveal */
+.char-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
