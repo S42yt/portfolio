@@ -22,6 +22,8 @@ const COLLABORATORS: {
   { file: "ren.png", name: "Ren", href: "https://github.com/tsundosika" },
   { file: "nrc.png", name: "NoRisk Client", href: "https://norisk.gg" },
   { file: "rtl.png", name: "RTL", href: "https://www.rtl.de", contain: true },
+  { file: "wasserlol.png", name: "Wasserlol", href: "https://youtube.com/@wasserlol"},
+  { file: "lunyone.png", name: "LunyOne", href: "https://lunyone.de/de/"}
 ];
 
 const MARQUEE_REPEATS = 4;
