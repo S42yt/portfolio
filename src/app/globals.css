@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: var(--font-big-shoulders);
+  --font-display: var(--font-jetbrains-mono);
   --font-mono: var(--font-jetbrains-mono);
 }
 

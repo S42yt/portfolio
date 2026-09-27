@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { CSSProperties } from "react";
-import { JetBrains_Mono, Big_Shoulders, Open_Sans } from "next/font/google";
+import { JetBrains_Mono, Open_Sans } from "next/font/google";
 import "./globals.css";
 import "./aero.css";
 import Footer from "@/components/footer";
@@ -12,12 +12,6 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-});
-
-const bigShoulders = Big_Shoulders({
-  variable: "--font-big-shoulders",
-  subsets: ["latin"],
-  weight: ["400", "700", "900"],
 });
 
 const openSans = Open_Sans({
@@ -70,7 +64,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${jetbrainsMono.variable} ${bigShoulders.variable} ${openSans.variable}`}
+      className={`${jetbrainsMono.variable} ${openSans.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: RESTORE_THEME }} />
