@@ -18,6 +18,7 @@ const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+  preload: false,
 });
 
 const BUBBLES = [
@@ -115,7 +116,7 @@ export default function RootLayout({
             {BUBBLES.map((bubble, index) => (
               <span
                 key={index}
-                className="bg-blob absolute"
+                className="absolute"
                 style={{
                   width: bubble.size,
                   height: bubble.size,

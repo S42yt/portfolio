@@ -5,7 +5,9 @@ import { useEffect } from "react";
 const STORAGE_KEY = "s42-theme";
 const SECRET_WORD = "aero";
 const TAPS_NEEDED = 5;
-const GLITCH_MS = 460;
+const GLITCH_MS = 360;
+const REVEAL_MS = 900;
+const LARGE_AREA = 260_000;
 
 const shuffle = <T,>(items: T[]) => {
   const copy = [...items];
@@ -16,15 +18,39 @@ const shuffle = <T,>(items: T[]) => {
   return copy;
 };
 
-const depth = (el: Element) => {
-  let count = 0;
-  for (let node = el.parentElement; node; node = node.parentElement) count++;
-  return count;
-};
-
 const isOnScreen = (el: Element) => {
   const rect = el.getBoundingClientRect();
   return rect.width > 0 && rect.bottom > 0 && rect.top < window.innerHeight;
+};
+
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+
+let assetsReady: Promise<void> | null = null;
+
+const loadAssets = () => {
+  if (assetsReady) return assetsReady;
+
+  const portrait = window.matchMedia("(max-aspect-ratio: 4 / 5)").matches;
+  const images = [
+    portrait ? "/aero/meadow-portrait.webp" : "/aero/meadow.webp",
+    "/aero/bubble.png",
+  ].map((src) => {
+    const img = new Image();
+    img.src = src;
+    return img.decode().catch(() => undefined);
+  });
+  const fonts = ["400", "600", "700"].map((weight) =>
+    document.fonts?.load(`${weight} 16px "Open Sans"`).catch(() => undefined),
+  );
+
+  assetsReady = Promise.race([
+    Promise.all([...images, ...fonts]).then(() => undefined),
+    wait(2500),
+  ]).then(() => {
+    document.documentElement.classList.add("aero-ready");
+  });
+  return assetsReady;
 };
 
 export default function AeroMode() {
@@ -33,6 +59,8 @@ export default function AeroMode() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const timers = new Set<number>();
     let busy = false;
+
+    if (root.classList.contains("aero")) loadAssets();
 
     const later = (fn: () => void, ms: number) => {
       const id = window.setTimeout(() => {
@@ -43,10 +71,13 @@ export default function AeroMode() {
     };
 
     const glitch = (el: Element) => {
-      el.classList.remove("glitching");
+      const rect = el.getBoundingClientRect();
+      const name =
+        rect.width * rect.height > LARGE_AREA ? "glitching-lg" : "glitching";
+      el.classList.remove("glitching", "glitching-lg");
       void (el as HTMLElement).offsetWidth;
-      el.classList.add("glitching");
-      later(() => el.classList.remove("glitching"), GLITCH_MS);
+      el.classList.add(name);
+      later(() => el.classList.remove(name), GLITCH_MS);
     };
 
     const targets = () =>
@@ -61,8 +92,20 @@ export default function AeroMode() {
       later(() => overlay.remove(), duration);
     };
 
-    const toggle = () => {
+    const revealOrigin = () => {
+      const logo = document.querySelector("[data-aero-trigger]");
+      if (logo && isOnScreen(logo)) {
+        const range = document.createRange();
+        range.selectNodeContents(logo);
+        const rect = range.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      }
+      return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    };
+
+    const toggle = async () => {
       if (busy) return;
+      busy = true;
       const toAero = !root.classList.contains("aero");
 
       try {
@@ -70,53 +113,46 @@ export default function AeroMode() {
         else sessionStorage.removeItem(STORAGE_KEY);
       } catch {}
 
+      if (toAero) await loadAssets();
+
+      const apply = () => root.classList.toggle("aero", toAero);
+
       if (reducedMotion.matches) {
-        root.classList.toggle("aero", toAero);
+        apply();
+        busy = false;
         return;
       }
 
-      busy = true;
-      const all = targets();
-      const visible = all.filter(isOnScreen);
-      const wallpaper = document.querySelector(".aero-wallpaper");
-      const order = toAero
-        ? shuffle(visible)
-        : shuffle(visible).sort((a, b) => depth(a) - depth(b));
-      const gap = Math.min(140, Math.max(55, 1000 / Math.max(order.length, 1)));
-      const total = order.length * gap + GLITCH_MS + 120;
+      const visible = shuffle(targets().filter(isOnScreen));
+      showOverlay(GLITCH_MS + REVEAL_MS);
+      visible.forEach((el, index) =>
+        later(() => glitch(el), Math.min(index * 25, 140)),
+      );
+      await wait(GLITCH_MS);
 
-      showOverlay(total);
+      const { x, y } = revealOrigin();
+      const radius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y),
+      );
+      root.style.setProperty("--reveal-x", `${x}px`);
+      root.style.setProperty("--reveal-y", `${y}px`);
+      root.style.setProperty("--reveal-r", `${Math.ceil(radius)}px`);
 
-      if (toAero) {
-        wallpaper?.classList.add("aero");
-        order.forEach((el, index) =>
-          later(() => {
-            glitch(el);
-            later(() => el.classList.add("aero"), GLITCH_MS * 0.35);
-          }, index * gap),
-        );
-        later(() => {
-          root.classList.add("aero");
-          wallpaper?.classList.remove("aero");
-          all.forEach((el) => el.classList.remove("aero"));
-          busy = false;
-        }, total);
+      if (typeof document.startViewTransition === "function") {
+        root.classList.add("theme-switching");
+        const transition = document.startViewTransition(apply);
+        await transition.finished.catch(() => undefined);
+        root.classList.remove("theme-switching");
       } else {
-        all.forEach((el) => el.classList.add("aero"));
-        wallpaper?.classList.add("aero");
-        root.classList.remove("aero");
-        order.forEach((el, index) =>
-          later(() => {
-            glitch(el);
-            later(() => el.classList.remove("aero"), GLITCH_MS * 0.35);
-          }, index * gap),
-        );
-        later(() => wallpaper?.classList.remove("aero"), total * 0.45);
-        later(() => {
-          all.forEach((el) => el.classList.remove("aero"));
-          busy = false;
-        }, total);
+        apply();
+        await wait(REVEAL_MS);
       }
+
+      shuffle(targets().filter(isOnScreen))
+        .slice(0, 3)
+        .forEach((el, index) => later(() => glitch(el), index * 110));
+      busy = false;
     };
 
     const tease = () => {
@@ -133,10 +169,10 @@ export default function AeroMode() {
         const el = pool[Math.floor(Math.random() * pool.length)];
         if (el) {
           glitch(el);
-          later(() => el.classList.add("aero"), GLITCH_MS * 0.35);
+          later(() => el.classList.add("aero"), GLITCH_MS * 0.4);
           later(() => {
             glitch(el);
-            later(() => el.classList.remove("aero"), GLITCH_MS * 0.35);
+            later(() => el.classList.remove("aero"), GLITCH_MS * 0.4);
           }, 1400);
         }
       }
@@ -151,6 +187,7 @@ export default function AeroMode() {
       if (event.key.length !== 1 || event.ctrlKey || event.metaKey) return;
 
       typed = (typed + event.key.toLowerCase()).slice(-SECRET_WORD.length);
+      if (typed.endsWith(SECRET_WORD.slice(0, 2))) loadAssets();
       if (typed === SECRET_WORD) {
         typed = "";
         toggle();
@@ -169,6 +206,7 @@ export default function AeroMode() {
       window.clearTimeout(tapReset);
       tapReset = window.setTimeout(() => (taps = 0), 1500);
 
+      if (taps === 2) loadAssets();
       if (taps >= TAPS_NEEDED) {
         taps = 0;
         toggle();

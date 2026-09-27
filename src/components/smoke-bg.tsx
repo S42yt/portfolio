@@ -220,7 +220,8 @@ export default function SmokeBg() {
     };
 
     const SIM_SCALE = 0.25;
-    const VIEW_SCALE = 0.6;
+    const VIEW_SCALE = 0.5;
+    const FRAME_MS = 1000 / 30;
     let simW = 1;
     let simH = 1;
 
@@ -277,7 +278,21 @@ export default function SmokeBg() {
       targets = [makeTarget(simW, simH), makeTarget(simW, simH)];
     };
     resize();
-    addEventListener("resize", resize);
+    let resizeTimer = 0;
+    let lastW = innerWidth;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        if (
+          innerWidth === lastW &&
+          Math.abs(canvas.height - innerHeight * VIEW_SCALE) < 80
+        )
+          return;
+        lastW = innerWidth;
+        resize();
+      }, 150);
+    };
+    addEventListener("resize", onResize);
 
     const pointer = {
       x: 0.5,
@@ -302,9 +317,12 @@ export default function SmokeBg() {
     let raf = 0;
     const start = performance.now();
     let read = 0;
+    let last = 0;
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
+      if (now - last < FRAME_MS) return;
+      last = now;
       const t = (now - start) / 1000;
       const write = 1 - read;
       const aspect = innerWidth / innerHeight;
@@ -343,19 +361,25 @@ export default function SmokeBg() {
       pointer.vy *= 0.86;
       pointer.active *= 0.9;
     };
-    raf = requestAnimationFrame(frame);
-
-    const onVisibility = () => {
+    const root = document.documentElement;
+    const sync = () => {
       cancelAnimationFrame(raf);
-      if (!document.hidden) raf = requestAnimationFrame(frame);
+      if (!document.hidden && !root.classList.contains("aero")) {
+        raf = requestAnimationFrame(frame);
+      }
     };
-    document.addEventListener("visibilitychange", onVisibility);
+    document.addEventListener("visibilitychange", sync);
+    const classWatch = new MutationObserver(sync);
+    classWatch.observe(root, { attributes: true, attributeFilter: ["class"] });
+    sync();
 
     return () => {
       cancelAnimationFrame(raf);
-      removeEventListener("resize", resize);
+      window.clearTimeout(resizeTimer);
+      removeEventListener("resize", onResize);
       removeEventListener("pointermove", onMove);
-      document.removeEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("visibilitychange", sync);
+      classWatch.disconnect();
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);
