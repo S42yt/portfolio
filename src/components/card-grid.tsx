@@ -8,7 +8,7 @@ export default function CardGrid({ children }: CardGridProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {Children.map(children, (child) => (
-        <div className="h-full" data-gsap="card">
+        <div className="h-full" data-gsap="card" data-glitch>
           {child}
         </div>
       ))}

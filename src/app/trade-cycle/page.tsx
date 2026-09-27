@@ -1,4 +1,5 @@
 import BackHome from "@/components/back-home";
+import AeroWindow from "@/components/aero-window";
 import HeroSection from "./components/hero";
 import DemoSection from "./components/demo";
 import FeaturesSection from "./components/features";
@@ -40,15 +41,17 @@ export default function TradeCyclePage() {
   return (
     <div className="min-h-screen py-20 noise-overlay">
       <div className="max-w-4xl mx-auto px-6">
-        <HeroSection />
-        <DemoSection />
-        <FeaturesSection />
-        <ConfigurationSection />
-        <DownloadSection downloads={downloads} />
-        <ContributingSection />
-        <ProjectLinksSection />
-        <TechnicalDetailsSection />
-        <BackHome />
+        <AeroWindow title="TradeCycle - S42" icon="/icons/trade-cycle.png">
+          <HeroSection />
+          <DemoSection />
+          <FeaturesSection />
+          <ConfigurationSection />
+          <DownloadSection downloads={downloads} />
+          <ContributingSection />
+          <ProjectLinksSection />
+          <TechnicalDetailsSection />
+          <BackHome />
+        </AeroWindow>
       </div>
     </div>
   );

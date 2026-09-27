@@ -1,26 +1,29 @@
 import BackHome from "@/components/back-home";
+import AeroWindow from "@/components/aero-window";
 
 export default function SoonPage() {
   return (
     <div className="max-w-5xl mx-auto px-6 md:px-12 pt-24 pb-16">
-      <p className="eyebrow mb-6">Coming Soon</p>
+      <AeroWindow title="Coming Soon - S42">
+        <p className="eyebrow mb-6">Coming Soon</p>
 
-      <h1
-        className="font-display font-black leading-[0.85] tracking-tight mb-8"
-        style={{ fontSize: "clamp(6rem, 22vw, 16rem)", color: "var(--text)" }}
-      >
-        Soon.
-      </h1>
+        <h1
+          className="font-display font-black leading-[0.85] tracking-tight mb-8"
+          style={{ fontSize: "clamp(6rem, 22vw, 16rem)", color: "var(--text)" }}
+        >
+          Soon.
+        </h1>
 
-      <div className="section-rule mb-8" />
+        <div className="section-rule mb-8" />
 
-      <p className="text-base" style={{ color: "var(--text-muted)" }}>
-        Expect something big.
-      </p>
+        <p className="text-base" style={{ color: "var(--text-muted)" }}>
+          Expect something big.
+        </p>
 
-      <div className="mt-16">
-        <BackHome />
-      </div>
+        <div className="mt-16">
+          <BackHome />
+        </div>
+      </AeroWindow>
     </div>
   );
 }

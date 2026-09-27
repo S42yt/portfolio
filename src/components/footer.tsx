@@ -6,7 +6,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 export default function Footer() {
   return (
     <footer className="relative z-10 px-6 pt-8 pb-28 md:pb-10" id="footer">
-      <div className="max-w-5xl mx-auto">
+      <div className="footer-inner max-w-5xl mx-auto" data-glitch>
         <div
           className="mb-6"
           style={{ borderTop: "1px solid var(--border)" }}

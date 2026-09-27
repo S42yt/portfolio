@@ -1,4 +1,5 @@
 import BackHome from "@/components/back-home";
+import AeroWindow from "@/components/aero-window";
 import {
   faCode,
   faPalette,
@@ -61,14 +62,16 @@ export default function CuteCraftPage() {
   return (
     <div className="min-h-screen py-20 noise-overlay">
       <div className="max-w-4xl mx-auto px-6">
-        <HeroSection />
-        <WhatIsCuteCraftSection />
-        <ServerFeaturesSection features={features} />
-        <MyRoleSection contributions={myContributions} />
-        <TechnologiesSection />
-        <CommunityLinksSection />
-        <ServerInfoSection />
-        <BackHome />
+        <AeroWindow title="CuteCraft - S42" icon="/icons/cutecraft-icon.png">
+          <HeroSection />
+          <WhatIsCuteCraftSection />
+          <ServerFeaturesSection features={features} />
+          <MyRoleSection contributions={myContributions} />
+          <TechnologiesSection />
+          <CommunityLinksSection />
+          <ServerInfoSection />
+          <BackHome />
+        </AeroWindow>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ export default function Ticker({ items, reverse, className }: TickerProps) {
     <div
       aria-hidden="true"
       data-gsap="ticker"
+      data-glitch
       className={`ticker ${className ?? ""}`}
     >
       <div className={`ticker-track ${reverse ? "ticker-track-reverse" : ""}`}>

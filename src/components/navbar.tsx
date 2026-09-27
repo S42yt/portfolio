@@ -66,7 +66,8 @@ export default function FloatingNav() {
     >
       <ul
         ref={listRef}
-        className="glass relative flex items-center gap-1 rounded-[var(--radius-md)] p-1.5"
+        data-glitch
+        className="glass nav-bar relative flex items-center gap-1 rounded-[var(--radius-md)] p-1.5"
       >
         <span
           aria-hidden="true"

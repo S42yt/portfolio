@@ -35,7 +35,10 @@ export default function KofiToast() {
         transitionTimingFunction: "var(--ease-spring)",
       }}
     >
-      <div className="glass-strong flex items-center gap-3 rounded-[var(--radius-md)] p-2 pr-3 transition-transform duration-300 hover:-translate-y-1">
+      <div
+        data-glitch
+        className="glass-strong flex items-center gap-3 rounded-[var(--radius-md)] p-2 pr-3 transition-transform duration-300 hover:-translate-y-1"
+      >
         <a
           href="https://ko-fi.com/G2G21YPX94"
           target="_blank"

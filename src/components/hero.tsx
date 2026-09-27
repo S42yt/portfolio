@@ -4,12 +4,22 @@ export default function Hero() {
       data-gsap="hero"
       className="max-w-5xl mx-auto px-6 md:px-12 pt-32 md:pt-36 pb-14"
     >
-      <p data-gsap="hero-item" className="eyebrow mb-6">
-        Developer · UI/UX · Performance
-      </p>
+      <div
+        data-gsap="hero-item"
+        data-glitch
+        className="hero-eyebrow-row flex items-center gap-4 mb-6"
+      >
+        <div className="user-tile aero-only">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/emojis/kuromi_hey.gif" alt="" aria-hidden="true" />
+        </div>
+        <p className="eyebrow">Developer · UI/UX · Performance</p>
+      </div>
 
       <h1
-        className="font-display font-black leading-[0.85] tracking-tight mb-8"
+        data-glitch
+        data-aero-trigger
+        className="hero-wordmark font-display font-black leading-[0.85] tracking-tight mb-8"
         style={{
           fontSize: "clamp(4.5rem, 18vw, 13rem)",
           color: "var(--text)",
@@ -24,7 +34,7 @@ export default function Hero() {
         ))}
       </h1>
 
-      <div data-gsap="hero-item">
+      <div data-gsap="hero-item" data-glitch className="hero-card">
         <div className="section-rule mb-8" />
 
         <div className="flex items-start gap-3 max-w-2xl">

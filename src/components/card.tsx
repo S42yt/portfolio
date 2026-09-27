@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, MouseEvent, useRef } from "react";
+import { CSSProperties, ReactNode, MouseEvent, useRef } from "react";
 import Link from "next/link";
 
 interface CardProps {
@@ -41,6 +41,7 @@ export default function Card({
       onMouseMove={handleMouseMove}
       data-archived={archived}
       className="panel project-card relative flex h-full flex-col overflow-hidden p-5"
+      style={{ "--orb": hoverColor } as CSSProperties}
     >
       <div
         aria-hidden="true"
@@ -54,14 +55,7 @@ export default function Card({
       />
 
       {archived && (
-        <span
-          className="absolute right-4 top-4 rounded-[var(--radius-sm)] px-2.5 py-1 text-xs font-medium"
-          style={{
-            background: "oklch(80% 0.15 85 / 0.15)",
-            border: "1px solid oklch(80% 0.15 85 / 0.45)",
-            color: "oklch(85% 0.13 85)",
-          }}
-        >
+        <span className="archived-badge absolute right-4 top-4 rounded-[var(--radius-sm)] px-2.5 py-1 text-xs font-medium">
           Archived
         </span>
       )}

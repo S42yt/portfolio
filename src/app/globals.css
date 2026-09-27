@@ -8,9 +8,6 @@
 :root {
   color-scheme: dark;
 
-  --font-jetbrains-mono:
-    "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
-
   --bg: oklch(9% 0.012 285);
   --surface: oklch(13% 0.014 285);
   --surface-raised: oklch(17% 0.016 285);
@@ -65,7 +62,9 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-jetbrains-mono);
+  font-family:
+    var(--font-jetbrains-mono), "JetBrains Mono", "Consolas", "Monaco",
+    "Courier New", monospace;
   font-weight: 400;
   line-height: 1.6;
   position: relative;
@@ -224,6 +223,12 @@ body {
   transform: translateY(-4px);
   border-color: var(--border-strong);
   box-shadow: var(--shadow-2);
+}
+
+.archived-badge {
+  background: oklch(80% 0.15 85 / 0.15);
+  border: 1px solid oklch(80% 0.15 85 / 0.45);
+  color: oklch(85% 0.13 85);
 }
 
 .project-card[data-archived="true"] {

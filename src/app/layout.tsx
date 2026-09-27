@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Big_Shoulders } from "next/font/google";
+import type { CSSProperties } from "react";
+import { JetBrains_Mono, Big_Shoulders, Open_Sans } from "next/font/google";
 import "./globals.css";
+import "./aero.css";
 import Footer from "@/components/footer";
 import KofiToast from "@/components/kofi-toast";
 import SmokeBg from "@/components/smoke-bg";
+import AeroMode from "@/components/aero-mode";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -16,6 +19,24 @@ const bigShoulders = Big_Shoulders({
   subsets: ["latin"],
   weight: ["400", "700", "900"],
 });
+
+const openSans = Open_Sans({
+  variable: "--font-open-sans",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+const BUBBLES = [
+  { size: 150, top: "10%", left: "3%", duration: 18, delay: 0 },
+  { size: 70, top: "34%", left: "12%", duration: 13, delay: -4 },
+  { size: 230, top: "46%", left: "84%", duration: 24, delay: -8 },
+  { size: 54, top: "20%", left: "70%", duration: 12, delay: -6 },
+  { size: 110, top: "70%", left: "6%", duration: 20, delay: -10 },
+  { size: 40, top: "62%", left: "93%", duration: 11, delay: -3 },
+  { size: 88, top: "8%", left: "90%", duration: 16, delay: -7 },
+];
+
+const RESTORE_THEME = `try{if(sessionStorage.getItem("s42-theme")==="aero")document.documentElement.classList.add("aero")}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s42.site"),
@@ -46,10 +67,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${jetbrainsMono.variable} ${bigShoulders.variable} antialiased relative overflow-x-hidden`}
-      >
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${jetbrainsMono.variable} ${bigShoulders.variable} ${openSans.variable}`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: RESTORE_THEME }} />
+      </head>
+      <body className="antialiased relative overflow-x-hidden">
         <a href="#main" className="skip-link">
           Skip to content
         </a>
@@ -91,6 +117,30 @@ export default function RootLayout({
             }}
           />
           <SmokeBg />
+          <div className="aero-wallpaper absolute inset-0 overflow-hidden">
+            {BUBBLES.map((bubble, index) => (
+              <span
+                key={index}
+                className="bg-blob absolute"
+                style={{
+                  width: bubble.size,
+                  height: bubble.size,
+                  top: bubble.top,
+                  left: bubble.left,
+                }}
+              >
+                <span
+                  className="aero-bubble"
+                  style={
+                    {
+                      "--bubble-duration": `${bubble.duration}s`,
+                      "--bubble-delay": `${bubble.delay}s`,
+                    } as CSSProperties
+                  }
+                />
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="relative z-10 min-h-screen flex flex-col">
@@ -101,6 +151,7 @@ export default function RootLayout({
         </div>
 
         <KofiToast />
+        <AeroMode />
       </body>
     </html>
   );

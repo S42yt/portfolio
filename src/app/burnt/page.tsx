@@ -1,4 +1,5 @@
 import BackHome from "@/components/back-home";
+import AeroWindow from "@/components/aero-window";
 import {
   faDiscord,
   faSpotify,
@@ -76,15 +77,17 @@ export default function BurntPage() {
   return (
     <div className="min-h-screen py-20 noise-overlay">
       <div className="max-w-4xl mx-auto px-6">
-        <HeroSection />
-        <WhatIsBurntSection />
-        <FeaturesSection features={features} />
-        <PlatformsSection platforms={platforms} />
-        <PerfectForSection />
-        <HowItWorksSection />
-        <PrivacySecuritySection />
-        <CTASection />
-        <BackHome />
+        <AeroWindow title="Burnt - S42" icon="/icons/biogg.png">
+          <HeroSection />
+          <WhatIsBurntSection />
+          <FeaturesSection features={features} />
+          <PlatformsSection platforms={platforms} />
+          <PerfectForSection />
+          <HowItWorksSection />
+          <PrivacySecuritySection />
+          <CTASection />
+          <BackHome />
+        </AeroWindow>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import Hero from "@/components/hero";
 import SkillsSection from "@/components/skills";
 import Ticker from "@/components/ticker";
 import GsapFx from "@/components/gsap-fx";
+import AeroWindow from "@/components/aero-window";
 
 export default function Home() {
   const skills = [
@@ -52,7 +53,8 @@ export default function Home() {
 
           <div
             data-gsap="fade-up"
-            className="max-w-5xl mx-auto px-6 md:px-12 pb-14"
+            data-glitch
+            className="hero-skills max-w-5xl mx-auto px-6 md:px-12 pb-14"
           >
             <SkillsSection skills={skills} />
           </div>
@@ -78,20 +80,22 @@ export default function Home() {
             Projects
           </span>
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="mb-12">
-              <h2 data-gsap="section-title" className="section-title mb-4">
-                Projects
-              </h2>
-              <div className="section-rule mb-4" />
-              <p
-                data-gsap="fade-up"
-                className="text-sm"
-                style={{ color: "var(--text-tertiary)" }}
-              >
-                A selection of things I&apos;ve built. More on GitHub.
-              </p>
-            </div>
-            <CardHome />
+            <AeroWindow title="Projects - S42">
+              <div className="mb-12">
+                <h2 data-gsap="section-title" className="section-title mb-4">
+                  Projects
+                </h2>
+                <div className="section-rule mb-4" />
+                <p
+                  data-gsap="fade-up"
+                  className="text-sm"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  A selection of things I&apos;ve built. More on GitHub.
+                </p>
+              </div>
+              <CardHome />
+            </AeroWindow>
           </div>
         </section>
 
