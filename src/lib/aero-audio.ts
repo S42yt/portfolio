@@ -1,18 +1,134 @@
 type Listener = (playing: boolean) => void;
 
 const SOUND_PREF = "s42-sound";
-const BPM = 84;
+const BPM = 118;
 const STEP = 60 / BPM / 2;
-const STEPS_PER_CHORD = 16;
+const SWING = 0.3;
+const STEPS_PER_BAR = 8;
 const LOOKAHEAD = 0.35;
 
 const CHORDS = [
-  { bass: 40, pad: [52, 56, 59, 63, 66], arp: [64, 68, 71, 75, 78, 80] },
-  { bass: 37, pad: [49, 52, 56, 59, 63], arp: [61, 64, 68, 71, 73, 75] },
-  { bass: 45, pad: [57, 61, 64, 68, 71], arp: [69, 73, 76, 80, 81, 83] },
-  { bass: 47, pad: [54, 59, 61, 63, 66], arp: [66, 71, 73, 75, 78, 83] },
+  { root: 41, comp: [57, 60, 64, 67] },
+  { root: 38, comp: [53, 57, 60, 64] },
+  { root: 43, comp: [58, 62, 65, 69] },
+  { root: 36, comp: [58, 62, 64, 69] },
+  { root: 45, comp: [55, 60, 64, 67] },
+  { root: 38, comp: [54, 60, 64, 69] },
+  { root: 43, comp: [53, 58, 62, 65] },
+  { root: 36, comp: [52, 58, 62, 67] },
 ];
-const ARP_SHAPE = [0, 2, 4, 3, 1, 3, 5, 2];
+
+type Note = [step: number, midi: number];
+
+const MELODY: Note[][] = [
+  [
+    [0, 72],
+    [2, 76],
+    [3, 79],
+    [5, 77],
+    [6, 76],
+  ],
+  [
+    [1, 74],
+    [2, 76],
+    [4, 72],
+    [6, 69],
+  ],
+  [
+    [0, 70],
+    [2, 74],
+    [3, 77],
+    [5, 81],
+    [6, 79],
+  ],
+  [
+    [0, 76],
+    [3, 74],
+    [4, 72],
+    [6, 69],
+    [7, 70],
+  ],
+  [
+    [0, 72],
+    [2, 76],
+    [3, 79],
+    [5, 81],
+    [6, 79],
+  ],
+  [
+    [1, 78],
+    [2, 81],
+    [4, 84],
+    [6, 81],
+  ],
+  [
+    [0, 79],
+    [2, 77],
+    [3, 74],
+    [5, 70],
+    [6, 72],
+  ],
+  [
+    [0, 74],
+    [2, 76],
+    [4, 79],
+    [6, 82],
+  ],
+  [
+    [0, 72],
+    [2, 76],
+    [3, 79],
+    [5, 77],
+    [6, 76],
+  ],
+  [
+    [1, 74],
+    [2, 76],
+    [4, 72],
+    [6, 69],
+  ],
+  [
+    [0, 70],
+    [2, 74],
+    [3, 77],
+    [5, 81],
+    [6, 79],
+  ],
+  [
+    [0, 76],
+    [3, 74],
+    [4, 72],
+    [6, 69],
+    [7, 70],
+  ],
+  [
+    [0, 81],
+    [2, 79],
+    [3, 76],
+    [5, 72],
+    [6, 76],
+  ],
+  [
+    [0, 78],
+    [2, 74],
+    [4, 72],
+    [5, 69],
+    [6, 66],
+  ],
+  [
+    [0, 70],
+    [1, 74],
+    [2, 77],
+    [4, 82],
+    [6, 81],
+  ],
+  [
+    [0, 79],
+    [4, 77],
+    [6, 76],
+  ],
+];
+const COMP_STEPS = [1, 4, 6];
 const SPARKLE = [76, 78, 80, 83, 85, 88, 90, 92];
 
 let ctx: AudioContext | null = null;
@@ -133,52 +249,133 @@ const bell = (
   }
 };
 
-const pad = (
+const marimba = (
+  context: AudioContext,
+  time: number,
+  midi: number,
+  velocity: number,
+) => {
+  const out = voice(context, 0.15, 0.35);
+  const partials: [number, number, number][] = [
+    [1, 1, 0.55],
+    [3.93, 0.3, 0.09],
+    [10.2, 0.08, 0.03],
+  ];
+  for (const [ratio, level, decay] of partials) {
+    const osc = context.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = hz(midi) * ratio;
+    const env = context.createGain();
+    env.gain.setValueAtTime(0, time);
+    env.gain.linearRampToValueAtTime(velocity * level, time + 0.004);
+    env.gain.exponentialRampToValueAtTime(0.0001, time + decay);
+    osc.connect(env).connect(out);
+    osc.start(time);
+    osc.stop(time + decay + 0.05);
+  }
+};
+
+const electricPiano = (
   context: AudioContext,
   time: number,
   notes: number[],
-  duration: number,
+  velocity: number,
 ) => {
-  const out = voice(context, 0, 0.9);
-  const filter = context.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.setValueAtTime(900, time);
-  filter.frequency.linearRampToValueAtTime(1700, time + duration / 2);
-  filter.frequency.linearRampToValueAtTime(1000, time + duration);
-  const env = context.createGain();
-  env.gain.setValueAtTime(0, time);
-  env.gain.linearRampToValueAtTime(1, time + 1.6);
-  env.gain.setValueAtTime(1, time + duration - 0.4);
-  env.gain.linearRampToValueAtTime(0, time + duration + 1.4);
-  filter.connect(env).connect(out);
-
+  const out = voice(context, -0.25, 0.45);
   for (const midi of notes) {
-    for (const detune of [-7, 7]) {
+    const partials: [number, number, number][] = [
+      [1, 1, 0.7],
+      [2.002, 0.22, 0.25],
+    ];
+    for (const [ratio, level, decay] of partials) {
       const osc = context.createOscillator();
-      osc.type = "sawtooth";
-      osc.frequency.value = hz(midi);
-      osc.detune.value = detune;
-      const level = context.createGain();
-      level.gain.value = 0.018;
-      osc.connect(level).connect(filter);
+      osc.type = "sine";
+      osc.frequency.value = hz(midi) * ratio;
+      const env = context.createGain();
+      env.gain.setValueAtTime(0, time);
+      env.gain.linearRampToValueAtTime(velocity * level, time + 0.008);
+      env.gain.exponentialRampToValueAtTime(0.0001, time + decay);
+      osc.connect(env).connect(out);
       osc.start(time);
-      osc.stop(time + duration + 1.5);
+      osc.stop(time + decay + 0.05);
     }
   }
 };
 
 const bass = (context: AudioContext, time: number, midi: number) => {
-  const out = voice(context, 0, 0.1);
-  const osc = context.createOscillator();
-  osc.type = "sine";
-  osc.frequency.value = hz(midi);
+  const out = voice(context, 0, 0.08);
+  const filter = context.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(1400, time);
+  filter.frequency.exponentialRampToValueAtTime(380, time + 0.18);
+  filter.connect(out);
+
+  const body = context.createOscillator();
+  body.type = "triangle";
+  body.frequency.value = hz(midi);
+  const sub = context.createOscillator();
+  sub.type = "sine";
+  sub.frequency.value = hz(midi);
   const env = context.createGain();
   env.gain.setValueAtTime(0, time);
-  env.gain.linearRampToValueAtTime(0.16, time + 0.02);
-  env.gain.exponentialRampToValueAtTime(0.0001, time + STEP * 3.5);
+  env.gain.linearRampToValueAtTime(0.22, time + 0.006);
+  env.gain.exponentialRampToValueAtTime(0.0001, time + STEP * 1.8);
+  body.connect(env);
+  sub.connect(env);
+  env.connect(filter);
+  for (const osc of [body, sub]) {
+    osc.start(time);
+    osc.stop(time + STEP * 1.9);
+  }
+};
+
+let noise: AudioBuffer | null = null;
+
+const noiseBuffer = (context: AudioContext) => {
+  if (noise) return noise;
+  const length = Math.floor(context.sampleRate * 0.25);
+  noise = context.createBuffer(1, length, context.sampleRate);
+  const data = noise.getChannelData(0);
+  for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
+  return noise;
+};
+
+const hit = (
+  context: AudioContext,
+  time: number,
+  type: BiquadFilterType,
+  frequency: number,
+  level: number,
+  decay: number,
+  pan: number,
+) => {
+  const out = voice(context, pan, 0.15);
+  const source = context.createBufferSource();
+  source.buffer = noiseBuffer(context);
+  const filter = context.createBiquadFilter();
+  filter.type = type;
+  filter.frequency.value = frequency;
+  filter.Q.value = type === "bandpass" ? 2.5 : 0.7;
+  const env = context.createGain();
+  env.gain.setValueAtTime(level, time);
+  env.gain.exponentialRampToValueAtTime(0.0001, time + decay);
+  source.connect(filter).connect(env).connect(out);
+  source.start(time);
+  source.stop(time + decay + 0.02);
+};
+
+const kick = (context: AudioContext, time: number) => {
+  const out = voice(context, 0, 0);
+  const osc = context.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(130, time);
+  osc.frequency.exponentialRampToValueAtTime(48, time + 0.12);
+  const env = context.createGain();
+  env.gain.setValueAtTime(0.28, time);
+  env.gain.exponentialRampToValueAtTime(0.0001, time + 0.22);
   osc.connect(env).connect(out);
   osc.start(time);
-  osc.stop(time + STEP * 3.6);
+  osc.stop(time + 0.24);
 };
 
 const bubble = (
@@ -202,23 +399,35 @@ const bubble = (
   osc.stop(time + 0.25);
 };
 
-const scheduleStep = (context: AudioContext, index: number, time: number) => {
-  const chord = CHORDS[Math.floor(index / STEPS_PER_CHORD) % CHORDS.length];
-  const inChord = index % STEPS_PER_CHORD;
+const scheduleStep = (context: AudioContext, index: number, start: number) => {
+  const bar = Math.floor(index / STEPS_PER_BAR);
+  const inBar = index % STEPS_PER_BAR;
+  const time = inBar % 2 ? start + STEP * SWING : start;
+  const chord = CHORDS[bar % CHORDS.length];
+  const next = CHORDS[(bar + 1) % CHORDS.length];
+  const phrase = MELODY[bar % MELODY.length];
+  const pass = Math.floor(bar / MELODY.length);
 
-  if (inChord === 0) pad(context, time, chord.pad, STEP * STEPS_PER_CHORD);
-  if (inChord === 0 || inChord === 6 || inChord === 10) {
-    bass(context, time, chord.bass);
+  const walk = [chord.root, chord.root + 7, chord.root + 12, next.root - 1];
+  if (inBar % 2 === 0) bass(context, time, walk[inBar / 2]);
+
+  if (COMP_STEPS.includes(inBar)) {
+    electricPiano(context, time, chord.comp, inBar === 1 ? 0.045 : 0.035);
   }
 
-  if (Math.random() > 0.22) {
-    const shape =
-      ARP_SHAPE[(index + Math.floor(index / 32)) % ARP_SHAPE.length];
-    const lift = Math.random() < 0.12 ? 12 : 0;
-    bell(context, time, chord.arp[shape] + lift, 0.07 + Math.random() * 0.05);
+  for (const [noteStep, midi] of phrase) {
+    if (noteStep !== inBar) continue;
+    marimba(context, time, midi, 0.16);
+    if (pass % 2 === 1) bell(context, time, midi + 12, 0.05);
   }
 
-  if (Math.random() < 0.1) bubble(context, time + STEP * 0.5);
+  hit(context, time, "highpass", 7000, inBar % 2 ? 0.05 : 0.028, 0.06, 0.35);
+  if (inBar === 2 || inBar === 6) {
+    hit(context, time, "bandpass", 1900, 0.16, 0.05, -0.1);
+  }
+  if (inBar === 0 || inBar === 5) kick(context, time);
+
+  if (Math.random() < 0.05) bubble(context, time + STEP * 0.5, undefined, 0.07);
 };
 
 const tick = () => {
