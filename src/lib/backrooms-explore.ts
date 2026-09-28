@@ -5,6 +5,8 @@ type Callbacks = {
   onBump?: () => void;
   onBeacon?: (gain: number, pan: number, signal: number) => void;
   onEntity?: (pan: number) => void;
+  onScare?: () => void;
+  onPan?: (direction: number) => void;
   onOpen?: () => void;
   onExit?: () => void;
   onLeave?: () => void;
@@ -87,9 +89,16 @@ export const startExplore = async (
   let entity: {
     x: number;
     z: number;
+    fromX: number;
+    fromZ: number;
     born: number;
     gone: number;
+    scare: boolean;
+    rushAt: number;
   } | null = null;
+  let scared = false;
+  let lookUp = 0;
+  let panning = 0;
   let nextEntity = performance.now() + 9000 + Math.random() * 7000;
   let nextFlicker = performance.now() + 8000 + Math.random() * 8000;
   let lastBeacon = 0;
@@ -103,6 +112,7 @@ export const startExplore = async (
   let raf = 0;
   let stopped = false;
   const start = performance.now();
+  let lastFrame = start;
 
   const rect = () => canvas.getBoundingClientRect();
 
@@ -159,7 +169,7 @@ export const startExplore = async (
     const from = yaw;
     const began = performance.now();
     const turnTo = (now: number) => {
-      const t = Math.min(1, (now - began) / 450);
+      const t = Math.min(1, Math.max(0, (now - began) / 450));
       yaw = from + (target - from) * ease(t);
       if (t < 1) {
         requestAnimationFrame(turnTo);
@@ -168,7 +178,7 @@ export const startExplore = async (
       callbacks.onOpen?.();
       const openedAt = performance.now();
       const swing = (at: number) => {
-        const k = Math.min(1, (at - openedAt) / 1100);
+        const k = Math.min(1, Math.max(0, (at - openedAt) / 1100));
         state.open = ease(k);
         if (k < 1) {
           requestAnimationFrame(swing);
@@ -177,7 +187,7 @@ export const startExplore = async (
         beginWalk(door.nodeX, door.nodeZ - side * 1.7, null);
         const whiteAt = performance.now();
         const fadeWhite = (w: number) => {
-          const f = Math.min(1, (w - whiteAt) / 950);
+          const f = Math.min(1, Math.max(0, (w - whiteAt) / 950));
           state.white = f * f;
           if (f < 1) requestAnimationFrame(fadeWhite);
           else callbacks.onExit?.();
@@ -285,6 +295,11 @@ export const startExplore = async (
     else if (fraction > 1 - EDGE)
       turn = -((fraction - (1 - EDGE)) / EDGE) * TURN_SPEED;
     else turn = 0;
+    const direction = turn > 0 ? -1 : turn < 0 ? 1 : 0;
+    if (direction !== panning) {
+      panning = direction;
+      callbacks.onPan?.(direction);
+    }
   };
 
   const onPointerUp = (event: PointerEvent) => {
@@ -296,6 +311,10 @@ export const startExplore = async (
 
   const onPointerLeave = () => {
     turn = 0;
+    if (panning) {
+      panning = 0;
+      callbacks.onPan?.(0);
+    }
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -336,15 +355,26 @@ export const startExplore = async (
     const ex = x + dx * 2 * steps;
     const ez = z + dz * 2 * steps;
     if (Math.hypot(ex - door.nodeX, ez - door.nodeZ) < 3) return;
-    entity = { x: ex, z: ez, born: now, gone: 0 };
+    const scare = !scared && now - start > 20000 && Math.random() < 0.4;
+    entity = {
+      x: ex,
+      z: ez,
+      fromX: ex,
+      fromZ: ez,
+      born: now,
+      gone: 0,
+      scare,
+      rushAt: 0,
+    };
     callbacks.onEntity?.(panOf(ex, ez));
   };
 
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame);
     if (document.hidden) return;
-    const dt = Math.min(0.05, (now - (state.time * 1000 + start)) / 1000);
-    state.time = (now - start) / 1000;
+    const dt = Math.min(0.05, Math.max(0, (now - lastFrame) / 1000));
+    lastFrame = Math.max(lastFrame, now);
+    state.time = (lastFrame - start) / 1000;
 
     if (!opening) yaw += (turn + keyTurn) * dt;
 
@@ -389,7 +419,28 @@ export const startExplore = async (
       nextEntity = now + 11000 + Math.random() * 9000;
     }
     let entityAlpha = 0;
-    if (entity) {
+    if (entity?.scare) {
+      const age = (now - entity.born) / 1000;
+      entityAlpha = Math.min(0.97, age / 0.5);
+      if (!entity.rushAt && age > 1.4) entity.rushAt = now;
+      if (entity.rushAt) {
+        const k = Math.min(1, (now - entity.rushAt) / 430);
+        const pull = k * k * k;
+        const tx = x + Math.sin(yaw) * 0.8;
+        const tz = z + Math.cos(yaw) * 0.8;
+        entity.x = entity.fromX + (tx - entity.fromX) * pull;
+        entity.z = entity.fromZ + (tz - entity.fromZ) * pull;
+        glitch = Math.max(glitch, 0.25 + k * 0.6);
+        lookUp = Math.max(lookUp, k * k * 0.42);
+        if (k >= 1) {
+          entity = null;
+          scared = true;
+          glitch = 1;
+          bump = 1;
+          callbacks.onScare?.();
+        }
+      }
+    } else if (entity) {
       const age = (now - entity.born) / 1000;
       const near = Math.hypot(entity.x - x, entity.z - z) < 4.5;
       if (!entity.gone && (near || age > 4.2)) {
@@ -406,11 +457,12 @@ export const startExplore = async (
 
     glitch = Math.max(0, glitch - dt * 2.4);
     bump = Math.max(0, bump - dt * 4);
+    if (!entity?.rushAt) lookUp = Math.max(0, lookUp - dt * 0.9);
 
     state.x = x;
     state.z = z;
     state.yaw = yaw + Math.sin(now * 0.05) * bump * 0.03;
-    state.pitch = bob * 0.012 - bump * 0.02;
+    state.pitch = bob * 0.012 - bump * 0.02 + lookUp;
     state.roll = Math.sin(now * 0.0007) * 0.006 + bob * 0.004;
     state.depth = STANDING + Math.abs(bob) * 0.035;
     state.glitch = glitch;

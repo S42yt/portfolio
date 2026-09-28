@@ -41,7 +41,7 @@ const BUBBLES = [
   { size: 88, top: "8%", left: "90%", duration: 16, delay: -7 },
 ];
 
-const RESTORE_THEME = `try{if(sessionStorage.getItem("s42-theme")==="aero")document.documentElement.classList.add("aero")}catch(e){}`;
+const RESTORE_THEME = `try{var s=sessionStorage,c=document.documentElement.classList;if(s.getItem("s42-bk")==="1")c.add("backrooms");else if(s.getItem("s42-theme")==="aero")c.add("aero")}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s42.site"),

@@ -1,3 +1,5 @@
+import { BACTERIA } from "./bacteria";
+
 const VERT = `
 attribute vec2 a_pos;
 void main() {
@@ -197,15 +199,7 @@ vec3 staticFrame(vec2 frag) {
   return mix(carpet * 0.25, vec3(n) * 0.6, 0.55) * (0.6 + band * 0.5);
 }
 
-float cylinder(vec2 o, vec2 d, vec2 c, float r) {
-  vec2 oc = o - c;
-  float a = dot(d, d);
-  float b = dot(oc, d);
-  float k = dot(oc, oc) - r * r;
-  float disc = b * b - a * k;
-  if (disc < 0.0) return -1.0;
-  return (-b - sqrt(disc)) / a;
-}
+${BACTERIA}
 
 void main() {
   vec2 frag = gl_FragCoord.xy;
@@ -282,17 +276,21 @@ void main() {
     }
 
     if (u_entity.z > 0.0) {
-      float tb = cylinder(o, rd.xz, u_entity.xy, 0.2);
-      float th = cylinder(o, rd.xz, u_entity.xy, 0.13);
-      float yb = ro.y + rd.y * tb - floorY;
-      float yh = ro.y + rd.y * th - floorY;
-      bool body = tb > 0.0 && tb < t && yb > 0.0 && yb < 1.58;
-      bool head = th > 0.0 && th < t && yh > 1.58 && yh < 1.9;
-      if (body || head) {
-        float te = body ? tb : th;
-        vec3 figure = vec3(0.015, 0.012, 0.008) + FOG * 0.05 * (1.0 - exp(-te * 0.05));
-        col = mix(col, figure, u_entity.z);
-        t = mix(t, te, u_entity.z);
+      vec2 e = u_entity.xy;
+      vec2 n = normalize(o - e + vec2(1e-4, 0.0));
+      float denom = dot(rd.xz, n);
+      if (denom < -1e-4) {
+        float te = dot(e - o, n) / denom;
+        if (te > 0.05 && te < t) {
+          vec3 hp = ro + rd * te;
+          vec2 tang = vec2(-n.y, n.x);
+          vec2 lp = vec2(dot(hp.xz - e, tang), hp.y - floorY) / 2.7;
+          float dd = bacteria(lp, u_time);
+          float soft = te * u_fov / u_res.y * 0.9 + 0.002;
+          float m = (1.0 - smoothstep(-soft, soft, dd)) * u_entity.z;
+          col = mix(col, vec3(0.012, 0.01, 0.007), m);
+          t = mix(t, te, m);
+        }
       }
     }
 

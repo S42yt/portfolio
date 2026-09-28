@@ -333,6 +333,35 @@ export const playSlabCrunch = () => {
   synthSweep(900, 90, 0.35, 0.06, "square");
 };
 
+const noiseBurst = (duration: number, level: number) => {
+  const audio = getAudio();
+  if (!audio) return;
+  const { ctx, sfx } = audio;
+  const now = ctx.currentTime;
+  const length = Math.floor(ctx.sampleRate * duration);
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const tone = ctx.createBiquadFilter();
+  tone.type = "highpass";
+  tone.frequency.value = 900;
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(level, now);
+  env.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  source.connect(tone).connect(env).connect(sfx);
+  source.start(now);
+};
+
+export const playScare = () => {
+  const growl = pick(["entity-1", "entity-2", "entity-3", "entity-4"] as const);
+  play(growl, { rate: 1.3, gain: 0.75, wet: 0.35 });
+  play("glass-hit", { rate: 0.45, gain: 0.35, wet: 0.2 });
+  noiseBurst(0.45, 0.22);
+  synthSweep(95, 32, 0.5, 0.28, "sawtooth");
+};
+
 export const playStep = (index: number) => {
   play("impact", {
     rate: 2.2 + Math.random() * 0.35,

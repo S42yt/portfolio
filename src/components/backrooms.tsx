@@ -22,6 +22,7 @@ import {
   playBump,
   playDoorOpen,
   playLightsOn,
+  playScare,
   playShatter,
   playStep,
   playUnshatter,
@@ -65,6 +66,7 @@ const BODY_SELECTOR = [
 ].join(", ");
 
 const HITS = 5;
+const STORAGE_KEY = "s42-bk";
 const HEAL_MS = 7000;
 const SOLID = [
   "a",
@@ -149,6 +151,7 @@ export default function Backrooms() {
   const shardsRef = useRef<HTMLDivElement>(null);
   const exploreRef = useRef<HTMLDivElement>(null);
   const signalRef = useRef<HTMLSpanElement>(null);
+  const tagRef = useRef<HTMLSpanElement>(null);
   const fallRef = useRef<HTMLDivElement>(null);
   const timecodeRef = useRef<HTMLSpanElement>(null);
   const messageRef = useRef<HTMLSpanElement>(null);
@@ -173,6 +176,9 @@ export default function Backrooms() {
     let explore: Explore | null = null;
     let exploreCanvas: HTMLCanvasElement | null = null;
     let exploring = false;
+    let scared = false;
+    let enteredAt = 0;
+    let looking = 0;
     const beacon = createBeacon();
     const ragdoll = createRagdoll({
       selector: BODY_SELECTOR,
@@ -334,9 +340,16 @@ export default function Backrooms() {
           .filter(onScreen)
           .slice(0, 2)
           .forEach((el) => glitch(el));
+      } else if (
+        !scared &&
+        !reducedMotion.matches &&
+        Date.now() - enteredAt > 40000 &&
+        roll > 0.88
+      ) {
+        if (shader?.appear("scare")) scare();
       } else {
         const seen = shader?.appear();
-        if (seen) {
+        if (seen && seen.kind !== "scare") {
           if (sound) playEntityCue(seen.kind, seen.pan);
           later(() => shader?.glitch(0.5), seen.kind === "run" ? 100 : 900);
           later(() => scrambleSome(seen.kind === "stand" ? 3 : 1), 1200);
@@ -344,6 +357,14 @@ export default function Backrooms() {
         }
       }
       events = window.setTimeout(runEvent, 5000 + Math.random() * 6000);
+    };
+
+    const scare = () => {
+      scared = true;
+      if (sound) playScare();
+      pulse("bk-scare", 650);
+      pulse("bk-shake", 500);
+      if (!exploring) later(() => scrambleSome(3), 200);
     };
 
     const flashMessage = (text: string) => {
@@ -358,10 +379,12 @@ export default function Backrooms() {
     const startBreaking = () => {
       ragdoll.enable();
       noclipTries = 0;
+      enteredAt = Date.now();
       later(() => {
         if (!root.classList.contains("backrooms") || exploring) return;
         flashMessage("FIND THE EXIT");
         root.classList.add("bk-wander-hint");
+        later(() => root.classList.remove("bk-wander-hint"), 7000);
       }, 9000);
       if (!reducedMotion.matches) {
         events = window.setTimeout(runEvent, 3000);
@@ -408,6 +431,13 @@ export default function Backrooms() {
         loadBackroomsAudio(),
       ]);
       return preloading;
+    };
+
+    const remember = (inside: boolean) => {
+      try {
+        if (inside) sessionStorage.setItem(STORAGE_KEY, "1");
+        else sessionStorage.removeItem(STORAGE_KEY);
+      } catch {}
     };
 
     const stopHealing = () => {
@@ -479,6 +509,7 @@ export default function Backrooms() {
         glass?.clear();
         root.classList.remove("bk-glass", "aero");
         root.classList.add("backrooms", "bk-entering");
+        remember(true);
         scatter();
         window.dispatchEvent(new Event("resize"));
       };
@@ -574,7 +605,12 @@ export default function Backrooms() {
       exploreCanvas?.remove();
       exploreCanvas = null;
       beacon.stop();
-      root.classList.remove("bk-exploring", "bk-opening");
+      root.classList.remove(
+        "bk-exploring",
+        "bk-opening",
+        "bk-pan-left",
+        "bk-pan-right",
+      );
     };
 
     const exit = async (viaDoor = false) => {
@@ -600,7 +636,20 @@ export default function Backrooms() {
       setPhase("light");
 
       closeExplore();
-      root.classList.remove("backrooms");
+      await withTimeout(
+        Promise.all([
+          loadImage(
+            window.matchMedia("(max-aspect-ratio: 4 / 5)").matches
+              ? "/aero/meadow-portrait.webp"
+              : "/aero/meadow.webp",
+          ),
+          loadImage("/aero/bubble.png"),
+        ]),
+        1200,
+      );
+      root.classList.remove("backrooms", "bk-bg-hover");
+      remember(false);
+      roomRef.current?.style.removeProperty("translate");
       unscatter();
       stopShader();
       root.classList.add("aero");
@@ -700,6 +749,11 @@ export default function Backrooms() {
           onEntity: (pan) => {
             if (sound) playEntityCue("stand", pan);
           },
+          onScare: scare,
+          onPan: (direction) => {
+            root.classList.toggle("bk-pan-left", direction < 0);
+            root.classList.toggle("bk-pan-right", direction > 0);
+          },
           onOpen: () => {
             root.classList.add("bk-opening");
             if (sound) playDoorOpen();
@@ -752,7 +806,6 @@ export default function Backrooms() {
       const target = event.target as Element | null;
       if (root.classList.contains("backrooms")) {
         if (target?.closest("[data-bk-return]")) leaveExplore();
-        else if (target?.closest("[data-bk-wander]")) wander();
         else if (
           !exploring &&
           event.button === 0 &&
@@ -786,12 +839,80 @@ export default function Backrooms() {
       glass?.resize();
     };
 
+    const onPointerMove = (event: PointerEvent) => {
+      if (!root.classList.contains("backrooms") || exploring || busy) {
+        root.classList.remove("bk-bg-hover");
+        return;
+      }
+      const { clientX, clientY } = event;
+      const target = event.target as Element | null;
+      const empty =
+        event.pointerType === "mouse" &&
+        !!target &&
+        !root.classList.contains("bk-grabbing") &&
+        !target.closest(`${SOLID}, ${BODY_SELECTOR}`);
+      root.classList.toggle("bk-bg-hover", empty);
+      if (empty && tagRef.current) {
+        tagRef.current.style.translate = `${clientX}px ${clientY}px`;
+        tagRef.current.dataset.flip = String(clientX > window.innerWidth - 180);
+      }
+      if (looking || reducedMotion.matches) return;
+      looking = requestAnimationFrame(() => {
+        looking = 0;
+        const room = roomRef.current;
+        if (!room) return;
+        const lx = clientX / window.innerWidth - 0.5;
+        const ly = clientY / window.innerHeight - 0.5;
+        room.style.translate = `${(-lx * 2.4).toFixed(2)}% ${(-ly * 1.4).toFixed(2)}%`;
+      });
+    };
+
+    const restore = async () => {
+      busy = true;
+      remember(true);
+      scatter();
+      startShader();
+      window.dispatchEvent(new Event("resize"));
+      if (!reducedMotion.matches) {
+        setPhase("lights");
+        root.classList.add("bk-rising");
+        await wait(1800);
+        setPhase("");
+        root.classList.remove("bk-rising");
+      }
+      startBreaking();
+      busy = false;
+      later(() => flashMessage("YOU NEVER LEFT"), 400);
+
+      const wake = (event: Event) => {
+        const target = event.target as Element | null;
+        if (target?.closest(".aero-sound")) return;
+        window.removeEventListener("pointerdown", wake);
+        window.removeEventListener("keydown", wake);
+        sound = soundEnabled();
+        if (!sound || !root.classList.contains("backrooms")) return;
+        unlockAudio();
+        preload().then(() => {
+          if (!root.classList.contains("backrooms")) return;
+          setSceneAudio(ambience);
+          startMusic();
+        });
+      };
+      window.addEventListener("pointerdown", wake);
+      window.addEventListener("keydown", wake);
+    };
+
+    if (root.classList.contains("backrooms")) restore();
+
     window.addEventListener("keydown", onKeyDown);
     document.addEventListener("click", onClick);
     window.addEventListener("resize", onResize);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
 
     return () => {
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("pointermove", onPointerMove);
+      cancelAnimationFrame(looking);
       stopHealing();
       window.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("click", onClick);
@@ -823,6 +944,12 @@ export default function Backrooms() {
         </span>
         <span className="bk-hud-play">PLAY ▶ &nbsp;SP</span>
         <span className="bk-hud-msg" ref={messageRef} />
+        <span className="bk-edge bk-edge-left">‹</span>
+        <span className="bk-edge bk-edge-right">›</span>
+        <span className="bk-room-hint">
+          <span className="bk-hint-mouse">◀ CLICK THE ROOM TO WANDER ▶</span>
+          <span className="bk-hint-touch">◀ TAP THE ROOM TO WANDER ▶</span>
+        </span>
       </div>
 
       <div ref={exploreRef} className="bk-explore-wrap" />
@@ -840,9 +967,9 @@ export default function Backrooms() {
         </span>
       </div>
 
-      <button type="button" data-bk-wander className="bk-wander">
-        ▸ WANDER
-      </button>
+      <span ref={tagRef} aria-hidden="true" className="bk-tag">
+        ▸ WALK IN
+      </span>
       <button type="button" data-bk-return className="bk-return">
         ◂ PAGES
       </button>

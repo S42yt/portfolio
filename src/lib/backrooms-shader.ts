@@ -1,3 +1,5 @@
+import { BACTERIA } from "./bacteria";
+
 const VERT = `
 attribute vec2 a_pos;
 varying vec2 v_uv;
@@ -43,7 +45,7 @@ float capsule(vec2 p, vec2 a, vec2 b, float r) {
   float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
   return length(pa - ba * h) - r;
 }
-
+${BACTERIA}
 float entity(vec2 uv) {
   if (u_ent.w <= 0.001) return 0.0;
   vec2 px = cover(uv) * u_img;
@@ -52,13 +54,7 @@ float entity(vec2 uv) {
   float c = cos(u_tilt);
   float s = sin(u_tilt);
   p = vec2(c * p.x - s * p.y, s * p.x + c * p.y);
-  float d = length(p - vec2(0.0, 0.905)) - 0.07;
-  d = min(d, capsule(p, vec2(0.0, 0.8), vec2(0.0, 0.5), 0.08));
-  d = min(d, capsule(p, vec2(0.0, 0.56), vec2(0.0, 0.43), 0.065));
-  d = min(d, capsule(p, vec2(-0.035, 0.44), vec2(-0.05, 0.0), 0.028));
-  d = min(d, capsule(p, vec2(0.035, 0.44), vec2(0.05, 0.0), 0.028));
-  d = min(d, capsule(p, vec2(-0.075, 0.78), vec2(-0.13, 0.26), 0.022));
-  d = min(d, capsule(p, vec2(0.075, 0.78), vec2(0.13, 0.26), 0.022));
+  float d = bacteria(p, u_time);
   float soft = 1.6 / u_ent.z;
   float mask = 1.0 - smoothstep(-soft, soft * 2.0, d);
   mask *= step(u_clip.x, px.x) * step(px.x, u_clip.y);
@@ -92,7 +88,7 @@ void main() {
   col += glow * 0.55 * (1.0 - u_flicker);
 
   float ent = entity(uv);
-  col = mix(col, vec3(0.045, 0.034, 0.012), ent);
+  col = mix(col, vec3(0.018, 0.014, 0.008), ent);
 
   col *= 1.0 - u_flicker * 0.55;
   col *= 0.975 + 0.025 * sin(u_time * 1.3);
@@ -111,7 +107,7 @@ void main() {
 }`;
 
 type Spot = {
-  kind: "peek" | "stand" | "run";
+  kind: "peek" | "stand" | "run" | "scare";
   x: number;
   y: number;
   h: number;
@@ -297,6 +293,11 @@ export const startRoomShader = (
         if (since > 120) done = true;
       }
       done = done || t > 4;
+    } else if (spot.kind === "scare") {
+      alpha = t < 0.06 ? t / 0.06 : 0.97;
+      x = spot.x + Math.sin(t * 90) * spot.h * 0.012;
+      glitch = Math.max(glitch, 0.75);
+      done = t > 0.5;
     } else {
       const progress = Math.min(t / 0.9, 1);
       x = spot.x + ((spot.to ?? spot.x) - spot.x) * progress;
@@ -365,6 +366,16 @@ export const startRoomShader = (
   return {
     appear(kind) {
       if (current || !animate) return null;
+      if (kind === "scare") {
+        const spot: Spot = {
+          kind: "scare",
+          x: scene.size[0] * (0.38 + Math.random() * 0.24),
+          y: scene.size[1] * 1.95,
+          h: scene.size[1] * 1.85,
+        };
+        current = { spot, begin: performance.now(), vanishAt: 0 };
+        return { kind: "scare", pan: 0 };
+      }
       const pool = scene.spots.filter((spot) => !kind || spot.kind === kind);
       const spot = pool[Math.floor(Math.random() * pool.length)];
       if (!spot) return null;

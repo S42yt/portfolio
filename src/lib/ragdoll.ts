@@ -231,8 +231,8 @@ export const createRagdoll = ({ selector, onImpact }: Options) => {
   };
 
   const frame = (now: number) => {
-    const dt = Math.min((now - last) / 1000, 1 / 30);
-    last = now;
+    const dt = Math.min(Math.max(0, (now - last) / 1000), 1 / 30);
+    last = Math.max(last, now);
     let awake = false;
     for (const body of bodies.values()) {
       if (body.asleep) continue;
