@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import {
   faSpotify,
   faTwitch,
@@ -51,7 +51,7 @@ export default function HowItWorksSection() {
           },
         ].map((item) => (
           <div key={item.text} className="flex items-center gap-3">
-            <FontAwesomeIcon
+            <Icon
               icon={item.icon}
               className={`w-4 h-4 shrink-0 ${item.color}`}
             />

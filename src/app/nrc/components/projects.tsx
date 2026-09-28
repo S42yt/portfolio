@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
 
@@ -94,7 +94,7 @@ export default function ProjectsSection() {
                   rel="noopener noreferrer"
                   className="btn btn-sm"
                 >
-                  <FontAwesomeIcon icon={link.icon} className="w-3 h-3" />
+                  <Icon icon={link.icon} className="w-3 h-3" />
                   {link.label}
                 </a>
               ))}

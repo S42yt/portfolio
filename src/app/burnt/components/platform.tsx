@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import Icon from "@/components/icon";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 interface Platform {
   name: string;
@@ -28,7 +28,7 @@ export default function PlatformsSection({ platforms }: PlatformsSectionProps) {
       <div className="flex flex-wrap gap-6">
         {platforms.map((platform, index) => (
           <div key={index} className="flex items-center gap-2">
-            <FontAwesomeIcon
+            <Icon
               icon={platform.icon}
               className={`w-4 h-4 ${platform.color}`}
             />

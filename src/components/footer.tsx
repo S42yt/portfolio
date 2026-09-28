@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
@@ -22,7 +22,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="link-muted flex min-h-11 items-center gap-2 px-3 text-sm"
             >
-              <FontAwesomeIcon icon={faDiscord} className="h-4 w-4" />
+              <Icon icon={faDiscord} className="h-4 w-4" />
               Discord
             </a>
 
@@ -30,7 +30,7 @@ export default function Footer() {
               href="/contact"
               className="link-muted flex min-h-11 items-center gap-2 px-3 text-sm"
             >
-              <FontAwesomeIcon icon={faEnvelope} className="h-4 w-4" />
+              <Icon icon={faEnvelope} className="h-4 w-4" />
               Contact
             </Link>
           </div>

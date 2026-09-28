@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 export default function HeroSection() {
@@ -27,7 +27,7 @@ export default function HeroSection() {
           rel="noopener noreferrer"
           className="btn btn-primary"
         >
-          <FontAwesomeIcon icon={faGlobe} className="w-4 h-4" />
+          <Icon icon={faGlobe} className="w-4 h-4" />
           Visit Burnt.rip
         </a>
       </div>

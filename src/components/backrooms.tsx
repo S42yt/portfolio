@@ -873,6 +873,7 @@ export default function Backrooms() {
       scatter();
       startShader();
       window.dispatchEvent(new Event("resize"));
+      root.classList.remove("bk-booting");
       if (!reducedMotion.matches) {
         setPhase("lights");
         root.classList.add("bk-rising");

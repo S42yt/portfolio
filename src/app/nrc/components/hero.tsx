@@ -1,6 +1,6 @@
 "use client";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faRocket } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 
@@ -43,7 +43,7 @@ export default function HeroSection() {
           rel="noopener noreferrer"
           className="btn btn-primary"
         >
-          <FontAwesomeIcon icon={faRocket} className="w-4 h-4" />
+          <Icon icon={faRocket} className="w-4 h-4" />
           Download
         </a>
         <a

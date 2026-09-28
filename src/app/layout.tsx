@@ -8,8 +8,7 @@ import Footer from "@/components/footer";
 import KofiToast from "@/components/kofi-toast";
 import SmokeBg from "@/components/smoke-bg";
 import AeroMode from "@/components/aero-mode";
-import AeroSoundToggle from "@/components/aero-sound-toggle";
-import Backrooms from "@/components/backrooms";
+import Eggs from "@/components/eggs";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -41,7 +40,7 @@ const BUBBLES = [
   { size: 88, top: "8%", left: "90%", duration: 16, delay: -7 },
 ];
 
-const RESTORE_THEME = `try{var s=sessionStorage,c=document.documentElement.classList;if(s.getItem("s42-bk")==="1")c.add("backrooms");else if(s.getItem("s42-theme")==="aero")c.add("aero")}catch(e){}`;
+const RESTORE_THEME = `try{var s=sessionStorage,c=document.documentElement.classList;if(s.getItem("s42-bk")==="1")c.add("backrooms","bk-booting");else if(s.getItem("s42-theme")==="aero")c.add("aero")}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s42.site"),
@@ -158,8 +157,7 @@ export default function RootLayout({
 
         <KofiToast />
         <AeroMode />
-        <AeroSoundToggle />
-        <Backrooms />
+        <Eggs />
       </body>
     </html>
   );

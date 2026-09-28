@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import BackHome from "@/components/back-home";
@@ -55,7 +55,7 @@ export default function ContactPage() {
                 className="row-link flex min-h-14 items-center justify-between px-5 py-4"
               >
                 <span className="flex items-center gap-3">
-                  <FontAwesomeIcon
+                  <Icon
                     icon={link.icon}
                     className="w-4 h-4"
                     style={{ color: "var(--text-tertiary)" }}

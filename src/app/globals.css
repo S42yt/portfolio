@@ -570,3 +570,12 @@ body {
     --border-strong: oklch(52% 0.02 285);
   }
 }
+
+.svg-inline--fa {
+  display: inline-block;
+  width: 1.25em;
+  height: 1em;
+  overflow: visible;
+  box-sizing: content-box;
+  vertical-align: -0.125em;
+}

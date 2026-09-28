@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import Icon from "@/components/icon";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 interface Contribution {
   icon: IconDefinition;
@@ -41,7 +41,7 @@ export default function MyRoleSection({ contributions }: MyRoleSectionProps) {
             className="flex items-start gap-4 py-5 pr-6"
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
-            <FontAwesomeIcon
+            <Icon
               icon={item.icon}
               className={`w-4 h-4 shrink-0 mt-0.5 ${item.color}`}
             />

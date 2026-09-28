@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faVolumeHigh, faVolumeXmark } from "@fortawesome/free-solid-svg-icons";
 import { onMusicChange, toggleSound } from "@/lib/aero-audio";
 
@@ -19,10 +19,7 @@ export default function AeroSoundToggle() {
       className="aero-sound aero-only"
       data-playing={playing}
     >
-      <FontAwesomeIcon
-        icon={playing ? faVolumeHigh : faVolumeXmark}
-        className="h-4 w-4"
-      />
+      <Icon icon={playing ? faVolumeHigh : faVolumeXmark} className="h-4 w-4" />
       <span className="aero-sound-bars" aria-hidden="true">
         <span />
         <span />

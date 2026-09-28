@@ -1,6 +1,6 @@
 import CardGrid from "./card-grid";
 import Card from "./card";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faGithub, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import {
   faUser,
@@ -20,7 +20,7 @@ export default function CardHome() {
   return (
     <CardGrid>
       <Card
-        icon={<FontAwesomeIcon icon={faGithub} className="w-8 h-8" />}
+        icon={<Icon icon={faGithub} className="w-8 h-8" />}
         title="GitHub Profile"
         image="/emojis/cina_walk.gif"
         description="Here you can see my GitHub profile and all my projects i published so far."
@@ -61,7 +61,7 @@ export default function CardHome() {
       />
 
       <Card
-        icon={<FontAwesomeIcon icon={faQuestion} className="w-8 h-8" />}
+        icon={<Icon icon={faQuestion} className="w-8 h-8" />}
         title="Soon"
         image="/emojis/kuromi_love.gif"
         description="???"
@@ -99,7 +99,7 @@ export default function CardHome() {
       />
 
       <Card
-        icon={<FontAwesomeIcon icon={faCodeBranch} className="w-8 h-8" />}
+        icon={<Icon icon={faCodeBranch} className="w-8 h-8" />}
         title="Source Code"
         image="/emojis/kuromi_blush.gif"
         description="This is the source code of this website, feel free to check it out and understand how it works."

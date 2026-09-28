@@ -130,8 +130,8 @@ void main() {
   p += vel * 0.85;
 
   vec2 q = vec2(
-    fbm(p + vec2(0.0, u_time * 0.10), 5),
-    fbm(p + vec2(5.2, 1.3) + vec2(u_time * 0.07, 0.0), 5)
+    fbm(p + vec2(0.0, u_time * 0.10), 4),
+    fbm(p + vec2(5.2, 1.3) + vec2(u_time * 0.07, 0.0), 4)
   );
   float f = fbm(p + 2.2 * q + vec2(u_time * 0.03, -u_time * 0.05), 5);
 
@@ -219,9 +219,9 @@ export default function SmokeBg() {
       time: u(renderProg, "u_time"),
     };
 
-    const SIM_SCALE = 0.25;
-    const VIEW_SCALE = 0.5;
-    const FRAME_MS = 1000 / 30;
+    const SIM_SCALE = 0.2;
+    const VIEW_SCALE = Math.min(0.42, 640 / Math.max(innerWidth, 1));
+    const FRAME_MS = 1000 / 24;
     let simW = 1;
     let simH = 1;
 

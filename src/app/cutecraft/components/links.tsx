@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
@@ -48,7 +48,7 @@ export default function CommunityLinksSection() {
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             <div className="flex items-center gap-3">
-              <FontAwesomeIcon
+              <Icon
                 icon={link.icon}
                 className="w-4 h-4"
                 style={{ color: "var(--text-faint)" }}

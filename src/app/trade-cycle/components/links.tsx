@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 export default function ProjectLinksSection() {
@@ -21,7 +21,7 @@ export default function ProjectLinksSection() {
         rel="noopener noreferrer"
         className="btn"
       >
-        <FontAwesomeIcon icon={faGithub} className="w-4 h-4" />
+        <Icon icon={faGithub} className="w-4 h-4" />
         GitHub Repository
         <span style={{ color: "var(--text-faint)" }}>↗</span>
       </a>

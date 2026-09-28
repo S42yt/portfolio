@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "@/components/icon";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
 export default function DownloadSection() {
@@ -25,7 +25,7 @@ export default function DownloadSection() {
         rel="noopener noreferrer"
         className="btn btn-primary"
       >
-        <FontAwesomeIcon icon={faDownload} className="w-4 h-4" />
+        <Icon icon={faDownload} className="w-4 h-4" />
         norisk.gg
       </a>
     </div>
