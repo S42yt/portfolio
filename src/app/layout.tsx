@@ -1,13 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import type { CSSProperties } from "react";
-import { JetBrains_Mono, Open_Sans } from "next/font/google";
+import { JetBrains_Mono, Open_Sans, VT323 } from "next/font/google";
 import "./globals.css";
 import "./aero.css";
+import "./backrooms.css";
 import Footer from "@/components/footer";
 import KofiToast from "@/components/kofi-toast";
 import SmokeBg from "@/components/smoke-bg";
 import AeroMode from "@/components/aero-mode";
 import AeroSoundToggle from "@/components/aero-sound-toggle";
+import Backrooms from "@/components/backrooms";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -19,6 +21,13 @@ const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+  preload: false,
+});
+
+const vt323 = VT323({
+  variable: "--font-vt323",
+  subsets: ["latin"],
+  weight: "400",
   preload: false,
 });
 
@@ -66,7 +75,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${jetbrainsMono.variable} ${openSans.variable}`}
+      className={`${jetbrainsMono.variable} ${openSans.variable} ${vt323.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: RESTORE_THEME }} />
@@ -149,6 +158,7 @@ export default function RootLayout({
         <KofiToast />
         <AeroMode />
         <AeroSoundToggle />
+        <Backrooms />
       </body>
     </html>
   );

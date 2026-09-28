@@ -364,7 +364,9 @@ export default function SmokeBg() {
     const root = document.documentElement;
     const sync = () => {
       cancelAnimationFrame(raf);
-      if (!document.hidden && !root.classList.contains("aero")) {
+      const hidden =
+        root.classList.contains("aero") || root.classList.contains("backrooms");
+      if (!document.hidden && !hidden) {
         raf = requestAnimationFrame(frame);
       }
     };

@@ -1,0 +1,777 @@
+.bk-bubble,
+.bk-room,
+.bk-static,
+.bk-lights,
+.bk-hud,
+.bk-exit {
+  display: none;
+}
+
+.bk-bubble:is(.aero *) {
+  display: block;
+  position: fixed;
+  z-index: 35;
+  top: 0;
+  left: 0;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: url("/aero/bubble.png") center / contain no-repeat;
+  filter: sepia(1) saturate(2.6) hue-rotate(8deg) brightness(1.05)
+    drop-shadow(0 0 6px rgba(230, 200, 80, 0.55));
+  cursor: pointer;
+  animation:
+    bk-bubble-path 48s linear infinite,
+    bk-bubble-flicker 9s steps(1, end) infinite;
+}
+
+.bk-bubble:is(.aero *):focus-visible {
+  outline: 2px dashed #c9a227;
+  outline-offset: 4px;
+}
+
+@keyframes bk-bubble-path {
+  0% {
+    transform: translate(8vw, 82vh);
+  }
+  20% {
+    transform: translate(30vw, 58vh);
+  }
+  40% {
+    transform: translate(72vw, 70vh);
+  }
+  60% {
+    transform: translate(88vw, 34vh);
+  }
+  80% {
+    transform: translate(46vw, 22vh);
+  }
+  100% {
+    transform: translate(8vw, 82vh);
+  }
+}
+
+@keyframes bk-bubble-flicker {
+  0%,
+  91%,
+  93%,
+  100% {
+    opacity: 0.9;
+  }
+  92%,
+  94% {
+    opacity: 0.15;
+  }
+}
+
+.bk-wall .bk-bubble {
+  animation-play-state: paused;
+}
+
+html.bk-wall {
+  filter: url(#bk-ripple);
+}
+
+html.bk-wall body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      105deg,
+      transparent 0%,
+      transparent 38%,
+      rgba(255, 255, 255, 0.55) 45%,
+      rgba(200, 235, 255, 0.25) 48%,
+      transparent 56%,
+      transparent 100%
+    ),
+    linear-gradient(rgba(210, 235, 250, 0.12), rgba(210, 235, 250, 0.12));
+  background-size:
+    300% 100%,
+    100% 100%;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.35),
+    inset 0 0 120px rgba(170, 210, 240, 0.35);
+  animation: bk-sheen 1.1s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+@keyframes bk-sheen {
+  from {
+    background-position:
+      110% 0,
+      0 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    background-position:
+      -10% 0,
+      0 0;
+    opacity: 1;
+  }
+}
+
+.bk-vt::view-transition-old(root) {
+  z-index: 2;
+  animation: bk-mirror 1.5s cubic-bezier(0.55, 0, 0.85, 0.35) both;
+}
+
+.bk-vt::view-transition-new(root) {
+  animation: none;
+  opacity: 1;
+}
+
+@keyframes bk-mirror {
+  0% {
+    transform: none;
+    filter: none;
+  }
+  12% {
+    transform: skewX(1.5deg) scale(1.01);
+    filter: brightness(1.15) saturate(1.2);
+  }
+  20% {
+    transform: scaleX(1);
+    filter: brightness(1.6) saturate(0.6);
+  }
+  24% {
+    transform: scaleX(-1) skewX(-2deg);
+    filter: brightness(1.2) hue-rotate(12deg);
+  }
+  34% {
+    transform: scaleX(-1) skewX(3deg) translateX(-1%);
+  }
+  44% {
+    transform: scaleX(-1) skewX(-2deg) scale(1.04);
+    filter: brightness(1.1) blur(0.5px);
+  }
+  100% {
+    transform: scaleX(-1) scale(4.2) rotate(-4deg);
+    filter: brightness(2.4) blur(10px);
+    opacity: 0;
+  }
+}
+
+.bk-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  pointer-events: none;
+  display: none;
+}
+
+.bk-intro[data-phase="fall"],
+.bk-intro[data-phase="dark"],
+.bk-intro[data-phase="lights"],
+.bk-intro[data-phase="lightsoff"],
+.bk-intro[data-phase="wake"] {
+  display: block;
+}
+
+.bk-intro[data-phase="fall"] {
+  background:
+    radial-gradient(
+      ellipse 60% 55% at 50% 50%,
+      rgba(0, 0, 0, 0.95) 0%,
+      rgba(0, 0, 0, 0.55) 60%,
+      rgba(0, 0, 0, 0.1) 100%
+    ),
+    url("/backrooms/wall.webp") 0 0 / 180px 540px repeat;
+  animation: bk-fall 1.15s cubic-bezier(0.5, 0, 1, 1) both;
+}
+
+@keyframes bk-fall {
+  from {
+    background-position:
+      0 0,
+      0 0;
+    filter: blur(2px) brightness(0.8);
+  }
+  to {
+    background-position:
+      0 0,
+      0 -5200px;
+    filter: blur(6px) brightness(0.35);
+  }
+}
+
+.bk-intro[data-phase="dark"] {
+  background: #000;
+}
+
+.bk-intro[data-phase="lights"] {
+  background: #000;
+  animation: bk-lights-on 1.6s steps(1, end) both;
+}
+
+@keyframes bk-lights-on {
+  0% {
+    opacity: 1;
+  }
+  16% {
+    opacity: 0.35;
+  }
+  24% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.45;
+  }
+  54% {
+    opacity: 0.9;
+  }
+  72% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.bk-intro[data-phase="lightsoff"] {
+  background: #000;
+  animation: bk-lights-off 1.3s steps(1, end) both;
+}
+
+@keyframes bk-lights-off {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  30% {
+    opacity: 0.1;
+  }
+  55% {
+    opacity: 0.7;
+  }
+  62% {
+    opacity: 0.3;
+  }
+  80%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.bk-intro[data-phase="wake"] {
+  background: radial-gradient(circle at 50% 40%, #fff 0%, #cdeeff 60%, #7cc1ee);
+  animation: bk-wake 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes bk-wake {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.backrooms {
+  color-scheme: light;
+
+  --bk-font: var(--font-vt323), "VT323", "Courier New", monospace;
+  --font-display: var(--bk-font);
+
+  --bg: #b9a55a;
+  --surface: rgba(228, 214, 152, 0.9);
+  --surface-raised: rgba(238, 226, 170, 0.95);
+  --border: rgba(92, 74, 24, 0.5);
+  --border-strong: rgba(70, 54, 14, 0.75);
+  --text: #211904;
+  --text-secondary: #362c0c;
+  --text-tertiary: #4d3f16;
+  --accent: #6a4b00;
+  --accent-fill: #7a5d12;
+  --on-accent: #fff3cf;
+  --text-muted: var(--text-secondary);
+  --text-faint: var(--text-tertiary);
+  --border-subtle: var(--border);
+  --glass-highlight: rgba(92, 74, 24, 0.4);
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-pill: 0px;
+}
+
+.backrooms body {
+  font-family: var(--bk-font);
+  font-size: 1.14rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.backrooms .bk-room {
+  display: block;
+  position: fixed;
+  inset: -3%;
+  z-index: -5;
+  background: #9c8a45 url("/backrooms/level0.webp") center / cover no-repeat;
+  animation: bk-breathe 14s ease-in-out infinite alternate;
+}
+
+@media (max-aspect-ratio: 4 / 5) {
+  .backrooms .bk-room {
+    background-image: url("/backrooms/level0-portrait.webp");
+  }
+}
+
+@keyframes bk-breathe {
+  from {
+    transform: scale(1) translateY(0);
+  }
+  to {
+    transform: scale(1.035) translateY(-0.6%);
+  }
+}
+
+.bk-entity {
+  position: absolute;
+  left: 39.5%;
+  top: 53%;
+  width: 2.8vh;
+  height: 11vh;
+  transform: translate(-50%, -100%);
+  opacity: 0;
+  filter: blur(1.4px);
+}
+
+@media (max-aspect-ratio: 4 / 5) {
+  .bk-entity {
+    left: 47%;
+    top: 52%;
+  }
+}
+
+.bk-entity::before,
+.bk-entity::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0b0802;
+}
+
+.bk-entity::before {
+  top: 0;
+  width: 44%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.bk-entity::after {
+  top: 11%;
+  width: 72%;
+  height: 89%;
+  clip-path: polygon(
+    22% 0,
+    78% 0,
+    100% 62%,
+    84% 64%,
+    72% 100%,
+    58% 100%,
+    50% 58%,
+    42% 100%,
+    28% 100%,
+    16% 64%,
+    0 62%
+  );
+}
+
+.bk-entity-show .bk-entity {
+  animation: bk-entity 4.2s ease-in-out both;
+}
+
+@keyframes bk-entity {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.85;
+  }
+  70% {
+    opacity: 0.85;
+    transform: translate(-50%, -100%) scale(1.06);
+  }
+  74% {
+    opacity: 0.1;
+  }
+  78% {
+    opacity: 0.7;
+  }
+  84%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.backrooms .bk-static {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.1;
+  mix-blend-mode: overlay;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.35) 0,
+      rgba(0, 0, 0, 0.35) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    url("/backrooms/noise.png") 0 0 / 160px 160px repeat;
+  animation: bk-static 0.6s steps(6, end) infinite;
+}
+
+.backrooms .bk-static::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(20, 14, 0, 0.9) 100%
+  );
+  mix-blend-mode: multiply;
+}
+
+@keyframes bk-static {
+  from {
+    background-position:
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      0 0,
+      -960px 480px;
+  }
+}
+
+.backrooms .bk-lights {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  pointer-events: none;
+  background: #140f00;
+  opacity: 0;
+}
+
+.bk-flicker .bk-lights {
+  animation: bk-flicker 1.1s steps(1, end) both;
+}
+
+@keyframes bk-flicker {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.4;
+  }
+  26% {
+    opacity: 0;
+  }
+  58% {
+    opacity: 0.3;
+  }
+  66%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.backrooms .bk-hud {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 61;
+  pointer-events: none;
+  font-family: var(--bk-font);
+  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+  color: #f4ecd0;
+  text-shadow:
+    1px 0 rgba(255, 40, 40, 0.6),
+    -1px 0 rgba(40, 160, 255, 0.6),
+    0 0 6px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.08em;
+}
+
+.bk-hud > span {
+  position: absolute;
+}
+
+.bk-hud-rec {
+  top: 1.1rem;
+  left: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.bk-hud-dot {
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: #e0241b;
+  box-shadow: 0 0 8px #e0241b;
+  animation: bk-rec 2s steps(1, end) infinite;
+}
+
+@keyframes bk-rec {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.1;
+  }
+}
+
+.bk-hud-level {
+  top: 1.1rem;
+  right: 1.25rem;
+}
+
+.bk-hud-time {
+  bottom: 5.4rem;
+  left: 1.25rem;
+}
+
+.bk-hud-play {
+  bottom: 5.4rem;
+  right: 1.25rem;
+}
+
+@media (max-width: 767px) {
+  .bk-hud-level {
+    top: 3.2rem;
+  }
+
+  .bk-hud-rec {
+    top: 3.2rem;
+  }
+
+  .bk-hud-time,
+  .bk-hud-play {
+    bottom: 9.6rem;
+  }
+}
+
+.backrooms .bk-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: fixed;
+  z-index: 62;
+  right: 1.25rem;
+  bottom: 1.5rem;
+  padding: 0.3rem 0.9rem;
+  font-family: var(--bk-font);
+  font-size: 1.6rem;
+  letter-spacing: 0.12em;
+  color: #d8ffd8;
+  background: #0f4f22;
+  border: 3px solid #0a2f14;
+  box-shadow:
+    0 0 18px rgba(80, 255, 120, 0.55),
+    inset 0 0 10px rgba(120, 255, 150, 0.35);
+  text-shadow: 0 0 8px rgba(140, 255, 160, 0.9);
+  cursor: pointer;
+  animation: bk-exit-hum 6s steps(1, end) infinite;
+}
+
+.backrooms .bk-exit:hover,
+.backrooms .bk-exit:focus-visible {
+  box-shadow:
+    0 0 28px rgba(80, 255, 120, 0.85),
+    inset 0 0 14px rgba(120, 255, 150, 0.5);
+  outline: none;
+}
+
+@keyframes bk-exit-hum {
+  0%,
+  86%,
+  90%,
+  100% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 0.55;
+  }
+}
+
+@media (max-width: 767px) {
+  .backrooms .bk-exit {
+    bottom: 5.75rem;
+  }
+}
+
+.backrooms [data-glitch] {
+  translate: var(--bk-x, 0) var(--bk-y, 0);
+  rotate: var(--bk-r, 0deg);
+  transition:
+    translate 2.5s cubic-bezier(0.22, 1, 0.36, 1),
+    rotate 2.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.backrooms [data-glitch][data-bk="drift"] {
+  animation: bk-drift 7s ease-in-out infinite alternate;
+}
+
+.backrooms [data-glitch][data-bk="ghost"] {
+  animation: bk-ghost 5s ease-in-out infinite alternate;
+}
+
+@keyframes bk-drift {
+  from {
+    rotate: calc(var(--bk-r, 0deg) - 1.5deg);
+  }
+  to {
+    rotate: calc(var(--bk-r, 0deg) + 1.5deg);
+  }
+}
+
+@keyframes bk-ghost {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+.backrooms :is(h1, h2, h3) {
+  text-shadow:
+    2px 0 rgba(200, 30, 30, 0.35),
+    -2px 0 rgba(30, 120, 220, 0.35);
+}
+
+.backrooms .section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.backrooms :is(.panel, .glass, .glass-strong, .chip, .btn) {
+  background:
+    linear-gradient(rgba(236, 224, 166, 0.82), rgba(226, 210, 146, 0.86)),
+    url("/backrooms/wall.webp") 0 0 / 192px 192px;
+  border: 2px solid rgba(80, 62, 20, 0.55);
+  box-shadow: 0 8px 20px rgba(40, 28, 0, 0.35);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--text);
+}
+
+.backrooms .project-card {
+  background:
+    linear-gradient(rgba(240, 232, 196, 0.78), rgba(232, 220, 170, 0.85)),
+    url("/backrooms/ceiling.webp") 0 0 / 220px 220px;
+}
+
+.backrooms .project-glow {
+  display: none;
+}
+
+.backrooms .btn-primary {
+  background: #5b4410;
+  color: #fff3cf;
+  border-color: #3a2a06;
+}
+
+.backrooms .nav-indicator {
+  background: rgba(80, 62, 20, 0.35);
+}
+
+.backrooms .ticker {
+  background: rgba(38, 30, 6, 0.88);
+  color: #e9d9a0;
+  border-color: rgba(0, 0, 0, 0.5);
+  font-family: var(--bk-font);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+}
+
+.backrooms .giant-text {
+  color: rgba(80, 60, 15, 0.16);
+  -webkit-text-stroke: 0;
+}
+
+.backrooms .noise-overlay::before {
+  display: none;
+}
+
+.backrooms .section-rule {
+  background: rgba(60, 46, 10, 0.4);
+}
+
+.backrooms .media-frame {
+  filter: sepia(0.6) saturate(0.8) contrast(1.05);
+}
+
+.backrooms [aria-label="Support link"] {
+  display: none;
+}
+
+.aero-sound.aero-only:is(.backrooms *) {
+  display: grid !important;
+  background: #2a2106;
+  border-color: #6b5518;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+}
+
+.bk-shake main,
+.bk-shake .bk-room {
+  animation: bk-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes bk-shake {
+  10%,
+  90% {
+    translate: -2px 1px;
+  }
+  20%,
+  80% {
+    translate: 4px -2px;
+  }
+  30%,
+  50%,
+  70% {
+    translate: -7px 3px;
+  }
+  40%,
+  60% {
+    translate: 7px -3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.bk-wall {
+    filter: none;
+  }
+
+  .bk-bubble:is(.aero *) {
+    animation: none;
+    transform: translate(85vw, 70vh);
+  }
+
+  .backrooms .bk-static,
+  .backrooms .bk-room,
+  .backrooms [data-glitch] {
+    animation: none !important;
+  }
+}

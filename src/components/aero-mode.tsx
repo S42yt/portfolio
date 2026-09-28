@@ -113,7 +113,7 @@ export default function AeroMode() {
     };
 
     const toggle = async () => {
-      if (busy) return;
+      if (busy || root.classList.contains("backrooms")) return;
       busy = true;
       const toAero = !root.classList.contains("aero");
 
@@ -185,6 +185,7 @@ export default function AeroMode() {
       const canTease =
         !busy &&
         !root.classList.contains("aero") &&
+        !root.classList.contains("backrooms") &&
         !reducedMotion.matches &&
         document.visibilityState === "visible";
 

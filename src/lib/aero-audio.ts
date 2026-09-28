@@ -1,5 +1,7 @@
 type Listener = (playing: boolean) => void;
 
+export type SceneAudio = { start: () => void; stop: (fade: number) => void };
+
 const SOUND_PREF = "s42-sound";
 const BPM = 118;
 const STEP = 60 / BPM / 2;
@@ -137,7 +139,9 @@ let musicBus: GainNode;
 let musicIn: GainNode;
 let reverbIn: GainNode;
 let sfxBus: GainNode;
+let musicTone: BiquadFilterNode;
 let musicPlaying = false;
+let sceneAudio: SceneAudio | null = null;
 let schedulerId = 0;
 let nextTime = 0;
 let step = 0;
@@ -177,9 +181,14 @@ const ensure = () => {
   master.gain.value = 0.85;
   master.connect(limiter);
 
+  musicTone = ctx.createBiquadFilter();
+  musicTone.type = "lowpass";
+  musicTone.frequency.value = 20000;
+  musicTone.connect(master);
+
   musicBus = ctx.createGain();
   musicBus.gain.value = 0;
-  musicBus.connect(master);
+  musicBus.connect(musicTone);
 
   musicIn = ctx.createGain();
   musicIn.connect(musicBus);
@@ -461,11 +470,25 @@ export const unlockAudio = () => {
   if (context?.state === "suspended") context.resume();
 };
 
+export const getAudio = () => {
+  const context = ensure();
+  return context ? { ctx: context, out: master, sfx: sfxBus } : null;
+};
+
+export const setSceneAudio = (next: SceneAudio | null) => {
+  sceneAudio = next;
+};
+
 export const startMusic = () => {
   const context = ensure();
   if (!context || musicPlaying) return;
   context.resume();
   musicPlaying = true;
+  if (sceneAudio) {
+    sceneAudio.start();
+    notify();
+    return;
+  }
   const now = context.currentTime;
   musicBus.gain.cancelScheduledValues(now);
   musicBus.gain.setValueAtTime(musicBus.gain.value, now);
@@ -480,11 +503,31 @@ export const startMusic = () => {
 export const stopMusic = (fade = 1.2) => {
   if (!ctx || !musicPlaying) return;
   musicPlaying = false;
+  if (sceneAudio) {
+    sceneAudio.stop(fade);
+    notify();
+    return;
+  }
   window.clearInterval(schedulerId);
   const now = ctx.currentTime;
   musicBus.gain.cancelScheduledValues(now);
   musicBus.gain.setValueAtTime(musicBus.gain.value, now);
   musicBus.gain.linearRampToValueAtTime(0, now + fade);
+  notify();
+};
+
+export const tapeStop = () => {
+  if (!ctx || !musicPlaying || sceneAudio) return;
+  musicPlaying = false;
+  window.clearInterval(schedulerId);
+  const now = ctx.currentTime;
+  musicTone.frequency.cancelScheduledValues(now);
+  musicTone.frequency.setValueAtTime(20000, now);
+  musicTone.frequency.exponentialRampToValueAtTime(90, now + 1.3);
+  musicBus.gain.cancelScheduledValues(now);
+  musicBus.gain.setValueAtTime(musicBus.gain.value, now);
+  musicBus.gain.linearRampToValueAtTime(0, now + 1.4);
+  musicTone.frequency.setValueAtTime(20000, now + 1.6);
   notify();
 };
 
