@@ -147,6 +147,7 @@ export type RoomShader = {
   appear: (kind?: Spot["kind"]) => { kind: Spot["kind"]; pan: number } | null;
   flicker: () => void;
   glitch: (amount: number) => void;
+  pause: (paused: boolean) => void;
   stop: () => void;
 };
 
@@ -322,6 +323,7 @@ export const startRoomShader = (
 
   let raf = 0;
   let last = 0;
+  let paused = false;
 
   function draw(now: number) {
     if (!ready) return;
@@ -348,7 +350,7 @@ export const startRoomShader = (
 
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame);
-    if (now - last < 1000 / 30) return;
+    if (paused || now - last < 1000 / 30) return;
     last = now;
     draw(now);
   };
@@ -382,6 +384,9 @@ export const startRoomShader = (
     },
     glitch(amount) {
       glitch = Math.max(glitch, amount);
+    },
+    pause(value) {
+      paused = value;
     },
     stop() {
       cancelAnimationFrame(raf);

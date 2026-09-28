@@ -333,6 +333,97 @@ export const playSlabCrunch = () => {
   synthSweep(900, 90, 0.35, 0.06, "square");
 };
 
+export const playStep = (index: number) => {
+  play("impact", {
+    rate: 2.2 + Math.random() * 0.35,
+    gain: 0.16,
+    wet: 0.35,
+    pan: index % 2 ? 0.18 : -0.18,
+  });
+};
+
+export const playBump = () => {
+  play("impact", { rate: 1.1, gain: 0.35, wet: 0.3 });
+  synthSweep(110, 45, 0.25, 0.08);
+};
+
+export const playDoorOpen = () => {
+  play("clank-1", { rate: 0.7, gain: 0.5, wet: 0.8 });
+  play("clank-2", { rate: 0.5, gain: 0.35, wet: 1, delay: 0.25 });
+  synthSweep(180, 900, 1.6, 0.05, "triangle");
+};
+
+let reversed: AudioBuffer | null = null;
+
+export const playUnshatter = (ending = 1.3) => {
+  const audio = getAudio();
+  const source = buffers["glass-break"];
+  if (!audio || !source) return;
+  if (!reversed) {
+    reversed = audio.ctx.createBuffer(
+      source.numberOfChannels,
+      source.length,
+      source.sampleRate,
+    );
+    for (let channel = 0; channel < source.numberOfChannels; channel++) {
+      const input = source.getChannelData(channel);
+      const output = reversed.getChannelData(channel);
+      for (let i = 0; i < input.length; i++) {
+        output[i] = input[input.length - 1 - i];
+      }
+    }
+  }
+  const node = audio.ctx.createBufferSource();
+  node.buffer = reversed;
+  node.playbackRate.value = 1.15;
+  const gain = audio.ctx.createGain();
+  gain.gain.value = 0.7;
+  node.connect(gain).connect(audio.sfx);
+  const length = reversed.duration / node.playbackRate.value;
+  node.start(audio.ctx.currentTime + Math.max(0, ending - length));
+};
+
+export const createBeacon = () => {
+  let source: AudioBufferSourceNode | null = null;
+  let gain: GainNode | null = null;
+  let panner: StereoPannerNode | null = null;
+
+  return {
+    start() {
+      const audio = getAudio();
+      if (!audio || source) return;
+      const { ctx } = audio;
+      gain = ctx.createGain();
+      gain.gain.value = 0;
+      panner = ctx.createStereoPanner();
+      const band = ctx.createBiquadFilter();
+      band.type = "bandpass";
+      band.frequency.value = 820;
+      band.Q.value = 1.4;
+      gain.connect(band).connect(panner).connect(audio.sfx);
+      source = loop(ctx, "hum", gain, 1.85);
+    },
+    set(level: number, pan: number) {
+      const audio = getAudio();
+      if (!audio || !gain || !panner) return;
+      const now = audio.ctx.currentTime;
+      gain.gain.setTargetAtTime(level, now, 0.15);
+      panner.pan.setTargetAtTime(pan, now, 0.15);
+    },
+    stop() {
+      const audio = getAudio();
+      if (audio && gain) {
+        gain.gain.setTargetAtTime(0, audio.ctx.currentTime, 0.1);
+      }
+      const ending = source;
+      window.setTimeout(() => ending?.stop(), 500);
+      source = null;
+      gain = null;
+      panner = null;
+    },
+  };
+};
+
 export const playThud = (speed: number, pan: number) => {
   play("impact", {
     rate: 0.9 + Math.random() * 0.6,

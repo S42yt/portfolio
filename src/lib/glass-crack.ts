@@ -354,6 +354,7 @@ type ShatterOptions = {
   origin: Point;
   content: () => HTMLElement;
   duration: number;
+  reverse?: boolean;
 };
 
 export const shatter = ({
@@ -362,6 +363,7 @@ export const shatter = ({
   origin,
   content,
   duration,
+  reverse = false,
 }: ShatterOptions) => {
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -416,8 +418,10 @@ export const shatter = ({
     const seconds = duration / 1000;
     const frame = (now: number) => {
       const elapsed = (now - start) / 1000;
+      const progress = Math.min(1, elapsed / seconds);
+      const clock = reverse ? seconds * Math.pow(1 - progress, 2.2) : elapsed;
       for (const shard of shards) {
-        const t = Math.max(0, elapsed - shard.delay);
+        const t = Math.max(0, clock - shard.delay);
         const x = shard.vx * t;
         const y = shard.vy * t + 1500 * t * t;
         const z = shard.vz * t;

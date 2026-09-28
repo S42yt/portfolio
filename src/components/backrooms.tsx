@@ -18,14 +18,19 @@ import {
   playFall,
   playGlassKnock,
   playImpact,
+  createBeacon,
+  playBump,
+  playDoorOpen,
   playLightsOn,
-  playPowerOut,
   playShatter,
+  playStep,
+  playUnshatter,
   playSlabCrunch,
   playThud,
 } from "@/lib/backrooms-audio";
 import { createRagdoll } from "@/lib/ragdoll";
 import { playFallScene } from "@/lib/backrooms-fall";
+import { startExplore, type Explore } from "@/lib/backrooms-explore";
 import { startRoomShader, type RoomShader } from "@/lib/backrooms-shader";
 import { createGlass, shatter, voronoi } from "@/lib/glass-crack";
 
@@ -142,6 +147,8 @@ export default function Backrooms() {
   const roomRef = useRef<HTMLDivElement>(null);
   const glassRef = useRef<HTMLCanvasElement>(null);
   const shardsRef = useRef<HTMLDivElement>(null);
+  const exploreRef = useRef<HTMLDivElement>(null);
+  const signalRef = useRef<HTMLSpanElement>(null);
   const fallRef = useRef<HTMLDivElement>(null);
   const timecodeRef = useRef<HTMLSpanElement>(null);
   const messageRef = useRef<HTMLSpanElement>(null);
@@ -162,9 +169,11 @@ export default function Backrooms() {
     let healFinish = 0;
     let preloading: Promise<unknown> | null = null;
     const glass = glassRef.current ? createGlass(glassRef.current) : null;
-    let exitTimer = 0;
-    let flees = 0;
     let noclipTries = 0;
+    let explore: Explore | null = null;
+    let exploreCanvas: HTMLCanvasElement | null = null;
+    let exploring = false;
+    const beacon = createBeacon();
     const ragdoll = createRagdoll({
       selector: BODY_SELECTOR,
       onImpact: (speed, pan) => {
@@ -311,7 +320,13 @@ export default function Backrooms() {
     const runEvent = () => {
       if (!root.classList.contains("backrooms")) return;
       const roll = Math.random();
-      if (roll < 0.4) {
+      if (exploring) {
+        if (roll < 0.35) {
+          pulse("bk-flicker", 1100);
+          explore?.flicker();
+          if (sound) ambience.buzz();
+        }
+      } else if (roll < 0.4) {
         pulse("bk-flicker", 1100);
         shader?.flicker();
         if (sound) ambience.buzz();
@@ -331,37 +346,6 @@ export default function Backrooms() {
       events = window.setTimeout(runEvent, 5000 + Math.random() * 6000);
     };
 
-    const signs = () =>
-      Array.from(document.querySelectorAll<HTMLElement>("[data-bk-sign]"));
-
-    const placeSign = (sign: HTMLElement, avoid?: { x: number; y: number }) => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      let left = 0;
-      let top = 0;
-      for (let attempt = 0; attempt < 12; attempt++) {
-        left = width * (0.06 + Math.random() * 0.74);
-        top = height * (0.18 + Math.random() * 0.6);
-        if (!avoid || Math.hypot(left - avoid.x, top - avoid.y) > 320) break;
-      }
-      sign.style.left = `${left}px`;
-      sign.style.top = `${top}px`;
-    };
-
-    const revealExits = () => {
-      if (!root.classList.contains("backrooms")) return;
-      flees = 0;
-      signs().forEach((sign) => {
-        placeSign(sign);
-        sign.dataset.shown = "";
-      });
-    };
-
-    const hideExits = () => {
-      window.clearTimeout(exitTimer);
-      signs().forEach((sign) => delete sign.dataset.shown);
-    };
-
     const flashMessage = (text: string) => {
       const message = messageRef.current;
       if (!message) return;
@@ -371,48 +355,14 @@ export default function Backrooms() {
       message.classList.add("bk-hud-msg-show");
     };
 
-    const decoyTrap = (sign: HTMLElement) => {
-      delete sign.dataset.shown;
-      pulse("bk-flicker", 1100);
-      pulse("bk-shake", 500);
-      shader?.flicker();
-      shader?.glitch(1);
-      if (sound) ambience.buzz();
-      const seen = shader?.appear("stand");
-      if (seen && sound) playEntityCue(seen.kind, seen.pan);
-      scrambleSome(3);
-      flashMessage("WRONG WAY");
-      const real = signs().find((el) => el.dataset.bkSign === "real");
-      if (real?.dataset.shown !== undefined) {
-        glitch(real);
-        placeSign(real);
-      }
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      if (busy || flees >= 3 || !root.classList.contains("backrooms")) return;
-      const real = signs().find((el) => el.dataset.bkSign === "real");
-      if (!real || real.dataset.shown === undefined) return;
-      const rect = real.getBoundingClientRect();
-      const distance = Math.hypot(
-        event.clientX - (rect.left + rect.width / 2),
-        event.clientY - (rect.top + rect.height / 2),
-      );
-      if (distance > 130) return;
-      flees++;
-      glitch(real);
-      shader?.glitch(0.6);
-      if (sound) playGlitch();
-      placeSign(real, { x: event.clientX, y: event.clientY });
-    };
-
     const startBreaking = () => {
       ragdoll.enable();
       noclipTries = 0;
-      exitTimer = window.setTimeout(
-        revealExits,
-        reducedMotion.matches ? 8000 : 20000 + Math.random() * 10000,
-      );
+      later(() => {
+        if (!root.classList.contains("backrooms") || exploring) return;
+        flashMessage("FIND THE EXIT");
+        root.classList.add("bk-wander-hint");
+      }, 9000);
       if (!reducedMotion.matches) {
         events = window.setTimeout(runEvent, 3000);
         const loopScramble = () => {
@@ -438,7 +388,7 @@ export default function Backrooms() {
 
     const stopBreaking = () => {
       ragdoll.disable();
-      hideExits();
+      root.classList.remove("bk-wander-hint");
       window.clearTimeout(events);
       window.clearTimeout(breaking);
       window.clearInterval(clock);
@@ -617,41 +567,162 @@ export default function Backrooms() {
       busy = false;
     };
 
-    const exit = async () => {
+    const closeExplore = () => {
+      exploring = false;
+      explore?.stop();
+      explore = null;
+      exploreCanvas?.remove();
+      exploreCanvas = null;
+      beacon.stop();
+      root.classList.remove("bk-exploring", "bk-opening");
+    };
+
+    const exit = async (viaDoor = false) => {
       if (busy || !root.classList.contains("backrooms")) return;
       busy = true;
       sound = soundEnabled();
       if (sound) unlockAudio();
       stopBreaking();
+      const reduced = reducedMotion.matches;
 
-      if (!reducedMotion.matches) {
-        setPhase("lightsoff");
-        if (sound) playPowerOut();
-        stopMusic(1.2);
-        await wait(1300);
-      } else {
-        stopMusic(0.6);
+      if (!viaDoor) {
+        stopMusic(reduced ? 0.6 : 1.2);
+        if (!reduced) {
+          shader?.glitch(1);
+          explore?.glitch(1);
+          pulse("bk-flicker", 1100);
+          if (sound) playGlitch();
+          await wait(450);
+          setPhase("lightfade");
+          await wait(700);
+        }
       }
+      setPhase("light");
 
+      closeExplore();
       root.classList.remove("backrooms");
       unscatter();
       stopShader();
       root.classList.add("aero");
       window.dispatchEvent(new Event("resize"));
       setSceneAudio(null);
-      setPhase("wake");
+
+      if (reduced) {
+        setPhase("wake");
+        if (sound) {
+          playShimmer();
+          startMusic();
+        }
+        await wait(300);
+        setPhase("");
+        busy = false;
+        return;
+      }
+
+      await wait(120);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const host = shardsRef.current;
+      const cells = voronoi(glass?.seeds() ?? [], width, height);
+      const page = snapshot();
+      if (sound) playUnshatter(1.3);
+      if (host && cells.length) {
+        await shatter({
+          host,
+          cells,
+          origin: { x: width / 2, y: height / 2 },
+          content: () => page.cloneNode(true) as HTMLElement,
+          duration: 1300,
+          reverse: true,
+        });
+      }
+      setPhase("");
+      pulse("bk-healed", 1400);
       if (sound) {
-        playGlitch();
         playShimmer();
         startMusic();
       }
       glitchTargets()
         .filter(onScreen)
-        .slice(0, 4)
-        .forEach((el, index) => later(() => glitch(el), 200 + index * 120));
-      await wait(reducedMotion.matches ? 300 : 1400);
-      setPhase("");
+        .slice(0, 3)
+        .forEach((el, index) => later(() => glitch(el), 350 + index * 140));
       busy = false;
+    };
+
+    const leaveExplore = () => {
+      if (!exploring || explore?.opening || busy) return;
+      closeExplore();
+      shader?.pause(false);
+      shader?.glitch(0.9);
+      pulse("bk-flicker", 1100);
+      if (sound) playGlitch();
+    };
+
+    const wander = async () => {
+      if (
+        busy ||
+        exploring ||
+        !root.classList.contains("backrooms") ||
+        root.classList.contains("bk-entering")
+      ) {
+        return;
+      }
+      const host = exploreRef.current;
+      if (!host) return;
+      exploring = true;
+      sound = soundEnabled();
+      if (sound) unlockAudio();
+      root.classList.remove("bk-wander-hint");
+      const view = document.createElement("canvas");
+      view.className = "bk-explore";
+      host.appendChild(view);
+      exploreCanvas = view;
+      root.classList.add("bk-exploring");
+      pulse("bk-flicker", 1100);
+      shader?.glitch(1);
+      if (sound) playGlitch();
+
+      const started = await startExplore(
+        view,
+        {
+          onStep: (index) => {
+            if (sound) playStep(index);
+          },
+          onBump: () => {
+            if (sound) playBump();
+          },
+          onBeacon: (gain, pan, signal) => {
+            if (sound) beacon.set(gain, pan);
+            if (signalRef.current) {
+              signalRef.current.dataset.level = String(signal);
+            }
+          },
+          onEntity: (pan) => {
+            if (sound) playEntityCue("stand", pan);
+          },
+          onOpen: () => {
+            root.classList.add("bk-opening");
+            if (sound) playDoorOpen();
+            stopMusic(1.4);
+            beacon.stop();
+          },
+          onExit: () => {
+            exit(true);
+          },
+          onLeave: leaveExplore,
+        },
+        { reduced: reducedMotion.matches },
+      );
+
+      if (!started || !exploring || exploreCanvas !== view) {
+        started?.stop();
+        if (exploreCanvas === view) closeExplore();
+        return;
+      }
+      explore = started;
+      view.dataset.ready = "true";
+      shader?.pause(true);
+      if (sound) beacon.start();
     };
 
     let typed = "";
@@ -668,7 +739,7 @@ export default function Backrooms() {
       }
       noclipTries++;
       if (noclipTries >= 3) {
-        exit();
+        exit(false);
         return;
       }
       flashMessage("NOCLIP FAILED");
@@ -679,10 +750,21 @@ export default function Backrooms() {
 
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
-      const sign = target?.closest<HTMLElement>("[data-bk-sign]");
-      if (sign?.dataset.bkSign === "decoy") decoyTrap(sign);
-      else if (sign) exit();
-      else onBackground(event);
+      if (root.classList.contains("backrooms")) {
+        if (target?.closest("[data-bk-return]")) leaveExplore();
+        else if (target?.closest("[data-bk-wander]")) wander();
+        else if (
+          !exploring &&
+          event.button === 0 &&
+          target &&
+          !target.closest(`${SOLID}, ${BODY_SELECTOR}, .bk-explore`) &&
+          !window.getSelection()?.toString()
+        ) {
+          wander();
+        }
+        return;
+      }
+      onBackground(event);
     };
 
     const onBackground = (event: MouseEvent) => {
@@ -705,7 +787,6 @@ export default function Backrooms() {
     };
 
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.addEventListener("click", onClick);
     window.addEventListener("resize", onResize);
 
@@ -713,9 +794,9 @@ export default function Backrooms() {
       window.removeEventListener("resize", onResize);
       stopHealing();
       window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("click", onClick);
       stopBreaking();
+      closeExplore();
       stopShader();
       timers.forEach((id) => window.clearTimeout(id));
       timers.clear();
@@ -744,16 +825,27 @@ export default function Backrooms() {
         <span className="bk-hud-msg" ref={messageRef} />
       </div>
 
-      {["real", "decoy", "decoy"].map((kind, index) => (
-        <button
-          key={index}
-          type="button"
-          data-bk-sign={kind}
-          className="bk-exit"
-        >
-          <span aria-hidden="true">←</span> EXIT
-        </button>
-      ))}
+      <div ref={exploreRef} className="bk-explore-wrap" />
+
+      <div aria-hidden="true" className="bk-explore-hud">
+        <span className="bk-signal" ref={signalRef} data-level="0">
+          SIGNAL <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="bk-hint">
+          ◀ EDGES / DRAG TO LOOK ▶ · CLICK TO WALK · ESC
+        </span>
+      </div>
+
+      <button type="button" data-bk-wander className="bk-wander">
+        ▸ WANDER
+      </button>
+      <button type="button" data-bk-return className="bk-return">
+        ◂ PAGES
+      </button>
 
       <div ref={introRef} aria-hidden="true" className="bk-intro" data-phase="">
         <div ref={fallRef} className="bk-fall-wrap" />
