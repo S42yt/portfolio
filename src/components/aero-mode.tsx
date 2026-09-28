@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  playGlitch,
+  playPowerDown,
+  playShimmer,
+  soundEnabled,
+  startMusic,
+  stopMusic,
+  unlockAudio,
+} from "@/lib/aero-audio";
 
 const STORAGE_KEY = "s42-theme";
 const SECRET_WORD = "aero";
@@ -113,17 +122,32 @@ export default function AeroMode() {
         else sessionStorage.removeItem(STORAGE_KEY);
       } catch {}
 
+      const sound = soundEnabled();
+      if (sound) unlockAudio();
+
       if (toAero) await loadAssets();
 
       const apply = () => root.classList.toggle("aero", toAero);
+      const playArrival = () => {
+        if (!sound) return;
+        if (toAero) {
+          playShimmer();
+          startMusic();
+        } else {
+          playPowerDown();
+        }
+      };
+      if (!toAero) stopMusic();
 
       if (reducedMotion.matches) {
         apply();
+        playArrival();
         busy = false;
         return;
       }
 
       const visible = shuffle(targets().filter(isOnScreen));
+      if (sound) playGlitch();
       showOverlay(GLITCH_MS + REVEAL_MS);
       visible.forEach((el, index) =>
         later(() => glitch(el), Math.min(index * 25, 140)),
@@ -138,6 +162,8 @@ export default function AeroMode() {
       root.style.setProperty("--reveal-x", `${x}px`);
       root.style.setProperty("--reveal-y", `${y}px`);
       root.style.setProperty("--reveal-r", `${Math.ceil(radius)}px`);
+
+      playArrival();
 
       if (typeof document.startViewTransition === "function") {
         root.classList.add("theme-switching");

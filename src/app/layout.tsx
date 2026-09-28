@@ -7,6 +7,7 @@ import Footer from "@/components/footer";
 import KofiToast from "@/components/kofi-toast";
 import SmokeBg from "@/components/smoke-bg";
 import AeroMode from "@/components/aero-mode";
+import AeroSoundToggle from "@/components/aero-sound-toggle";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -147,6 +148,7 @@ export default function RootLayout({
 
         <KofiToast />
         <AeroMode />
+        <AeroSoundToggle />
       </body>
     </html>
   );
