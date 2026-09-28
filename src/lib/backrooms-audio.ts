@@ -17,12 +17,10 @@ const SOUNDS = [
 ] as const;
 
 type SoundName = (typeof SOUNDS)[number];
-export type BackroomsEvent = "buzz" | "entity" | "clank";
 
 const buffers: Partial<Record<SoundName, AudioBuffer>> = {};
 let loading: Promise<void> | null = null;
 let reverb: ConvolverNode | null = null;
-let eventListener: ((event: BackroomsEvent) => void) | null = null;
 
 const pick = <T>(items: readonly T[]) =>
   items[Math.floor(Math.random() * items.length)];
@@ -170,71 +168,28 @@ const wind = (duration: number, level: number) => {
   source.start(now);
 };
 
-export const onBackroomsEvent = (
-  listener: ((event: BackroomsEvent) => void) | null,
-) => {
-  eventListener = listener;
-};
+export type BackroomsAmbience = SceneAudio & { buzz: () => void };
 
-export const backroomsAmbience = (): SceneAudio => {
+export const backroomsAmbience = (): BackroomsAmbience => {
   let bus: GainNode | null = null;
   let humGain: GainNode | null = null;
   let sources: AudioBufferSourceNode[] = [];
   let timer = 0;
-  let entityDue = 2;
 
   const schedule = () => {
     timer = window.setTimeout(
       () => {
-        const audio = getAudio();
-        if (!audio || !bus || !humGain) return;
-        const { ctx } = audio;
-        entityDue--;
-
-        if (entityDue <= 0) {
-          entityDue = 2 + Math.floor(Math.random() * 3);
-          const pan = Math.random() * 1.6 - 0.8;
-          play(
-            pick(["entity-1", "entity-2", "entity-3", "entity-4"] as const),
-            {
-              rate: 0.55 + Math.random() * 0.2,
-              gain: 0.55,
-              wet: 1.1,
-              pan,
-              out: bus,
-            },
-          );
-          play("breath", {
-            rate: 0.6,
-            gain: 0.35,
-            wet: 0.8,
-            pan,
-            delay: 1.1,
-            out: bus,
-          });
-          eventListener?.("entity");
-        } else if (Math.random() < 0.5) {
-          const now = ctx.currentTime;
-          humGain.gain.cancelScheduledValues(now);
-          humGain.gain.setValueAtTime(0.32, now);
-          humGain.gain.linearRampToValueAtTime(0.9, now + 0.08);
-          humGain.gain.setValueAtTime(0.1, now + 0.3);
-          humGain.gain.linearRampToValueAtTime(0.85, now + 0.5);
-          humGain.gain.linearRampToValueAtTime(0.32, now + 1.1);
-          eventListener?.("buzz");
-        } else {
-          play(pick(["clank-1", "clank-2"] as const), {
-            rate: 0.55 + Math.random() * 0.3,
-            gain: 0.4,
-            wet: 1.2,
-            pan: Math.random() * 1.8 - 0.9,
-            out: bus,
-          });
-          eventListener?.("clank");
-        }
+        if (!bus) return;
+        play(pick(["clank-1", "clank-2"] as const), {
+          rate: 0.55 + Math.random() * 0.3,
+          gain: 0.4,
+          wet: 1.2,
+          pan: Math.random() * 1.8 - 0.9,
+          out: bus,
+        });
         schedule();
       },
-      5000 + Math.random() * 7000,
+      9000 + Math.random() * 9000,
     );
   };
 
@@ -295,7 +250,45 @@ export const backroomsAmbience = (): SceneAudio => {
       bus = null;
       humGain = null;
     },
+    buzz() {
+      const audio = getAudio();
+      if (!audio || !humGain) return;
+      const now = audio.ctx.currentTime;
+      humGain.gain.cancelScheduledValues(now);
+      humGain.gain.setValueAtTime(0.32, now);
+      humGain.gain.linearRampToValueAtTime(0.9, now + 0.08);
+      humGain.gain.setValueAtTime(0.1, now + 0.3);
+      humGain.gain.linearRampToValueAtTime(0.85, now + 0.5);
+      humGain.gain.linearRampToValueAtTime(0.32, now + 1.1);
+    },
   };
+};
+
+export const playEntityCue = (kind: "peek" | "stand" | "run", pan: number) => {
+  const growl = pick(["entity-1", "entity-2", "entity-3", "entity-4"] as const);
+  if (kind === "stand") {
+    play(growl, {
+      rate: 0.55 + Math.random() * 0.15,
+      gain: 0.6,
+      wet: 1.1,
+      pan,
+      delay: 0.5,
+    });
+  } else if (kind === "peek") {
+    play("breath", { rate: 0.6, gain: 0.5, wet: 0.7, pan, delay: 0.6 });
+    play(growl, { rate: 0.5, gain: 0.3, wet: 1.2, pan, delay: 1.4 });
+  } else {
+    for (let i = 0; i < 5; i++) {
+      play("impact", {
+        rate: 2.6,
+        gain: 0.12,
+        wet: 0.9,
+        pan: pan + i * 0.08,
+        delay: i * 0.17,
+      });
+    }
+    play(growl, { rate: 0.8, gain: 0.25, wet: 1.2, pan, delay: 0.2 });
+  }
 };
 
 export const playWallTouch = () => {

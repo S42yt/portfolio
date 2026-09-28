@@ -14,7 +14,7 @@ import {
 import {
   backroomsAmbience,
   loadBackroomsAudio,
-  onBackroomsEvent,
+  playEntityCue,
   playFall,
   playImpact,
   playLightsOn,
@@ -22,6 +22,7 @@ import {
   playPowerOut,
   playWallTouch,
 } from "@/lib/backrooms-audio";
+import { startRoomShader, type RoomShader } from "@/lib/backrooms-shader";
 
 const SECRET_WORD = "noclip";
 const SCRAMBLE = "█▓▒░#@%&?!/\\|<>";
@@ -56,6 +57,7 @@ const pad = (value: number) => String(value).padStart(2, "0");
 
 export default function Backrooms() {
   const introRef = useRef<HTMLDivElement>(null);
+  const roomRef = useRef<HTMLDivElement>(null);
   const timecodeRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -66,7 +68,10 @@ export default function Backrooms() {
     const ambience = backroomsAmbience();
     let busy = false;
     let breaking = 0;
+    let events = 0;
     let clock = 0;
+    let shader: RoomShader | null = null;
+    let canvas: HTMLCanvasElement | null = null;
     let sound = false;
 
     const later = (fn: () => void, ms: number) => {
@@ -182,29 +187,48 @@ export default function Backrooms() {
       later(() => root.classList.remove(className), ms);
     };
 
-    const onEvent = (event: string) => {
-      if (!root.classList.contains("backrooms") || reducedMotion.matches)
-        return;
-      if (event === "buzz") {
+    const startShader = () => {
+      const room = roomRef.current;
+      if (!room || shader) return;
+      canvas = document.createElement("canvas");
+      canvas.className = "bk-shader";
+      room.appendChild(canvas);
+      shader = startRoomShader(canvas, !reducedMotion.matches);
+    };
+
+    const stopShader = () => {
+      shader?.stop();
+      shader = null;
+      canvas?.remove();
+      canvas = null;
+    };
+
+    const runEvent = () => {
+      if (!root.classList.contains("backrooms")) return;
+      const roll = Math.random();
+      if (roll < 0.4) {
         pulse("bk-flicker", 1100);
+        shader?.flicker();
+        if (sound) ambience.buzz();
         glitchTargets()
           .filter(onScreen)
           .slice(0, 2)
           .forEach((el) => glitch(el));
-      } else if (event === "entity") {
-        pulse("bk-entity-show", 4200);
-        later(() => {
-          pulse("bk-shake", 500);
-          scrambleSome(3);
-        }, 900);
       } else {
-        scrambleSome(1);
+        const seen = shader?.appear();
+        if (seen) {
+          if (sound) playEntityCue(seen.kind, seen.pan);
+          later(() => shader?.glitch(0.5), seen.kind === "run" ? 100 : 900);
+          later(() => scrambleSome(seen.kind === "stand" ? 3 : 1), 1200);
+          if (seen.kind === "stand") later(() => pulse("bk-shake", 500), 1300);
+        }
       }
+      events = window.setTimeout(runEvent, 5000 + Math.random() * 6000);
     };
 
     const startBreaking = () => {
-      onBackroomsEvent(onEvent);
       if (!reducedMotion.matches) {
+        events = window.setTimeout(runEvent, 3000);
         const loopScramble = () => {
           scrambleSome(1 + Math.floor(Math.random() * 2));
           breaking = window.setTimeout(
@@ -227,7 +251,7 @@ export default function Backrooms() {
     };
 
     const stopBreaking = () => {
-      onBackroomsEvent(null);
+      window.clearTimeout(events);
       window.clearTimeout(breaking);
       window.clearInterval(clock);
     };
@@ -262,6 +286,7 @@ export default function Backrooms() {
         root.classList.add("backrooms", "bk-entering");
         setPhase("fall");
         scatter();
+        startShader();
       };
 
       if (reducedMotion.matches) {
@@ -339,6 +364,7 @@ export default function Backrooms() {
 
       root.classList.remove("backrooms");
       unscatter();
+      stopShader();
       root.classList.add("aero");
       setSceneAudio(null);
       setPhase("wake");
@@ -381,6 +407,7 @@ export default function Backrooms() {
       window.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("click", onClick);
       stopBreaking();
+      stopShader();
       timers.forEach((id) => window.clearTimeout(id));
       timers.clear();
     };
@@ -395,9 +422,7 @@ export default function Backrooms() {
         className="bk-bubble"
       />
 
-      <div aria-hidden="true" className="bk-room">
-        <div className="bk-entity" />
-      </div>
+      <div ref={roomRef} aria-hidden="true" className="bk-room" />
 
       <div aria-hidden="true" className="bk-static" />
       <div aria-hidden="true" className="bk-lights" />

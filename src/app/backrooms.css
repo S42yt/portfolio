@@ -336,84 +336,17 @@ html.bk-wall body::after {
   }
 }
 
-.bk-entity {
+.bk-shader {
   position: absolute;
-  left: 39.5%;
-  top: 53%;
-  width: 2.8vh;
-  height: 11vh;
-  transform: translate(-50%, -100%);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   opacity: 0;
-  filter: blur(1.4px);
+  transition: opacity 400ms ease;
 }
 
-@media (max-aspect-ratio: 4 / 5) {
-  .bk-entity {
-    left: 47%;
-    top: 52%;
-  }
-}
-
-.bk-entity::before,
-.bk-entity::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #0b0802;
-}
-
-.bk-entity::before {
-  top: 0;
-  width: 44%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-}
-
-.bk-entity::after {
-  top: 11%;
-  width: 72%;
-  height: 89%;
-  clip-path: polygon(
-    22% 0,
-    78% 0,
-    100% 62%,
-    84% 64%,
-    72% 100%,
-    58% 100%,
-    50% 58%,
-    42% 100%,
-    28% 100%,
-    16% 64%,
-    0 62%
-  );
-}
-
-.bk-entity-show .bk-entity {
-  animation: bk-entity 4.2s ease-in-out both;
-}
-
-@keyframes bk-entity {
-  0% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 0.85;
-  }
-  70% {
-    opacity: 0.85;
-    transform: translate(-50%, -100%) scale(1.06);
-  }
-  74% {
-    opacity: 0.1;
-  }
-  78% {
-    opacity: 0.7;
-  }
-  84%,
-  100% {
-    opacity: 0;
-  }
+.bk-shader[data-ready="true"] {
+  opacity: 1;
 }
 
 .backrooms .bk-static {
@@ -422,7 +355,7 @@ html.bk-wall body::after {
   inset: 0;
   z-index: 60;
   pointer-events: none;
-  opacity: 0.1;
+  opacity: 0.07;
   mix-blend-mode: overlay;
   background:
     repeating-linear-gradient(
