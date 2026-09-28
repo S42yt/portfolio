@@ -1,6 +1,3 @@
-.bk-door,
-.bk-portal,
-.bk-portal-dim,
 .bk-room,
 .bk-static,
 .bk-lights,
@@ -9,272 +6,137 @@
   display: none;
 }
 
-.bk-door[data-live]:is(.aero *) {
-  display: block;
-  position: fixed;
-  z-index: 30;
-  left: var(--x);
-  top: var(--y);
-  width: var(--w, 32px);
-  height: calc(var(--w, 32px) * 1.75);
-  translate: -50% -100%;
-  padding: 0;
-  border: 0;
-  background: #1c1606 url("/backrooms/door-view.webp") center / cover;
-  box-shadow:
-    0 0 0 2px #3b2f10,
-    0 0 0 3px rgba(0, 0, 0, 0.35),
-    0 0 14px 3px rgba(255, 228, 140, 0.45),
-    inset 0 0 8px rgba(0, 0, 0, 0.55);
-  cursor: pointer;
-  animation:
-    bk-door-in 3.5s ease-out both,
-    bk-door-flicker 9s steps(1, end) 3.5s infinite;
-  transition:
-    box-shadow 300ms ease,
-    scale 300ms ease;
-}
-
-.bk-door[data-live]:is(.aero *)::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  width: 420%;
-  height: 55%;
-  translate: -50% -35%;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(255, 232, 150, 0.5),
-    rgba(255, 232, 150, 0) 70%
-  );
-  filter: blur(2px);
-}
-
-.bk-door[data-live]:is(.aero *):hover,
-.bk-door[data-live]:is(.aero *):focus-visible {
-  scale: 1.08;
-  outline: none;
-  box-shadow:
-    0 0 0 2px #3b2f10,
-    0 0 0 3px rgba(0, 0, 0, 0.35),
-    0 0 26px 8px rgba(255, 228, 140, 0.75),
-    inset 0 0 6px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes bk-door-in {
-  from {
-    opacity: 0;
-    filter: blur(3px) brightness(1.6);
-  }
-  to {
-    opacity: 0.92;
-    filter: none;
-  }
-}
-
-@keyframes bk-door-flicker {
-  0%,
-  93%,
-  95%,
-  100% {
-    opacity: 0.92;
-  }
-  94% {
-    opacity: 0.25;
-  }
-}
-
-.bk-portaling .bk-portal-dim {
-  display: block;
+.bk-glass-cracks {
   position: fixed;
   inset: 0;
-  z-index: 270;
-  pointer-events: none;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(10, 8, 0, 0.35),
-    rgba(10, 8, 0, 0.85)
-  );
-  animation: bk-dim 1.5s ease both;
-}
-
-.bk-shatter .bk-portal-dim {
-  background: #050300;
-}
-
-@keyframes bk-dim {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.bk-portal[data-phase="approach"],
-.bk-portal[data-phase="glass"],
-.bk-portal[data-phase="mirror"],
-.bk-portal[data-phase="shatter"] {
-  display: block;
-  position: fixed;
-  inset: 0;
-  z-index: 280;
-  overflow: hidden;
-  pointer-events: none;
-  background: #1c1606;
-}
-
-.bk-portal-view {
-  position: absolute;
-  inset: 0;
-  background: url("/backrooms/level0.webp") center / cover;
-  filter: sepia(0.2) saturate(1.05);
-}
-
-@media (max-aspect-ratio: 4 / 5) {
-  .bk-portal-view {
-    background-image: url("/backrooms/level0-portrait.webp");
-  }
-}
-
-.bk-portal::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    105deg,
-    transparent 38%,
-    rgba(255, 255, 255, 0.4) 45%,
-    rgba(210, 235, 255, 0.18) 48%,
-    transparent 56%
-  );
-  background-size: 300% 100%;
-  opacity: 0;
-}
-
-.bk-portal[data-phase="glass"]::after {
-  animation: bk-sheen 1.1s cubic-bezier(0.45, 0, 0.2, 1) both;
-}
-
-.bk-portal[data-phase="glass"] .bk-portal-view {
-  animation: bk-bump 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) both;
-}
-
-@keyframes bk-bump {
-  0% {
-    transform: scale(1);
-  }
-  35% {
-    transform: scale(0.985) translateY(0.4%);
-    filter: brightness(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes bk-sheen {
-  from {
-    background-position: 110% 0;
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  to {
-    background-position: -10% 0;
-    opacity: 1;
-  }
-}
-
-.bk-portal[data-phase="mirror"] .bk-portal-view {
-  animation: bk-mirror-flip 0.65s cubic-bezier(0.6, 0, 0.3, 1) both;
-}
-
-@keyframes bk-mirror-flip {
-  0% {
-    transform: scaleX(1);
-    filter: none;
-  }
-  45% {
-    transform: scaleX(0.04);
-    filter: brightness(2.6) saturate(0.3);
-  }
-  55% {
-    transform: scaleX(-0.04);
-    filter: brightness(2.6) saturate(0.3);
-  }
-  100% {
-    transform: scaleX(-1);
-    filter: hue-rotate(-10deg) saturate(1.2);
-  }
-}
-
-.bk-portal[data-phase="shatter"] {
-  animation: bk-push 0.52s cubic-bezier(0.55, 0, 1, 0.45) both;
-}
-
-.bk-portal[data-phase="shatter"] .bk-portal-view {
-  transform: scaleX(-1);
-}
-
-@keyframes bk-push {
-  from {
-    transform: scale(1);
-    opacity: 1;
-    filter: none;
-  }
-  to {
-    transform: scale(3.2);
-    opacity: 0;
-    filter: brightness(2.2) blur(3px);
-  }
-}
-
-.bk-shatter .bk-cracks {
-  animation: bk-crack-burst 0.5s cubic-bezier(0.55, 0, 1, 0.45) both;
-}
-
-@keyframes bk-crack-burst {
-  to {
-    transform: scale(2.6);
-    opacity: 0;
-  }
-}
-
-.bk-cracks {
-  display: none;
-}
-
-.bk-cracked .bk-cracks {
-  display: block;
-  position: fixed;
-  inset: 0;
-  z-index: 301;
+  z-index: 240;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  filter: drop-shadow(1px 1px 0 rgba(0, 25, 50, 0.65))
-    drop-shadow(0 0 8px rgba(255, 255, 255, 0.75));
+  opacity: 0;
+  visibility: hidden;
 }
 
-.bk-cracks path {
-  fill: none;
+.bk-glass .bk-glass-cracks {
+  opacity: 1;
+  visibility: visible;
+}
+
+.bk-healing .bk-glass-cracks {
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.bk-shattering .bk-glass-cracks {
+  visibility: hidden;
+}
+
+.aero:not(.bk-shattering) body {
+  cursor: default;
+}
+
+.bk-knock :is(main > :not(nav), footer, [data-page-bg], .bk-glass-cracks) {
+  animation: bk-knock 0.38s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+
+@keyframes bk-knock {
+  0% {
+    translate: 0 0;
+    scale: 1;
+  }
+  18% {
+    translate: calc(var(--knock, 3px) * -1) calc(var(--knock, 3px) * 0.6);
+    scale: 0.997;
+  }
+  40% {
+    translate: var(--knock, 3px) calc(var(--knock, 3px) * -0.4);
+  }
+  65% {
+    translate: calc(var(--knock, 3px) * -0.4) 0;
+  }
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+.bk-shards {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  perspective: 900px;
+  overflow: hidden;
+}
+
+.bk-shard {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+  backface-visibility: visible;
+}
+
+.bk-shard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0) 32%,
+    rgba(255, 255, 255, 0.12) 52%,
+    rgba(255, 255, 255, 0) 70%
+  );
+}
+
+.bk-shard-page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--bg);
+}
+
+.bk-shard-page * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: none !important;
+}
+
+.bk-shard-edge {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+}
+
+.bk-shard-edge polygon {
+  fill: rgba(200, 235, 255, 0.07);
   stroke: rgba(255, 255, 255, 0.95);
-  stroke-width: 2.2px;
-  vector-effect: non-scaling-stroke;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: bk-crack 0.38s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
-  animation-delay: calc(var(--i) * 18ms);
+  stroke-width: 3px;
 }
 
-@keyframes bk-crack {
+.bk-shattering body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 301;
+  pointer-events: none;
+  background: #fff;
+  opacity: 0;
+}
+
+.bk-flash body::after {
+  animation: bk-flash 0.45s ease-out both;
+}
+
+@keyframes bk-flash {
+  from {
+    opacity: 0.85;
+  }
   to {
-    stroke-dashoffset: 0;
+    opacity: 0;
   }
 }
 
@@ -384,19 +246,23 @@
   color-scheme: light;
 
   --bk-font: var(--font-vt323), "VT323", "Courier New", monospace;
+  --bk-body: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --bk-ink: #1b160b;
+  --bk-cream: #f3ead0;
+  --bk-dark: #15110a;
   --font-display: var(--bk-font);
 
   --bg: #b9a55a;
-  --surface: rgba(228, 214, 152, 0.9);
-  --surface-raised: rgba(238, 226, 170, 0.95);
-  --border: rgba(92, 74, 24, 0.5);
-  --border-strong: rgba(70, 54, 14, 0.75);
-  --text: #211904;
-  --text-secondary: #362c0c;
-  --text-tertiary: #4d3f16;
-  --accent: #6a4b00;
-  --accent-fill: #7a5d12;
-  --on-accent: #fff3cf;
+  --surface: #f1e8cc;
+  --surface-raised: #f6efd8;
+  --border: rgba(60, 46, 14, 0.3);
+  --border-strong: rgba(40, 30, 8, 0.6);
+  --text: var(--bk-ink);
+  --text-secondary: #2f2816;
+  --text-tertiary: #4a3f25;
+  --accent: #962c12;
+  --accent-fill: var(--bk-ink);
+  --on-accent: var(--bk-cream);
   --text-muted: var(--text-secondary);
   --text-faint: var(--text-tertiary);
   --border-subtle: var(--border);
@@ -410,9 +276,7 @@
 }
 
 .backrooms body {
-  font-family: var(--bk-font);
-  font-size: 1.14rem;
-  letter-spacing: 0.02em;
+  font-family: var(--bk-body);
   color: var(--text);
 }
 
@@ -747,66 +611,288 @@
 
 @keyframes bk-ghost {
   from {
-    opacity: 0.9;
+    opacity: 1;
   }
   to {
-    opacity: 0.35;
+    opacity: 0.62;
   }
 }
 
-.backrooms :is(h1, h2, h3) {
+.backrooms :is(h1, h2, h3, h4) {
+  font-family: var(--bk-font);
+  font-weight: 400 !important;
+  letter-spacing: 0.02em;
   text-shadow:
-    2px 0 rgba(200, 30, 30, 0.35),
-    -2px 0 rgba(30, 120, 220, 0.35);
+    1.5px 0 rgba(200, 30, 30, 0.3),
+    -1.5px 0 rgba(30, 120, 220, 0.3);
+}
+
+.backrooms .hero-wordmark {
+  color: var(--bk-ink);
+  text-shadow:
+    3px 0 rgba(200, 30, 30, 0.35),
+    -3px 0 rgba(30, 120, 220, 0.35),
+    0 0 24px rgba(255, 244, 200, 0.55);
 }
 
 .backrooms .section-title {
+  display: inline-block;
+  padding: 0.08em 0.3em 0;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  color: var(--bk-ink);
+  background: var(--bk-cream);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.35);
+  text-shadow: none;
 }
 
-.backrooms :is(.panel, .glass, .glass-strong, .chip, .btn) {
+.backrooms .eyebrow {
+  display: inline-block;
+  padding: 0.2em 0.65em 0.1em;
+  font-family: var(--bk-font);
+  font-size: 1.1rem;
+  letter-spacing: 0.22em;
+  color: var(--bk-cream);
+  background: var(--bk-dark);
+  border: 1px solid rgba(243, 234, 208, 0.22);
+}
+
+.backrooms .aero-window {
+  --text: var(--bk-cream);
+  --text-secondary: rgba(243, 234, 208, 0.86);
+  --text-tertiary: rgba(243, 234, 208, 0.66);
+  --border: rgba(243, 234, 208, 0.2);
+  --accent: #f2a36f;
+  position: relative;
+  padding: clamp(1.25rem, 3.2vw, 2.75rem);
+  color: var(--text);
   background:
-    linear-gradient(rgba(236, 224, 166, 0.82), rgba(226, 210, 146, 0.86)),
-    url("/backrooms/wall.webp") 0 0 / 192px 192px;
-  border: 2px solid rgba(80, 62, 20, 0.55);
-  box-shadow: 0 8px 20px rgba(40, 28, 0, 0.35);
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.025) 0 1px,
+      transparent 1px 4px
+    ),
+    rgba(20, 16, 7, 0.74);
+  border: 1px solid rgba(243, 234, 208, 0.16);
+  box-shadow:
+    0 30px 60px -25px rgba(0, 0, 0, 0.8),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.backrooms .aero-window::before {
+  content: "EVIDENCE";
+  position: absolute;
+  top: 0.7rem;
+  right: 1rem;
+  font-family: var(--bk-font);
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  color: rgba(243, 234, 208, 0.35);
+  pointer-events: none;
+}
+
+.backrooms :is(.panel, .hero-card) {
+  --text: var(--bk-ink);
+  --text-secondary: #3a3120;
+  --text-tertiary: #5a4d31;
+  --border: rgba(60, 46, 14, 0.28);
+  --accent: #962c12;
+  position: relative;
+  color: var(--text);
+  background: linear-gradient(172deg, #f5edd4 0%, #eadfbb 100%);
+  border: 1px solid rgba(60, 46, 14, 0.22);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 16px 28px -12px rgba(10, 6, 0, 0.7),
+    0 3px 6px rgba(10, 6, 0, 0.3);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  color: var(--text);
+}
+
+.backrooms :is(.panel, .hero-card)::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: -11px;
+  left: 50%;
+  width: 92px;
+  height: 24px;
+  translate: -50% 0;
+  rotate: -2.5deg;
+  pointer-events: none;
+  background: rgba(240, 232, 206, 0.6);
+  border-left: 2px dotted rgba(120, 100, 60, 0.25);
+  border-right: 2px dotted rgba(120, 100, 60, 0.25);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+.backrooms .hero-card {
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.backrooms .hero-card .section-rule {
+  display: none;
 }
 
 .backrooms .project-card {
-  background:
-    linear-gradient(rgba(240, 232, 196, 0.78), rgba(232, 220, 170, 0.85)),
-    url("/backrooms/ceiling.webp") 0 0 / 220px 220px;
+  overflow: visible;
+  font-family: var(--bk-body);
+}
+
+.backrooms .project-card:nth-child(odd)::before {
+  rotate: 3deg;
+  left: 30%;
+}
+
+.backrooms .project-card h3 {
+  font-size: 1.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.backrooms .project-card:hover {
+  transform: translateY(-4px) rotate(-0.6deg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 24px 34px -14px rgba(10, 6, 0, 0.75),
+    0 4px 8px rgba(10, 6, 0, 0.3);
+}
+
+.backrooms .project-card[data-archived="true"] {
+  opacity: 1;
+  background: linear-gradient(172deg, #e9dfc2 0%, #dccfa6 100%);
+}
+
+.backrooms .archived-badge {
+  font-family: var(--bk-font);
+  font-size: 1.05rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a3301a;
+  background: transparent;
+  border: 2px solid #a3301a;
+  border-radius: 2px;
+  rotate: 9deg;
+  opacity: 0.8;
 }
 
 .backrooms .project-glow {
   display: none;
 }
 
-.backrooms .btn-primary {
-  background: #5b4410;
-  color: #fff3cf;
-  border-color: #3a2a06;
+.backrooms .chip {
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem 0.25rem;
+  font-family: var(--bk-font);
+  font-size: 1.2rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bk-cream);
+  background: linear-gradient(#211b10, #120f08);
+  border: 0;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.backrooms .chip:hover {
+  color: #fff;
+  background: #2b2415;
+}
+
+.backrooms .chip img {
+  opacity: 0.9;
+  filter: grayscale(1) brightness(1.5) sepia(0.4);
+}
+
+.backrooms .nav-bar {
+  background: rgba(12, 10, 4, 0.78);
+  border: 1px solid rgba(243, 234, 208, 0.28);
+  border-radius: 2px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.backrooms .nav-link {
+  font-family: var(--bk-font);
+  font-size: 1.3rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 234, 208, 0.7);
+}
+
+.backrooms .nav-link:hover {
+  color: var(--bk-cream);
+}
+
+.backrooms .nav-link[data-active="true"] {
+  color: var(--bk-ink);
 }
 
 .backrooms .nav-indicator {
-  background: rgba(80, 62, 20, 0.35);
+  background: var(--bk-cream);
+  border-radius: 1px;
+}
+
+.backrooms .btn {
+  font-family: var(--bk-font);
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bk-cream);
+  background: rgba(12, 10, 4, 0.82);
+  border: 1px solid rgba(243, 234, 208, 0.45);
+  border-radius: 2px;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.backrooms .btn:hover {
+  color: var(--bk-ink);
+  background: var(--bk-cream);
+  border-color: var(--bk-cream);
+}
+
+.backrooms .btn-primary {
+  color: var(--bk-ink);
+  background: var(--bk-cream);
+  border-color: var(--bk-ink);
+}
+
+.backrooms .btn-primary:hover {
+  color: var(--bk-cream);
+  background: var(--bk-ink);
+  border-color: var(--bk-cream);
+}
+
+.backrooms .link-accent {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.backrooms .prose-body {
+  color: var(--text-secondary);
+  line-height: 1.8;
 }
 
 .backrooms .ticker {
-  background: rgba(38, 30, 6, 0.88);
-  color: #e9d9a0;
-  border-color: rgba(0, 0, 0, 0.5);
+  background: rgba(14, 11, 4, 0.9);
+  color: var(--bk-cream);
+  border-color: rgba(243, 234, 208, 0.2);
   font-family: var(--bk-font);
   font-weight: 400;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
 }
 
 .backrooms .giant-text {
-  color: rgba(80, 60, 15, 0.16);
+  font-family: var(--bk-font);
+  color: rgba(40, 30, 8, 0.14);
   -webkit-text-stroke: 0;
 }
 
@@ -815,11 +901,27 @@
 }
 
 .backrooms .section-rule {
-  background: rgba(60, 46, 10, 0.4);
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--text-tertiary) 0 8px,
+    transparent 8px 14px
+  );
+  opacity: 0.6;
 }
 
 .backrooms .media-frame {
-  filter: sepia(0.6) saturate(0.8) contrast(1.05);
+  padding: 7px 7px 24px;
+  background: #f4eedb;
+  border: 0;
+  border-radius: 1px;
+  box-shadow:
+    0 14px 24px -10px rgba(10, 6, 0, 0.7),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.backrooms .media-frame img {
+  filter: sepia(0.35) saturate(0.85) contrast(1.05);
 }
 
 .backrooms [aria-label="Support link"] {
@@ -859,11 +961,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bk-door[data-live]:is(.aero *) {
-    animation: none;
-    opacity: 0.92;
-  }
-
   .backrooms .bk-static,
   .backrooms .bk-room,
   .backrooms [data-glitch] {
@@ -887,11 +984,4 @@
 .bk-grabbing * {
   cursor: grabbing !important;
   user-select: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bk-cracks path {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
 }

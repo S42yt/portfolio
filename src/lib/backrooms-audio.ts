@@ -291,19 +291,34 @@ export const playEntityCue = (kind: "peek" | "stand" | "run", pan: number) => {
   }
 };
 
-export const playWallTouch = () => {
-  play("glass-hit", { rate: 0.75, gain: 0.9, wet: 0.6 });
-  synthSweep(900, 140, 1.4, 0.05);
+export const playGlassKnock = (count: number) => {
+  play("glass-hit", {
+    rate: 0.8 + count * 0.12 + Math.random() * 0.08,
+    gain: 0.55 + count * 0.1,
+    wet: 0.35,
+  });
+  if (count >= 2) {
+    play("glass-break", {
+      rate: 1.9 - count * 0.12,
+      gain: 0.08 + count * 0.05,
+      wet: 0.3,
+      delay: 0.03,
+    });
+  }
+  synthSweep(160, 45, 0.28, 0.06 + count * 0.02);
 };
 
-export const playMirrorBreak = () => {
-  play("glass-break", { rate: 0.8, gain: 1, wet: 0.7 });
+export const playShatter = () => {
+  play("glass-break", { rate: 0.85, gain: 1, wet: 0.6 });
+  play("glass-break", {
+    rate: 1.25,
+    gain: 0.5,
+    wet: 0.4,
+    delay: 0.08,
+    pan: 0.4,
+  });
+  play("glass-hit", { rate: 0.6, gain: 0.8, wet: 0.7 });
   synthSweep(320, 40, 1.2, 0.12, "sawtooth");
-};
-
-export const playWallCrack = () => {
-  play("glass-hit", { rate: 1.3, gain: 0.8, wet: 0.5 });
-  play("glass-break", { rate: 1.6, gain: 0.25, wet: 0.4, delay: 0.05 });
 };
 
 export const playFall = (duration = 2.8) => {
@@ -316,22 +331,6 @@ export const playSlabCrunch = () => {
   play("impact", { rate: 1.5, gain: 0.45, wet: 0.5 });
   play("glass-break", { rate: 0.55, gain: 0.22, wet: 0.7 });
   synthSweep(900, 90, 0.35, 0.06, "square");
-};
-
-export const playFootsteps = (count = 4, spacing = 0.32) => {
-  for (let i = 0; i < count; i++) {
-    play("impact", {
-      rate: 2.3 + Math.random() * 0.3,
-      gain: 0.1 + i * 0.03,
-      wet: 0.3,
-      pan: i % 2 ? 0.15 : -0.15,
-      delay: i * spacing,
-    });
-  }
-};
-
-export const playDoorHum = () => {
-  play("hum", { rate: 1, gain: 0.25, wet: 0.4 });
 };
 
 export const playThud = (speed: number, pan: number) => {

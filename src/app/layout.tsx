@@ -87,6 +87,7 @@ export default function RootLayout({
 
         <div
           aria-hidden="true"
+          data-page-bg
           className="fixed inset-0 -z-10"
           style={{ background: "var(--bg)" }}
         >
@@ -148,7 +149,7 @@ export default function RootLayout({
           </div>
         </div>
 
-        <div className="relative z-10 min-h-screen flex flex-col">
+        <div data-page className="relative z-10 min-h-screen flex flex-col">
           <main id="main" className="flex-1">
             {children}
           </main>

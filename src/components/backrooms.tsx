@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   playGlitch,
   playShimmer,
@@ -16,20 +16,18 @@ import {
   loadBackroomsAudio,
   playEntityCue,
   playFall,
+  playGlassKnock,
   playImpact,
   playLightsOn,
-  playMirrorBreak,
-  playDoorHum,
-  playFootsteps,
   playPowerOut,
+  playShatter,
   playSlabCrunch,
   playThud,
-  playWallCrack,
-  playWallTouch,
 } from "@/lib/backrooms-audio";
 import { createRagdoll } from "@/lib/ragdoll";
 import { playFallScene } from "@/lib/backrooms-fall";
 import { startRoomShader, type RoomShader } from "@/lib/backrooms-shader";
+import { createGlass, shatter, voronoi } from "@/lib/glass-crack";
 
 const SECRET_WORD = "noclip";
 const SCRAMBLE = "█▓▒░#@%&?!/\\|<>";
@@ -45,7 +43,6 @@ const MESSAGES = [
 const IMAGES = [
   "/backrooms/wall.webp",
   "/backrooms/carpet.webp",
-  "/backrooms/door-view.webp",
   "/backrooms/ceiling.webp",
   "/backrooms/noise.png",
 ];
@@ -62,46 +59,69 @@ const BODY_SELECTOR = [
   "nav ul",
 ].join(", ");
 
-const seeded = (start: number) => {
-  let seed = start;
-  return () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-};
+const HITS = 5;
+const HEAL_MS = 7000;
+const SOLID = [
+  "a",
+  "button",
+  "input",
+  "textarea",
+  "select",
+  "label",
+  "summary",
+  "video",
+  "iframe",
+  "img",
+  "nav",
+  "footer",
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "li",
+  "[role=button]",
+  "[data-aero-trigger]",
+  ".panel",
+  ".glass",
+  ".glass-strong",
+  ".chip",
+  ".hero-card",
+  ".aero-window",
+  ".media-frame",
+  ".project-card",
+  ".aero-sound",
+  ".ticker",
+].join(", ");
 
-const CRACKS = (() => {
-  const rand = seeded(7);
-  const cx = 52;
-  const cy = 46;
-  const paths: string[] = [];
-  for (let i = 0; i < 13; i++) {
-    let angle = (i / 13) * Math.PI * 2 + rand() * 0.35;
-    let x = cx;
-    let y = cy;
-    let d = `M${cx} ${cy}`;
-    for (let travelled = 0; travelled < 95; ) {
-      const segment = 4 + rand() * 9;
-      angle += (rand() - 0.5) * 0.5;
-      x += Math.cos(angle) * segment;
-      y += Math.sin(angle) * segment * 0.9;
-      travelled += segment;
-      d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
-      if (x < -5 || x > 105 || y < -5 || y > 105) break;
-    }
-    paths.push(d);
+const snapshot = () => {
+  const frame = document.createElement("div");
+  frame.className = "bk-shard-page";
+  const background = document.querySelector("[data-page-bg]");
+  const page = document.querySelector<HTMLElement>("[data-page]");
+  if (background) frame.appendChild(background.cloneNode(true));
+  if (page) {
+    const copy = page.cloneNode(true) as HTMLElement;
+    copy.style.position = "absolute";
+    copy.style.inset = "auto 0 auto 0";
+    copy.style.top = `${-window.scrollY}px`;
+    const selector = "main > *, main > * > *, main > * > * > *";
+    const originals = page.querySelectorAll(selector);
+    const copies = copy.querySelectorAll<HTMLElement>(selector);
+    originals.forEach((el, index) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.bottom < -40 || rect.top > window.innerHeight + 40) {
+        copies[index]?.style.setProperty("visibility", "hidden");
+      }
+    });
+    frame.appendChild(copy);
   }
-  for (const radius of [5, 11, 19]) {
-    let d = "";
-    for (let k = 0; k <= 14; k++) {
-      const angle = (k / 14) * Math.PI * 2;
-      const r = radius * (0.8 + rand() * 0.4);
-      d += `${k ? "L" : "M"}${(cx + Math.cos(angle) * r).toFixed(1)} ${(
-        cy +
-        Math.sin(angle) * r * 0.9
-      ).toFixed(1)} `;
-    }
-    paths.push(d.trim());
-  }
-  return paths;
-})();
+  frame
+    .querySelectorAll("canvas, video, iframe, script")
+    .forEach((el) => el.remove());
+  frame.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+  return frame;
+};
 
 const wait = (ms: number) =>
   new Promise<void>((resolve) => window.setTimeout(resolve, ms));
@@ -120,8 +140,8 @@ const pad = (value: number) => String(value).padStart(2, "0");
 export default function Backrooms() {
   const introRef = useRef<HTMLDivElement>(null);
   const roomRef = useRef<HTMLDivElement>(null);
-  const doorRef = useRef<HTMLButtonElement>(null);
-  const portalRef = useRef<HTMLDivElement>(null);
+  const glassRef = useRef<HTMLCanvasElement>(null);
+  const shardsRef = useRef<HTMLDivElement>(null);
   const fallRef = useRef<HTMLDivElement>(null);
   const timecodeRef = useRef<HTMLSpanElement>(null);
   const messageRef = useRef<HTMLSpanElement>(null);
@@ -138,8 +158,10 @@ export default function Backrooms() {
     let clock = 0;
     let shader: RoomShader | null = null;
     let canvas: HTMLCanvasElement | null = null;
-    let doorTimer = 0;
-    let lastHum = 0;
+    let healTimer = 0;
+    let healFinish = 0;
+    let preloading: Promise<unknown> | null = null;
+    const glass = glassRef.current ? createGlass(glassRef.current) : null;
     let exitTimer = 0;
     let flees = 0;
     let noclipTries = 0;
@@ -180,17 +202,17 @@ export default function Backrooms() {
 
     const scatter = () => {
       glitchTargets().forEach((el) => {
-        const r = (Math.random() * 2 - 1) * 3.5;
-        const x = (Math.random() * 2 - 1) * 28;
-        const y = (Math.random() * 2 - 1) * 14;
+        const r = (Math.random() * 2 - 1) * 1.6;
+        const x = (Math.random() * 2 - 1) * 10;
+        const y = (Math.random() * 2 - 1) * 6;
         el.style.setProperty("--bk-x", `${x}px`);
         el.style.setProperty("--bk-y", `${y}px`);
         el.style.setProperty("--bk-r", `${r}deg`);
         el.style.translate = `${x}px ${y}px`;
         el.style.rotate = `${r}deg`;
         const roll = Math.random();
-        if (roll < 0.3) el.dataset.bk = "drift";
-        else if (roll < 0.42) el.dataset.bk = "ghost";
+        if (roll < 0.2) el.dataset.bk = "drift";
+        else if (roll < 0.28) el.dataset.bk = "ghost";
       });
     };
 
@@ -422,7 +444,74 @@ export default function Backrooms() {
       window.clearInterval(clock);
     };
 
-    const enter = async (origin?: DOMRect) => {
+    const preload = () => {
+      if (preloading) return preloading;
+      const portrait = window.matchMedia("(max-aspect-ratio: 4 / 5)").matches;
+      preloading = Promise.all([
+        loadImage(
+          portrait
+            ? "/backrooms/level0-portrait.webp"
+            : "/backrooms/level0.webp",
+        ),
+        ...IMAGES.map(loadImage),
+        document.fonts?.load('32px "VT323"').catch(() => undefined),
+        loadBackroomsAudio(),
+      ]);
+      return preloading;
+    };
+
+    const stopHealing = () => {
+      window.clearTimeout(healTimer);
+      window.clearTimeout(healFinish);
+      root.classList.remove("bk-healing");
+    };
+
+    const heal = () => {
+      if (busy) return;
+      root.classList.add("bk-healing");
+      healFinish = window.setTimeout(() => {
+        glass?.clear();
+        root.classList.remove("bk-glass", "bk-healing");
+      }, 1400);
+    };
+
+    const knock = (x: number, y: number) => {
+      if (!glass || busy) return;
+      stopHealing();
+      sound = soundEnabled();
+      if (sound) unlockAudio();
+      const count = glass.hit(x, y);
+      root.classList.add("bk-glass");
+      root.style.setProperty("--knock", `${1 + count * 1.6}px`);
+      if (!reducedMotion.matches) pulse("bk-knock", 380);
+      if (sound) preload().then(() => playGlassKnock(count));
+      else preload();
+      if (count >= HITS) {
+        enter();
+        return;
+      }
+      healTimer = window.setTimeout(heal, HEAL_MS);
+    };
+
+    const autoKnock = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const cx = width * (0.35 + Math.random() * 0.3);
+      const cy = height * (0.35 + Math.random() * 0.3);
+      for (let i = 0; i < HITS; i++) {
+        later(() => {
+          if (!root.classList.contains("aero")) return;
+          const spread = i === 0 ? 0 : 60 + i * 40;
+          const angle = Math.random() * Math.PI * 2;
+          knock(
+            cx + Math.cos(angle) * spread,
+            cy + Math.sin(angle) * spread * 0.7,
+          );
+        }, i * 420);
+      }
+    };
+
+    const enter = async () => {
       if (
         busy ||
         !root.classList.contains("aero") ||
@@ -432,35 +521,20 @@ export default function Backrooms() {
         return;
       }
       busy = true;
+      stopHealing();
       sound = soundEnabled();
       if (sound) unlockAudio();
-      doorRef.current?.removeAttribute("data-live");
-
-      const portrait = window.matchMedia("(max-aspect-ratio: 4 / 5)").matches;
-      const assets = Promise.all([
-        loadImage(
-          portrait
-            ? "/backrooms/level0-portrait.webp"
-            : "/backrooms/level0.webp",
-        ),
-        ...IMAGES.map(loadImage),
-        document.fonts?.load('32px "VT323"').catch(() => undefined),
-        sound ? loadBackroomsAudio() : Promise.resolve(),
-      ]);
 
       const enterState = () => {
-        root.classList.remove(
-          "bk-cracked",
-          "bk-shatter",
-          "bk-portaling",
-          "aero",
-        );
+        glass?.clear();
+        root.classList.remove("bk-glass", "aero");
         root.classList.add("backrooms", "bk-entering");
         scatter();
+        window.dispatchEvent(new Event("resize"));
       };
 
       if (reducedMotion.matches) {
-        await withTimeout(assets, 3000);
+        await withTimeout(preload(), 3000);
         enterState();
         startShader();
         root.classList.remove("bk-entering");
@@ -474,78 +548,59 @@ export default function Backrooms() {
         return;
       }
 
-      const portal = portalRef.current;
-      const view = portal?.querySelector<HTMLElement>(".bk-portal-view");
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const rect =
-        origin ?? new DOMRect(width / 2 - 32, height / 2 - 56, 64, 112);
+      const origin = glass?.last() ?? { x: width / 2, y: height / 2 };
+      await withTimeout(preload(), 1200);
 
       if (sound) {
         tapeStop();
-        playFootsteps(4, 0.34);
+        playShatter();
       }
-      root.classList.add("bk-portaling");
-      if (portal) portal.dataset.phase = "approach";
-      const easing = "cubic-bezier(0.55, 0, 0.3, 1)";
-      const walk = portal?.animate(
-        [
-          {
-            clipPath: `inset(${rect.top}px ${width - rect.right}px ${height - rect.bottom}px ${rect.left}px)`,
-          },
-          { clipPath: "inset(0px 0px 0px 0px)" },
-        ],
-        { duration: 1500, easing, fill: "forwards" },
-      );
-      const zoom = view?.animate(
-        [{ transform: "scale(1.9)" }, { transform: "scale(1)" }],
-        { duration: 1500, easing, fill: "forwards" },
-      );
-      await (walk?.finished.catch(() => undefined) ?? wait(1500));
-      await withTimeout(assets, 2000);
+      pulse("bk-flash", 450);
+      const host = shardsRef.current;
+      const cells = voronoi(glass?.seeds() ?? [], width, height);
+      const page = snapshot();
 
-      if (portal) portal.dataset.phase = "glass";
-      if (sound) playWallTouch();
-      pulse("bk-shake", 400);
-      await wait(520);
-
-      root.classList.add("bk-cracked");
-      if (sound) playWallCrack();
-      await wait(700);
-
-      if (portal) portal.dataset.phase = "mirror";
-      if (sound) playGlitch();
-      await wait(650);
-
-      if (portal) portal.dataset.phase = "shatter";
-      root.classList.add("bk-shatter");
-      if (sound) playMirrorBreak();
-      await wait(520);
-
-      enterState();
+      root.classList.add("bk-shattering");
       setPhase("fall");
-      if (portal) portal.dataset.phase = "";
-      walk?.cancel();
-      zoom?.cancel();
-
       const canvas = document.createElement("canvas");
       canvas.className = "bk-fall";
       fallRef.current?.appendChild(canvas);
-      if (sound) playFall(2.8);
-      const rendered = await playFallScene(canvas, {
-        duration: 2800,
-        onSlab: () => {
+      if (sound) playFall(3);
+      const falling = playFallScene(canvas, {
+        duration: 3000,
+        onCeiling: () => {
           if (sound) playSlabCrunch();
         },
+        onLand: () => {
+          if (sound) playImpact();
+          pulse("bk-shake", 600);
+        },
       });
-      if (!rendered) await wait(1400);
+
+      if (host && cells.length) {
+        await shatter({
+          host,
+          cells,
+          origin,
+          content: () => page.cloneNode(true) as HTMLElement,
+          duration: 1150,
+        });
+      }
+      enterState();
+      root.classList.remove("bk-shattering");
+
+      const rendered = await falling;
+      if (!rendered) {
+        await wait(1400);
+        if (sound) playImpact();
+      }
       canvas.remove();
 
       setPhase("dark");
       startShader();
-      if (sound) playImpact();
-      pulse("bk-shake", 600);
-      await wait(380);
+      await wait(320);
 
       setPhase("lights");
       root.classList.add("bk-rising");
@@ -582,6 +637,7 @@ export default function Backrooms() {
       unscatter();
       stopShader();
       root.classList.add("aero");
+      window.dispatchEvent(new Event("resize"));
       setSceneAudio(null);
       setPhase("wake");
       if (sound) {
@@ -607,7 +663,7 @@ export default function Backrooms() {
       if (typed !== SECRET_WORD) return;
       typed = "";
       if (!root.classList.contains("backrooms")) {
-        enter();
+        if (root.classList.contains("aero") && !busy) autoKnock();
         return;
       }
       noclipTries++;
@@ -624,63 +680,43 @@ export default function Backrooms() {
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       const sign = target?.closest<HTMLElement>("[data-bk-sign]");
-      const door = target?.closest<HTMLElement>("[data-noclip]");
-      if (door) enter(door.getBoundingClientRect());
-      else if (sign?.dataset.bkSign === "decoy") decoyTrap(sign);
+      if (sign?.dataset.bkSign === "decoy") decoyTrap(sign);
       else if (sign) exit();
+      else onBackground(event);
     };
 
-    const door = doorRef.current;
-    const spawnDoor = (delay: number) => {
-      doorTimer = window.setTimeout(() => {
-        const canSpawn =
-          door &&
-          !busy &&
-          !document.hidden &&
-          root.classList.contains("aero") &&
-          !root.classList.contains("backrooms") &&
-          !root.classList.contains("theme-switching");
-        if (canSpawn) {
-          const wide = window.innerWidth >= 1100;
-          const left = Math.random() < 0.5;
-          const x = wide
-            ? left
-              ? 3 + Math.random() * 5
-              : 91 + Math.random() * 5
-            : 12 + Math.random() * 76;
-          door.style.setProperty("--x", `${x}vw`);
-          door.style.setProperty("--y", `${80 + Math.random() * 7}vh`);
-          door.style.setProperty("--w", `${26 + Math.random() * 12}px`);
-          door.setAttribute("data-live", "");
-          later(() => {
-            if (!busy) door.removeAttribute("data-live");
-          }, 45000);
-        }
-        spawnDoor(canSpawn ? 60000 + Math.random() * 30000 : 8000);
-      }, delay);
+    const onBackground = (event: MouseEvent) => {
+      if (
+        event.button !== 0 ||
+        !root.classList.contains("aero") ||
+        root.classList.contains("backrooms") ||
+        root.classList.contains("theme-switching")
+      ) {
+        return;
+      }
+      const target = event.target as Element | null;
+      if (!target || target.closest(SOLID)) return;
+      if (window.getSelection()?.toString()) return;
+      knock(event.clientX, event.clientY);
     };
-    spawnDoor(12000 + Math.random() * 13000);
 
-    const onDoorHover = () => {
-      const now = Date.now();
-      if (now - lastHum < 4000 || !soundEnabled()) return;
-      lastHum = now;
-      loadBackroomsAudio().then(playDoorHum);
+    const onResize = () => {
+      glass?.resize();
     };
-    door?.addEventListener("pointerenter", onDoorHover);
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.addEventListener("click", onClick);
+    window.addEventListener("resize", onResize);
 
     return () => {
+      window.removeEventListener("resize", onResize);
+      stopHealing();
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("click", onClick);
       stopBreaking();
       stopShader();
-      window.clearTimeout(doorTimer);
-      door?.removeEventListener("pointerenter", onDoorHover);
       timers.forEach((id) => window.clearTimeout(id));
       timers.clear();
     };
@@ -688,34 +724,8 @@ export default function Backrooms() {
 
   return (
     <>
-      <button
-        ref={doorRef}
-        type="button"
-        data-noclip
-        aria-label="A strange door"
-        className="bk-door"
-      />
-
-      <div aria-hidden="true" className="bk-portal-dim" />
-      <div ref={portalRef} aria-hidden="true" className="bk-portal">
-        <div className="bk-portal-view" />
-      </div>
-
-      <svg
-        aria-hidden="true"
-        className="bk-cracks"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
-        {CRACKS.map((d, index) => (
-          <path
-            key={index}
-            d={d}
-            pathLength={1}
-            style={{ "--i": index } as CSSProperties}
-          />
-        ))}
-      </svg>
+      <canvas ref={glassRef} aria-hidden="true" className="bk-glass-cracks" />
+      <div ref={shardsRef} aria-hidden="true" className="bk-shards" />
 
       <div ref={roomRef} aria-hidden="true" className="bk-room" />
 
