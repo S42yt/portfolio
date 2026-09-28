@@ -1,4 +1,6 @@
-.bk-bubble,
+.bk-door,
+.bk-portal,
+.bk-portal-dim,
 .bk-room,
 .bk-static,
 .bk-lights,
@@ -7,67 +9,240 @@
   display: none;
 }
 
-.bk-bubble[data-live]:is(.aero *) {
+.bk-door[data-live]:is(.aero *) {
   display: block;
   position: fixed;
-  z-index: 35;
-  top: 0;
-  left: 0;
-  width: var(--size, 44px);
-  height: var(--size, 44px);
+  z-index: 30;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w, 32px);
+  height: calc(var(--w, 32px) * 1.75);
+  translate: -50% -100%;
   padding: 0;
   border: 0;
-  border-radius: 50%;
-  background: url("/aero/bubble.png") center / contain no-repeat;
-  filter: sepia(0.35) saturate(1.5) hue-rotate(-6deg);
+  background: #1c1606 url("/backrooms/door-view.webp") center / cover;
+  box-shadow:
+    0 0 0 2px #3b2f10,
+    0 0 0 3px rgba(0, 0, 0, 0.35),
+    0 0 14px 3px rgba(255, 228, 140, 0.45),
+    inset 0 0 8px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
   animation:
-    bk-bubble-rise var(--dur, 12s) ease-in-out both,
-    bk-bubble-flicker 7s steps(1, end) infinite;
+    bk-door-in 3.5s ease-out both,
+    bk-door-flicker 9s steps(1, end) 3.5s infinite;
+  transition:
+    box-shadow 300ms ease,
+    scale 300ms ease;
 }
 
-.bk-bubble[data-live]:is(.aero *):focus-visible {
-  outline: 2px dashed #c9a227;
-  outline-offset: 4px;
+.bk-door[data-live]:is(.aero *)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 420%;
+  height: 55%;
+  translate: -50% -35%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(255, 232, 150, 0.5),
+    rgba(255, 232, 150, 0) 70%
+  );
+  filter: blur(2px);
 }
 
-@keyframes bk-bubble-rise {
+.bk-door[data-live]:is(.aero *):hover,
+.bk-door[data-live]:is(.aero *):focus-visible {
+  scale: 1.08;
+  outline: none;
+  box-shadow:
+    0 0 0 2px #3b2f10,
+    0 0 0 3px rgba(0, 0, 0, 0.35),
+    0 0 26px 8px rgba(255, 228, 140, 0.75),
+    inset 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes bk-door-in {
   from {
-    transform: translate(var(--x), var(--y)) scale(0.6);
     opacity: 0;
-  }
-  12% {
-    transform: translate(var(--x), var(--y)) scale(1);
-    opacity: 0.85;
-  }
-  55% {
-    transform: translate(calc(var(--x) + var(--drift)), calc(var(--y) - 24vh));
-  }
-  88% {
-    opacity: 0.85;
+    filter: blur(3px) brightness(1.6);
   }
   to {
-    transform: translate(
-      calc(var(--x) - var(--drift) * 0.4),
-      calc(var(--y) - 44vh)
-    );
+    opacity: 0.92;
+    filter: none;
+  }
+}
+
+@keyframes bk-door-flicker {
+  0%,
+  93%,
+  95%,
+  100% {
+    opacity: 0.92;
+  }
+  94% {
+    opacity: 0.25;
+  }
+}
+
+.bk-portaling .bk-portal-dim {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 270;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(10, 8, 0, 0.35),
+    rgba(10, 8, 0, 0.85)
+  );
+  animation: bk-dim 1.5s ease both;
+}
+
+.bk-shatter .bk-portal-dim {
+  background: #050300;
+}
+
+@keyframes bk-dim {
+  from {
     opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
 }
 
-@keyframes bk-bubble-flicker {
-  0%,
-  96%,
-  98%,
+.bk-portal[data-phase="approach"],
+.bk-portal[data-phase="glass"],
+.bk-portal[data-phase="mirror"],
+.bk-portal[data-phase="shatter"] {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 280;
+  overflow: hidden;
+  pointer-events: none;
+  background: #1c1606;
+}
+
+.bk-portal-view {
+  position: absolute;
+  inset: 0;
+  background: url("/backrooms/level0.webp") center / cover;
+  filter: sepia(0.2) saturate(1.05);
+}
+
+@media (max-aspect-ratio: 4 / 5) {
+  .bk-portal-view {
+    background-image: url("/backrooms/level0-portrait.webp");
+  }
+}
+
+.bk-portal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.4) 45%,
+    rgba(210, 235, 255, 0.18) 48%,
+    transparent 56%
+  );
+  background-size: 300% 100%;
+  opacity: 0;
+}
+
+.bk-portal[data-phase="glass"]::after {
+  animation: bk-sheen 1.1s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+.bk-portal[data-phase="glass"] .bk-portal-view {
+  animation: bk-bump 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+
+@keyframes bk-bump {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.985) translateY(0.4%);
+    filter: brightness(1.2);
+  }
   100% {
-    filter: sepia(0.35) saturate(1.5) hue-rotate(-6deg);
-  }
-  97% {
-    filter: sepia(1) saturate(3) brightness(0.8);
+    transform: scale(1);
   }
 }
 
-.bk-wall .bk-bubble {
-  animation-play-state: paused;
+@keyframes bk-sheen {
+  from {
+    background-position: 110% 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    background-position: -10% 0;
+    opacity: 1;
+  }
+}
+
+.bk-portal[data-phase="mirror"] .bk-portal-view {
+  animation: bk-mirror-flip 0.65s cubic-bezier(0.6, 0, 0.3, 1) both;
+}
+
+@keyframes bk-mirror-flip {
+  0% {
+    transform: scaleX(1);
+    filter: none;
+  }
+  45% {
+    transform: scaleX(0.04);
+    filter: brightness(2.6) saturate(0.3);
+  }
+  55% {
+    transform: scaleX(-0.04);
+    filter: brightness(2.6) saturate(0.3);
+  }
+  100% {
+    transform: scaleX(-1);
+    filter: hue-rotate(-10deg) saturate(1.2);
+  }
+}
+
+.bk-portal[data-phase="shatter"] {
+  animation: bk-push 0.52s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+.bk-portal[data-phase="shatter"] .bk-portal-view {
+  transform: scaleX(-1);
+}
+
+@keyframes bk-push {
+  from {
+    transform: scale(1);
+    opacity: 1;
+    filter: none;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+    filter: brightness(2.2) blur(3px);
+  }
+}
+
+.bk-shatter .bk-cracks {
+  animation: bk-crack-burst 0.5s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+@keyframes bk-crack-burst {
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
 }
 
 .bk-cracks {
@@ -103,95 +278,6 @@
   }
 }
 
-html.bk-wall {
-  filter: url(#bk-ripple);
-}
-
-html.bk-wall body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 300;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      105deg,
-      transparent 0%,
-      transparent 38%,
-      rgba(255, 255, 255, 0.55) 45%,
-      rgba(200, 235, 255, 0.25) 48%,
-      transparent 56%,
-      transparent 100%
-    ),
-    linear-gradient(rgba(210, 235, 250, 0.12), rgba(210, 235, 250, 0.12));
-  background-size:
-    300% 100%,
-    100% 100%;
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.35),
-    inset 0 0 120px rgba(170, 210, 240, 0.35);
-  animation: bk-sheen 1.1s cubic-bezier(0.45, 0, 0.2, 1) both;
-}
-
-@keyframes bk-sheen {
-  from {
-    background-position:
-      110% 0,
-      0 0;
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  to {
-    background-position:
-      -10% 0,
-      0 0;
-    opacity: 1;
-  }
-}
-
-.bk-vt::view-transition-old(root) {
-  z-index: 2;
-  animation: bk-mirror 1.5s cubic-bezier(0.55, 0, 0.85, 0.35) both;
-}
-
-.bk-vt::view-transition-new(root) {
-  animation: none;
-  opacity: 1;
-}
-
-@keyframes bk-mirror {
-  0% {
-    transform: none;
-    filter: none;
-  }
-  12% {
-    transform: skewX(1.5deg) scale(1.01);
-    filter: brightness(1.15) saturate(1.2);
-  }
-  20% {
-    transform: scaleX(1);
-    filter: brightness(1.6) saturate(0.6);
-  }
-  24% {
-    transform: scaleX(-1) skewX(-2deg);
-    filter: brightness(1.2) hue-rotate(12deg);
-  }
-  34% {
-    transform: scaleX(-1) skewX(3deg) translateX(-1%);
-  }
-  44% {
-    transform: scaleX(-1) skewX(-2deg) scale(1.04);
-    filter: brightness(1.1) blur(0.5px);
-  }
-  100% {
-    transform: scaleX(-1) scale(4.2) rotate(-4deg);
-    filter: brightness(2.4) blur(10px);
-    opacity: 0;
-  }
-}
-
 .bk-intro {
   position: fixed;
   inset: 0;
@@ -208,272 +294,16 @@ html.bk-wall body::after {
   display: block;
 }
 
-.bk-intro[data-phase="pre"] {
-  display: block;
+.bk-intro[data-phase="fall"] {
   background: #050300;
 }
 
-.bk-shaft {
-  display: none;
+.bk-fall-wrap,
+.bk-fall {
   position: absolute;
   inset: 0;
-  overflow: hidden;
-  background: #050300;
-  perspective: 520px;
-  --W: 150vmax;
-  --L: 2600px;
-}
-
-.bk-intro[data-phase="fall"] .bk-shaft {
-  display: block;
-  animation: bk-fall-shake 0.14s steps(2, end) infinite;
-}
-
-.bk-shaft::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    circle at 50% 50%,
-    transparent 22%,
-    rgba(5, 3, 0, 0.55) 62%,
-    rgba(5, 3, 0, 0.92) 100%
-  );
-}
-
-@keyframes bk-fall-shake {
-  0% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 2px -3px;
-  }
-  100% {
-    translate: -2px 2px;
-  }
-}
-
-.bk-tube {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
-  transform-style: preserve-3d;
-  animation: bk-tumble 1.85s cubic-bezier(0.4, 0, 0.9, 0.6) both;
-}
-
-@keyframes bk-tumble {
-  from {
-    transform: translateZ(-1300px) rotateZ(0deg);
-  }
-  35% {
-    transform: translateZ(-1300px) rotateZ(10deg) translateX(18px);
-  }
-  70% {
-    transform: translateZ(-1300px) rotateZ(-5deg) translateY(-14px);
-  }
-  to {
-    transform: translateZ(-1300px) rotateZ(16deg);
-  }
-}
-
-.bk-face {
-  position: absolute;
-}
-
-.bk-face-l,
-.bk-face-r {
-  width: var(--L);
-  height: var(--W);
-  left: calc(var(--L) / -2);
-  top: calc(var(--W) / -2);
-}
-
-.bk-face-t,
-.bk-face-b {
-  width: var(--W);
-  height: var(--L);
-  left: calc(var(--W) / -2);
-  top: calc(var(--L) / -2);
-}
-
-.bk-face-l {
-  background:
-    linear-gradient(to right, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
-    url("/backrooms/wall-rot.webp") 0 0 / 260px 260px repeat;
-  filter: brightness(0.62);
-  transform: translateX(calc(var(--W) / -2)) rotateY(90deg);
-  animation: bk-rush-l 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
-}
-
-.bk-face-r {
-  background:
-    linear-gradient(to left, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
-    url("/backrooms/wall-rot.webp") 0 0 / 260px 260px repeat;
-  filter: brightness(0.78);
-  transform: translateX(calc(var(--W) / 2)) rotateY(-90deg);
-  animation: bk-rush-r 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
-}
-
-.bk-face-t {
-  background:
-    linear-gradient(to bottom, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
-    url("/backrooms/wall.webp") 0 0 / 260px 260px repeat;
-  filter: brightness(0.95);
-  transform: translateY(calc(var(--W) / -2)) rotateX(-90deg);
-  animation: bk-rush-t 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
-}
-
-.bk-face-b {
-  background:
-    linear-gradient(to top, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
-    url("/backrooms/wall.webp") 0 0 / 260px 260px repeat;
-  filter: brightness(0.5);
-  transform: translateY(calc(var(--W) / 2)) rotateX(90deg);
-  animation: bk-rush-b 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
-}
-
-@keyframes bk-rush-l {
-  from {
-    background-position:
-      0 0,
-      0 0;
-  }
-  to {
-    background-position:
-      0 0,
-      -7800px 0;
-  }
-}
-
-@keyframes bk-rush-r {
-  from {
-    background-position:
-      0 0,
-      0 0;
-  }
-  to {
-    background-position:
-      0 0,
-      7800px 0;
-  }
-}
-
-@keyframes bk-rush-t {
-  from {
-    background-position:
-      0 0,
-      0 0;
-  }
-  to {
-    background-position:
-      0 0,
-      0 -7800px;
-  }
-}
-
-@keyframes bk-rush-b {
-  from {
-    background-position:
-      0 0,
-      0 0;
-  }
-  to {
-    background-position:
-      0 0,
-      0 7800px;
-  }
-}
-
-.bk-shaft-end {
-  position: absolute;
-  width: var(--W);
-  height: var(--W);
-  left: calc(var(--W) / -2);
-  top: calc(var(--W) / -2);
-  background:
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(255, 246, 200, 0.55) 0%,
-      rgba(255, 236, 160, 0.15) 45%,
-      transparent 75%
-    ),
-    url("/backrooms/carpet.webp") 0 0 / 180px 180px repeat;
-  box-shadow: 0 0 140px 50px rgba(255, 238, 170, 0.35);
-  animation: bk-approach 1.85s cubic-bezier(0.5, 0, 0.85, 0.65) both;
-}
-
-@keyframes bk-approach {
-  from {
-    transform: translateZ(-1300px);
-    filter: brightness(1.9) blur(2px);
-  }
-  to {
-    transform: translateZ(1240px);
-    filter: brightness(1.05) blur(0);
-  }
-}
-
-.bk-debris {
-  position: absolute;
-  width: var(--size);
-  height: var(--size);
-  left: calc(var(--size) / -2);
-  top: calc(var(--size) / -2);
-  background: var(--tex) center / cover;
-  clip-path: var(--shape);
-  opacity: 0;
-  filter: brightness(0.8);
-  animation: bk-debris 1.05s linear var(--delay) both;
-}
-
-@keyframes bk-debris {
-  from {
-    transform: translate3d(var(--dx), var(--dy), -1200px)
-      rotate3d(var(--rx), 1, 0, 0deg);
-    opacity: 0;
-  }
-  12% {
-    opacity: 1;
-  }
-  to {
-    transform: translate3d(var(--dx), var(--dy), 1750px)
-      rotate3d(var(--rx), 1, 0, var(--spin));
-    opacity: 1;
-  }
-}
-
-.bk-speed {
-  position: absolute;
-  inset: -25%;
-  pointer-events: none;
-  background: repeating-conic-gradient(
-    from 0deg at 50% 50%,
-    rgba(255, 240, 190, 0.12) 0deg 1.2deg,
-    transparent 1.2deg 7deg
-  );
-  mask-image: radial-gradient(circle, transparent 16%, #000 62%);
-  -webkit-mask-image: radial-gradient(circle, transparent 16%, #000 62%);
-  animation:
-    bk-speed 0.24s steps(3, end) infinite,
-    bk-speed-in 1.85s ease-in both;
-}
-
-@keyframes bk-speed {
-  to {
-    rotate: 5deg;
-  }
-}
-
-@keyframes bk-speed-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  width: 100%;
+  height: 100%;
 }
 
 .bk-intro[data-phase="dark"] {
@@ -598,6 +428,22 @@ html.bk-wall body::after {
 @media (max-aspect-ratio: 4 / 5) {
   .backrooms .bk-room {
     background-image: url("/backrooms/level0-portrait.webp");
+  }
+}
+
+.bk-rising .bk-room {
+  animation: bk-stand-up 1.8s cubic-bezier(0.3, 0.7, 0.3, 1) both;
+}
+
+@keyframes bk-stand-up {
+  from {
+    transform: translateY(9%) rotate(-4deg) scale(1.14);
+  }
+  60% {
+    transform: translateY(-1%) rotate(0.6deg) scale(1.02);
+  }
+  to {
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -1013,13 +859,9 @@ html.bk-wall body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.bk-wall {
-    filter: none;
-  }
-
-  .bk-bubble:is(.aero *) {
+  .bk-door[data-live]:is(.aero *) {
     animation: none;
-    transform: translate(85vw, 70vh);
+    opacity: 0.92;
   }
 
   .backrooms .bk-static,
@@ -1048,12 +890,6 @@ html.bk-wall body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bk-bubble[data-live]:is(.aero *) {
-    animation: none;
-    transform: translate(var(--x), var(--y));
-    opacity: 0.85;
-  }
-
   .bk-cracks path {
     animation: none;
     stroke-dashoffset: 0;

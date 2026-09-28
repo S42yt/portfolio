@@ -19,12 +19,16 @@ import {
   playImpact,
   playLightsOn,
   playMirrorBreak,
+  playDoorHum,
+  playFootsteps,
   playPowerOut,
+  playSlabCrunch,
   playThud,
   playWallCrack,
   playWallTouch,
 } from "@/lib/backrooms-audio";
 import { createRagdoll } from "@/lib/ragdoll";
+import { playFallScene } from "@/lib/backrooms-fall";
 import { startRoomShader, type RoomShader } from "@/lib/backrooms-shader";
 
 const SECRET_WORD = "noclip";
@@ -40,8 +44,8 @@ const MESSAGES = [
 ];
 const IMAGES = [
   "/backrooms/wall.webp",
-  "/backrooms/wall-rot.webp",
   "/backrooms/carpet.webp",
+  "/backrooms/door-view.webp",
   "/backrooms/ceiling.webp",
   "/backrooms/noise.png",
 ];
@@ -99,28 +103,6 @@ const CRACKS = (() => {
   return paths;
 })();
 
-const DEBRIS = (() => {
-  const rand = seeded(19);
-  return Array.from({ length: 12 }, (_, i) => ({
-    "--dx": `${(rand() * 2 - 1) * 55}vmax`,
-    "--dy": `${(rand() * 2 - 1) * 55}vmax`,
-    "--rx": (rand() * 2 - 1).toFixed(2),
-    "--spin": `${Math.round(360 + rand() * 720)}deg`,
-    "--delay": `${(0.15 + rand() * 1.1).toFixed(2)}s`,
-    "--size": `${Math.round(50 + rand() * 90)}px`,
-    "--tex":
-      i % 3 === 0
-        ? "linear-gradient(135deg, rgba(235, 248, 255, 0.85), rgba(150, 205, 240, 0.25))"
-        : i % 3 === 1
-          ? "url(/backrooms/wall.webp)"
-          : "url(/backrooms/ceiling.webp)",
-    "--shape":
-      i % 3 === 0
-        ? "polygon(50% 0, 100% 70%, 20% 100%)"
-        : "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-  }));
-})();
-
 const wait = (ms: number) =>
   new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
@@ -138,7 +120,9 @@ const pad = (value: number) => String(value).padStart(2, "0");
 export default function Backrooms() {
   const introRef = useRef<HTMLDivElement>(null);
   const roomRef = useRef<HTMLDivElement>(null);
-  const bubbleRef = useRef<HTMLButtonElement>(null);
+  const doorRef = useRef<HTMLButtonElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const fallRef = useRef<HTMLDivElement>(null);
   const timecodeRef = useRef<HTMLSpanElement>(null);
   const messageRef = useRef<HTMLSpanElement>(null);
 
@@ -154,7 +138,8 @@ export default function Backrooms() {
     let clock = 0;
     let shader: RoomShader | null = null;
     let canvas: HTMLCanvasElement | null = null;
-    let bubbleTimer = 0;
+    let doorTimer = 0;
+    let lastHum = 0;
     let exitTimer = 0;
     let flees = 0;
     let noclipTries = 0;
@@ -437,7 +422,7 @@ export default function Backrooms() {
       window.clearInterval(clock);
     };
 
-    const enter = async () => {
+    const enter = async (origin?: DOMRect) => {
       if (
         busy ||
         !root.classList.contains("aero") ||
@@ -449,6 +434,7 @@ export default function Backrooms() {
       busy = true;
       sound = soundEnabled();
       if (sound) unlockAudio();
+      doorRef.current?.removeAttribute("data-live");
 
       const portrait = window.matchMedia("(max-aspect-ratio: 4 / 5)").matches;
       const assets = Promise.all([
@@ -463,9 +449,13 @@ export default function Backrooms() {
       ]);
 
       const enterState = () => {
-        root.classList.remove("bk-wall", "bk-cracked", "aero");
+        root.classList.remove(
+          "bk-cracked",
+          "bk-shatter",
+          "bk-portaling",
+          "aero",
+        );
         root.classList.add("backrooms", "bk-entering");
-        setPhase("pre");
         scatter();
       };
 
@@ -473,7 +463,6 @@ export default function Backrooms() {
         await withTimeout(assets, 3000);
         enterState();
         startShader();
-        setPhase("");
         root.classList.remove("bk-entering");
         if (sound) {
           tapeStop();
@@ -485,42 +474,72 @@ export default function Backrooms() {
         return;
       }
 
+      const portal = portalRef.current;
+      const view = portal?.querySelector<HTMLElement>(".bk-portal-view");
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const rect =
+        origin ?? new DOMRect(width / 2 - 32, height / 2 - 56, 64, 112);
+
       if (sound) {
-        playWallTouch();
         tapeStop();
+        playFootsteps(4, 0.34);
       }
-      root.classList.add("bk-wall");
-      await wait(550);
+      root.classList.add("bk-portaling");
+      if (portal) portal.dataset.phase = "approach";
+      const easing = "cubic-bezier(0.55, 0, 0.3, 1)";
+      const walk = portal?.animate(
+        [
+          {
+            clipPath: `inset(${rect.top}px ${width - rect.right}px ${height - rect.bottom}px ${rect.left}px)`,
+          },
+          { clipPath: "inset(0px 0px 0px 0px)" },
+        ],
+        { duration: 1500, easing, fill: "forwards" },
+      );
+      const zoom = view?.animate(
+        [{ transform: "scale(1.9)" }, { transform: "scale(1)" }],
+        { duration: 1500, easing, fill: "forwards" },
+      );
+      await (walk?.finished.catch(() => undefined) ?? wait(1500));
+      await withTimeout(assets, 2000);
+
+      if (portal) portal.dataset.phase = "glass";
+      if (sound) playWallTouch();
+      pulse("bk-shake", 400);
+      await wait(520);
+
       root.classList.add("bk-cracked");
       if (sound) playWallCrack();
-      await wait(800);
-      await withTimeout(assets, 2500);
+      await wait(700);
 
-      if (typeof document.startViewTransition === "function") {
-        root.classList.add("bk-vt");
-        const transition = document.startViewTransition(enterState);
-        await transition.ready.catch(() => undefined);
-        if (sound) later(playMirrorBreak, 520);
-        await transition.finished.catch(() => undefined);
-        root.classList.remove("bk-vt");
-      } else {
-        if (sound) playMirrorBreak();
-        enterState();
-      }
+      if (portal) portal.dataset.phase = "mirror";
+      if (sound) playGlitch();
+      await wait(650);
 
+      if (portal) portal.dataset.phase = "shatter";
+      root.classList.add("bk-shatter");
+      if (sound) playMirrorBreak();
+      await wait(520);
+
+      enterState();
       setPhase("fall");
-      const approach = intro
-        ?.querySelector(".bk-shaft-end")
-        ?.getAnimations()[0];
-      await withTimeout(
-        approach?.ready.catch(() => undefined) ?? wait(0),
-        1500,
-      );
-      if (sound) playFall();
-      await withTimeout(
-        approach?.finished.catch(() => undefined) ?? wait(1850),
-        2600,
-      );
+      if (portal) portal.dataset.phase = "";
+      walk?.cancel();
+      zoom?.cancel();
+
+      const canvas = document.createElement("canvas");
+      canvas.className = "bk-fall";
+      fallRef.current?.appendChild(canvas);
+      if (sound) playFall(2.8);
+      const rendered = await playFallScene(canvas, {
+        duration: 2800,
+        onSlab: () => {
+          if (sound) playSlabCrunch();
+        },
+      });
+      if (!rendered) await wait(1400);
+      canvas.remove();
 
       setPhase("dark");
       startShader();
@@ -529,15 +548,16 @@ export default function Backrooms() {
       await wait(380);
 
       setPhase("lights");
+      root.classList.add("bk-rising");
       if (sound) {
         playLightsOn();
         setSceneAudio(ambience);
         startMusic();
       }
-      await wait(1700);
+      await wait(1800);
 
       setPhase("");
-      root.classList.remove("bk-entering");
+      root.classList.remove("bk-entering", "bk-rising");
       startBreaking();
       busy = false;
     };
@@ -604,40 +624,50 @@ export default function Backrooms() {
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       const sign = target?.closest<HTMLElement>("[data-bk-sign]");
-      if (target?.closest("[data-noclip]")) enter();
+      const door = target?.closest<HTMLElement>("[data-noclip]");
+      if (door) enter(door.getBoundingClientRect());
       else if (sign?.dataset.bkSign === "decoy") decoyTrap(sign);
       else if (sign) exit();
     };
 
-    const bubble = bubbleRef.current;
-    const spawnBubble = (delay: number) => {
-      bubbleTimer = window.setTimeout(() => {
+    const door = doorRef.current;
+    const spawnDoor = (delay: number) => {
+      doorTimer = window.setTimeout(() => {
         const canSpawn =
-          bubble &&
+          door &&
           !busy &&
           !document.hidden &&
           root.classList.contains("aero") &&
           !root.classList.contains("backrooms") &&
           !root.classList.contains("theme-switching");
         if (canSpawn) {
-          const duration = 9 + Math.random() * 6;
-          bubble.style.setProperty("--size", `${30 + Math.random() * 26}px`);
-          bubble.style.setProperty("--x", `${6 + Math.random() * 82}vw`);
-          bubble.style.setProperty("--y", `${45 + Math.random() * 45}vh`);
-          bubble.style.setProperty(
-            "--drift",
-            `${(Math.random() * 2 - 1) * 10}vw`,
-          );
-          bubble.style.setProperty("--dur", `${duration}s`);
-          bubble.removeAttribute("data-live");
-          void bubble.offsetWidth;
-          bubble.setAttribute("data-live", "");
-          later(() => bubble.removeAttribute("data-live"), duration * 1000);
+          const wide = window.innerWidth >= 1100;
+          const left = Math.random() < 0.5;
+          const x = wide
+            ? left
+              ? 3 + Math.random() * 5
+              : 91 + Math.random() * 5
+            : 12 + Math.random() * 76;
+          door.style.setProperty("--x", `${x}vw`);
+          door.style.setProperty("--y", `${80 + Math.random() * 7}vh`);
+          door.style.setProperty("--w", `${26 + Math.random() * 12}px`);
+          door.setAttribute("data-live", "");
+          later(() => {
+            if (!busy) door.removeAttribute("data-live");
+          }, 45000);
         }
-        spawnBubble(25000 + Math.random() * 45000);
+        spawnDoor(canSpawn ? 60000 + Math.random() * 30000 : 8000);
       }, delay);
     };
-    spawnBubble(12000 + Math.random() * 18000);
+    spawnDoor(12000 + Math.random() * 13000);
+
+    const onDoorHover = () => {
+      const now = Date.now();
+      if (now - lastHum < 4000 || !soundEnabled()) return;
+      lastHum = now;
+      loadBackroomsAudio().then(playDoorHum);
+    };
+    door?.addEventListener("pointerenter", onDoorHover);
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("pointermove", onPointerMove, { passive: true });
@@ -649,7 +679,8 @@ export default function Backrooms() {
       document.removeEventListener("click", onClick);
       stopBreaking();
       stopShader();
-      window.clearTimeout(bubbleTimer);
+      window.clearTimeout(doorTimer);
+      door?.removeEventListener("pointerenter", onDoorHover);
       timers.forEach((id) => window.clearTimeout(id));
       timers.clear();
     };
@@ -658,12 +689,17 @@ export default function Backrooms() {
   return (
     <>
       <button
-        ref={bubbleRef}
+        ref={doorRef}
         type="button"
         data-noclip
-        aria-label="A strange bubble"
-        className="bk-bubble"
+        aria-label="A strange door"
+        className="bk-door"
       />
+
+      <div aria-hidden="true" className="bk-portal-dim" />
+      <div ref={portalRef} aria-hidden="true" className="bk-portal">
+        <div className="bk-portal-view" />
+      </div>
 
       <svg
         aria-hidden="true"
@@ -710,43 +746,8 @@ export default function Backrooms() {
       ))}
 
       <div ref={introRef} aria-hidden="true" className="bk-intro" data-phase="">
-        <div className="bk-shaft">
-          <div className="bk-tube">
-            <div className="bk-face bk-face-l" />
-            <div className="bk-face bk-face-r" />
-            <div className="bk-face bk-face-t" />
-            <div className="bk-face bk-face-b" />
-            <div className="bk-shaft-end" />
-            {DEBRIS.map((style, index) => (
-              <span
-                key={index}
-                className="bk-debris"
-                style={style as CSSProperties}
-              />
-            ))}
-          </div>
-          <div className="bk-speed" />
-        </div>
+        <div ref={fallRef} className="bk-fall-wrap" />
       </div>
-
-      <svg aria-hidden="true" width="0" height="0" className="absolute">
-        <filter id="bk-ripple">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.008 0.02"
-            numOctaves="2"
-            seed="4"
-          >
-            <animate
-              attributeName="baseFrequency"
-              dur="1.2s"
-              values="0.008 0.02;0.012 0.03;0.008 0.02"
-              repeatCount="indefinite"
-            />
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" scale="14" />
-        </filter>
-      </svg>
     </>
   );
 }

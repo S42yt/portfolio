@@ -306,10 +306,32 @@ export const playWallCrack = () => {
   play("glass-break", { rate: 1.6, gain: 0.25, wet: 0.4, delay: 0.05 });
 };
 
-export const playFall = () => {
-  wind(1.9, 0.6);
-  synthSweep(140, 38, 1.95, 0.14);
-  synthSweep(60, 30, 1.9, 0.2, "triangle");
+export const playFall = (duration = 2.8) => {
+  wind(duration, 0.6);
+  synthSweep(140, 38, duration, 0.14);
+  synthSweep(60, 30, duration, 0.2, "triangle");
+};
+
+export const playSlabCrunch = () => {
+  play("impact", { rate: 1.5, gain: 0.45, wet: 0.5 });
+  play("glass-break", { rate: 0.55, gain: 0.22, wet: 0.7 });
+  synthSweep(900, 90, 0.35, 0.06, "square");
+};
+
+export const playFootsteps = (count = 4, spacing = 0.32) => {
+  for (let i = 0; i < count; i++) {
+    play("impact", {
+      rate: 2.3 + Math.random() * 0.3,
+      gain: 0.1 + i * 0.03,
+      wet: 0.3,
+      pan: i % 2 ? 0.15 : -0.15,
+      delay: i * spacing,
+    });
+  }
+};
+
+export const playDoorHum = () => {
+  play("hum", { rate: 1, gain: 0.25, wet: 0.4 });
 };
 
 export const playThud = (speed: number, pan: number) => {
