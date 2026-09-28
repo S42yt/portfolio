@@ -301,9 +301,24 @@ export const playMirrorBreak = () => {
   synthSweep(320, 40, 1.2, 0.12, "sawtooth");
 };
 
+export const playWallCrack = () => {
+  play("glass-hit", { rate: 1.3, gain: 0.8, wet: 0.5 });
+  play("glass-break", { rate: 1.6, gain: 0.25, wet: 0.4, delay: 0.05 });
+};
+
 export const playFall = () => {
-  wind(1.25, 0.5);
-  synthSweep(160, 45, 1.3, 0.1);
+  wind(1.9, 0.6);
+  synthSweep(140, 38, 1.95, 0.14);
+  synthSweep(60, 30, 1.9, 0.2, "triangle");
+};
+
+export const playThud = (speed: number, pan: number) => {
+  play("impact", {
+    rate: 0.9 + Math.random() * 0.6,
+    gain: Math.min(1, speed / 1800) * 0.7,
+    wet: 0.45,
+    pan,
+  });
 };
 
 export const playImpact = () => {

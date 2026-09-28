@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { CSSProperties, useEffect, useRef } from "react";
 import {
   playGlitch,
   playShimmer,
@@ -20,8 +20,11 @@ import {
   playLightsOn,
   playMirrorBreak,
   playPowerOut,
+  playThud,
+  playWallCrack,
   playWallTouch,
 } from "@/lib/backrooms-audio";
+import { createRagdoll } from "@/lib/ragdoll";
 import { startRoomShader, type RoomShader } from "@/lib/backrooms-shader";
 
 const SECRET_WORD = "noclip";
@@ -37,9 +40,86 @@ const MESSAGES = [
 ];
 const IMAGES = [
   "/backrooms/wall.webp",
+  "/backrooms/wall-rot.webp",
+  "/backrooms/carpet.webp",
   "/backrooms/ceiling.webp",
   "/backrooms/noise.png",
 ];
+
+const BODY_SELECTOR = [
+  "main [data-glitch]",
+  "main .chip",
+  "main h2",
+  "main .media-frame",
+  "main .btn",
+  "main .project-card",
+  "main .eyebrow",
+  "footer [data-glitch]",
+  "nav ul",
+].join(", ");
+
+const seeded = (start: number) => {
+  let seed = start;
+  return () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+};
+
+const CRACKS = (() => {
+  const rand = seeded(7);
+  const cx = 52;
+  const cy = 46;
+  const paths: string[] = [];
+  for (let i = 0; i < 13; i++) {
+    let angle = (i / 13) * Math.PI * 2 + rand() * 0.35;
+    let x = cx;
+    let y = cy;
+    let d = `M${cx} ${cy}`;
+    for (let travelled = 0; travelled < 95; ) {
+      const segment = 4 + rand() * 9;
+      angle += (rand() - 0.5) * 0.5;
+      x += Math.cos(angle) * segment;
+      y += Math.sin(angle) * segment * 0.9;
+      travelled += segment;
+      d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+      if (x < -5 || x > 105 || y < -5 || y > 105) break;
+    }
+    paths.push(d);
+  }
+  for (const radius of [5, 11, 19]) {
+    let d = "";
+    for (let k = 0; k <= 14; k++) {
+      const angle = (k / 14) * Math.PI * 2;
+      const r = radius * (0.8 + rand() * 0.4);
+      d += `${k ? "L" : "M"}${(cx + Math.cos(angle) * r).toFixed(1)} ${(
+        cy +
+        Math.sin(angle) * r * 0.9
+      ).toFixed(1)} `;
+    }
+    paths.push(d.trim());
+  }
+  return paths;
+})();
+
+const DEBRIS = (() => {
+  const rand = seeded(19);
+  return Array.from({ length: 12 }, (_, i) => ({
+    "--dx": `${(rand() * 2 - 1) * 55}vmax`,
+    "--dy": `${(rand() * 2 - 1) * 55}vmax`,
+    "--rx": (rand() * 2 - 1).toFixed(2),
+    "--spin": `${Math.round(360 + rand() * 720)}deg`,
+    "--delay": `${(0.15 + rand() * 1.1).toFixed(2)}s`,
+    "--size": `${Math.round(50 + rand() * 90)}px`,
+    "--tex":
+      i % 3 === 0
+        ? "linear-gradient(135deg, rgba(235, 248, 255, 0.85), rgba(150, 205, 240, 0.25))"
+        : i % 3 === 1
+          ? "url(/backrooms/wall.webp)"
+          : "url(/backrooms/ceiling.webp)",
+    "--shape":
+      i % 3 === 0
+        ? "polygon(50% 0, 100% 70%, 20% 100%)"
+        : "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+  }));
+})();
 
 const wait = (ms: number) =>
   new Promise<void>((resolve) => window.setTimeout(resolve, ms));
@@ -58,7 +138,9 @@ const pad = (value: number) => String(value).padStart(2, "0");
 export default function Backrooms() {
   const introRef = useRef<HTMLDivElement>(null);
   const roomRef = useRef<HTMLDivElement>(null);
+  const bubbleRef = useRef<HTMLButtonElement>(null);
   const timecodeRef = useRef<HTMLSpanElement>(null);
+  const messageRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -72,6 +154,16 @@ export default function Backrooms() {
     let clock = 0;
     let shader: RoomShader | null = null;
     let canvas: HTMLCanvasElement | null = null;
+    let bubbleTimer = 0;
+    let exitTimer = 0;
+    let flees = 0;
+    let noclipTries = 0;
+    const ragdoll = createRagdoll({
+      selector: BODY_SELECTOR,
+      onImpact: (speed, pan) => {
+        if (sound) playThud(speed, pan);
+      },
+    });
     let sound = false;
 
     const later = (fn: () => void, ms: number) => {
@@ -104,9 +196,13 @@ export default function Backrooms() {
     const scatter = () => {
       glitchTargets().forEach((el) => {
         const r = (Math.random() * 2 - 1) * 3.5;
-        el.style.setProperty("--bk-x", `${(Math.random() * 2 - 1) * 28}px`);
-        el.style.setProperty("--bk-y", `${(Math.random() * 2 - 1) * 14}px`);
+        const x = (Math.random() * 2 - 1) * 28;
+        const y = (Math.random() * 2 - 1) * 14;
+        el.style.setProperty("--bk-x", `${x}px`);
+        el.style.setProperty("--bk-y", `${y}px`);
         el.style.setProperty("--bk-r", `${r}deg`);
+        el.style.translate = `${x}px ${y}px`;
+        el.style.rotate = `${r}deg`;
         const roll = Math.random();
         if (roll < 0.3) el.dataset.bk = "drift";
         else if (roll < 0.42) el.dataset.bk = "ghost";
@@ -118,6 +214,8 @@ export default function Backrooms() {
         el.style.removeProperty("--bk-x");
         el.style.removeProperty("--bk-y");
         el.style.removeProperty("--bk-r");
+        el.style.removeProperty("translate");
+        el.style.removeProperty("rotate");
         delete el.dataset.bk;
       });
     };
@@ -226,7 +324,88 @@ export default function Backrooms() {
       events = window.setTimeout(runEvent, 5000 + Math.random() * 6000);
     };
 
+    const signs = () =>
+      Array.from(document.querySelectorAll<HTMLElement>("[data-bk-sign]"));
+
+    const placeSign = (sign: HTMLElement, avoid?: { x: number; y: number }) => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      let left = 0;
+      let top = 0;
+      for (let attempt = 0; attempt < 12; attempt++) {
+        left = width * (0.06 + Math.random() * 0.74);
+        top = height * (0.18 + Math.random() * 0.6);
+        if (!avoid || Math.hypot(left - avoid.x, top - avoid.y) > 320) break;
+      }
+      sign.style.left = `${left}px`;
+      sign.style.top = `${top}px`;
+    };
+
+    const revealExits = () => {
+      if (!root.classList.contains("backrooms")) return;
+      flees = 0;
+      signs().forEach((sign) => {
+        placeSign(sign);
+        sign.dataset.shown = "";
+      });
+    };
+
+    const hideExits = () => {
+      window.clearTimeout(exitTimer);
+      signs().forEach((sign) => delete sign.dataset.shown);
+    };
+
+    const flashMessage = (text: string) => {
+      const message = messageRef.current;
+      if (!message) return;
+      message.textContent = text;
+      message.classList.remove("bk-hud-msg-show");
+      void message.offsetWidth;
+      message.classList.add("bk-hud-msg-show");
+    };
+
+    const decoyTrap = (sign: HTMLElement) => {
+      delete sign.dataset.shown;
+      pulse("bk-flicker", 1100);
+      pulse("bk-shake", 500);
+      shader?.flicker();
+      shader?.glitch(1);
+      if (sound) ambience.buzz();
+      const seen = shader?.appear("stand");
+      if (seen && sound) playEntityCue(seen.kind, seen.pan);
+      scrambleSome(3);
+      flashMessage("WRONG WAY");
+      const real = signs().find((el) => el.dataset.bkSign === "real");
+      if (real?.dataset.shown !== undefined) {
+        glitch(real);
+        placeSign(real);
+      }
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (busy || flees >= 3 || !root.classList.contains("backrooms")) return;
+      const real = signs().find((el) => el.dataset.bkSign === "real");
+      if (!real || real.dataset.shown === undefined) return;
+      const rect = real.getBoundingClientRect();
+      const distance = Math.hypot(
+        event.clientX - (rect.left + rect.width / 2),
+        event.clientY - (rect.top + rect.height / 2),
+      );
+      if (distance > 130) return;
+      flees++;
+      glitch(real);
+      shader?.glitch(0.6);
+      if (sound) playGlitch();
+      placeSign(real, { x: event.clientX, y: event.clientY });
+    };
+
     const startBreaking = () => {
+      ragdoll.enable();
+      noclipTries = 0;
+      exitTimer = window.setTimeout(
+        revealExits,
+        reducedMotion.matches ? 8000 : 20000 + Math.random() * 10000,
+      );
       if (!reducedMotion.matches) {
         events = window.setTimeout(runEvent, 3000);
         const loopScramble = () => {
@@ -251,6 +430,8 @@ export default function Backrooms() {
     };
 
     const stopBreaking = () => {
+      ragdoll.disable();
+      hideExits();
       window.clearTimeout(events);
       window.clearTimeout(breaking);
       window.clearInterval(clock);
@@ -282,16 +463,16 @@ export default function Backrooms() {
       ]);
 
       const enterState = () => {
-        root.classList.remove("bk-wall", "aero");
+        root.classList.remove("bk-wall", "bk-cracked", "aero");
         root.classList.add("backrooms", "bk-entering");
-        setPhase("fall");
+        setPhase("pre");
         scatter();
-        startShader();
       };
 
       if (reducedMotion.matches) {
         await withTimeout(assets, 3000);
         enterState();
+        startShader();
         setPhase("");
         root.classList.remove("bk-entering");
         if (sound) {
@@ -309,7 +490,10 @@ export default function Backrooms() {
         tapeStop();
       }
       root.classList.add("bk-wall");
-      await wait(1150);
+      await wait(550);
+      root.classList.add("bk-cracked");
+      if (sound) playWallCrack();
+      await wait(800);
       await withTimeout(assets, 2500);
 
       if (typeof document.startViewTransition === "function") {
@@ -324,13 +508,25 @@ export default function Backrooms() {
         enterState();
       }
 
+      setPhase("fall");
+      const approach = intro
+        ?.querySelector(".bk-shaft-end")
+        ?.getAnimations()[0];
+      await withTimeout(
+        approach?.ready.catch(() => undefined) ?? wait(0),
+        1500,
+      );
       if (sound) playFall();
-      await wait(1150);
+      await withTimeout(
+        approach?.finished.catch(() => undefined) ?? wait(1850),
+        2600,
+      );
 
       setPhase("dark");
+      startShader();
       if (sound) playImpact();
       pulse("bk-shake", 600);
-      await wait(480);
+      await wait(380);
 
       setPhase("lights");
       if (sound) {
@@ -390,24 +586,70 @@ export default function Backrooms() {
       typed = (typed + event.key.toLowerCase()).slice(-SECRET_WORD.length);
       if (typed !== SECRET_WORD) return;
       typed = "";
-      if (root.classList.contains("backrooms")) exit();
-      else enter();
+      if (!root.classList.contains("backrooms")) {
+        enter();
+        return;
+      }
+      noclipTries++;
+      if (noclipTries >= 3) {
+        exit();
+        return;
+      }
+      flashMessage("NOCLIP FAILED");
+      shader?.glitch(1);
+      if (sound) playGlitch();
+      scrambleSome(2);
     };
 
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
+      const sign = target?.closest<HTMLElement>("[data-bk-sign]");
       if (target?.closest("[data-noclip]")) enter();
-      else if (target?.closest("[data-bk-exit]")) exit();
+      else if (sign?.dataset.bkSign === "decoy") decoyTrap(sign);
+      else if (sign) exit();
     };
 
+    const bubble = bubbleRef.current;
+    const spawnBubble = (delay: number) => {
+      bubbleTimer = window.setTimeout(() => {
+        const canSpawn =
+          bubble &&
+          !busy &&
+          !document.hidden &&
+          root.classList.contains("aero") &&
+          !root.classList.contains("backrooms") &&
+          !root.classList.contains("theme-switching");
+        if (canSpawn) {
+          const duration = 9 + Math.random() * 6;
+          bubble.style.setProperty("--size", `${30 + Math.random() * 26}px`);
+          bubble.style.setProperty("--x", `${6 + Math.random() * 82}vw`);
+          bubble.style.setProperty("--y", `${45 + Math.random() * 45}vh`);
+          bubble.style.setProperty(
+            "--drift",
+            `${(Math.random() * 2 - 1) * 10}vw`,
+          );
+          bubble.style.setProperty("--dur", `${duration}s`);
+          bubble.removeAttribute("data-live");
+          void bubble.offsetWidth;
+          bubble.setAttribute("data-live", "");
+          later(() => bubble.removeAttribute("data-live"), duration * 1000);
+        }
+        spawnBubble(25000 + Math.random() * 45000);
+      }, delay);
+    };
+    spawnBubble(12000 + Math.random() * 18000);
+
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.addEventListener("click", onClick);
 
     return () => {
       window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("click", onClick);
       stopBreaking();
       stopShader();
+      window.clearTimeout(bubbleTimer);
       timers.forEach((id) => window.clearTimeout(id));
       timers.clear();
     };
@@ -416,11 +658,28 @@ export default function Backrooms() {
   return (
     <>
       <button
+        ref={bubbleRef}
         type="button"
         data-noclip
         aria-label="A strange bubble"
         className="bk-bubble"
       />
+
+      <svg
+        aria-hidden="true"
+        className="bk-cracks"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        {CRACKS.map((d, index) => (
+          <path
+            key={index}
+            d={d}
+            pathLength={1}
+            style={{ "--i": index } as CSSProperties}
+          />
+        ))}
+      </svg>
 
       <div ref={roomRef} aria-hidden="true" className="bk-room" />
 
@@ -436,18 +695,39 @@ export default function Backrooms() {
           00:47:13:00
         </span>
         <span className="bk-hud-play">PLAY ▶ &nbsp;SP</span>
+        <span className="bk-hud-msg" ref={messageRef} />
       </div>
 
-      <button type="button" data-bk-exit className="bk-exit">
-        <span aria-hidden="true">←</span> EXIT
-      </button>
+      {["real", "decoy", "decoy"].map((kind, index) => (
+        <button
+          key={index}
+          type="button"
+          data-bk-sign={kind}
+          className="bk-exit"
+        >
+          <span aria-hidden="true">←</span> EXIT
+        </button>
+      ))}
 
-      <div
-        ref={introRef}
-        aria-hidden="true"
-        className="bk-intro"
-        data-phase=""
-      />
+      <div ref={introRef} aria-hidden="true" className="bk-intro" data-phase="">
+        <div className="bk-shaft">
+          <div className="bk-tube">
+            <div className="bk-face bk-face-l" />
+            <div className="bk-face bk-face-r" />
+            <div className="bk-face bk-face-t" />
+            <div className="bk-face bk-face-b" />
+            <div className="bk-shaft-end" />
+            {DEBRIS.map((style, index) => (
+              <span
+                key={index}
+                className="bk-debris"
+                style={style as CSSProperties}
+              />
+            ))}
+          </div>
+          <div className="bk-speed" />
+        </div>
+      </div>
 
       <svg aria-hidden="true" width="0" height="0" className="absolute">
         <filter id="bk-ripple">

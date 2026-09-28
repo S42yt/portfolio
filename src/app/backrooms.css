@@ -7,67 +7,100 @@
   display: none;
 }
 
-.bk-bubble:is(.aero *) {
+.bk-bubble[data-live]:is(.aero *) {
   display: block;
   position: fixed;
   z-index: 35;
   top: 0;
   left: 0;
-  width: 46px;
-  height: 46px;
+  width: var(--size, 44px);
+  height: var(--size, 44px);
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: url("/aero/bubble.png") center / contain no-repeat;
-  filter: sepia(1) saturate(2.6) hue-rotate(8deg) brightness(1.05)
-    drop-shadow(0 0 6px rgba(230, 200, 80, 0.55));
-  cursor: pointer;
+  filter: sepia(0.35) saturate(1.5) hue-rotate(-6deg);
   animation:
-    bk-bubble-path 48s linear infinite,
-    bk-bubble-flicker 9s steps(1, end) infinite;
+    bk-bubble-rise var(--dur, 12s) ease-in-out both,
+    bk-bubble-flicker 7s steps(1, end) infinite;
 }
 
-.bk-bubble:is(.aero *):focus-visible {
+.bk-bubble[data-live]:is(.aero *):focus-visible {
   outline: 2px dashed #c9a227;
   outline-offset: 4px;
 }
 
-@keyframes bk-bubble-path {
-  0% {
-    transform: translate(8vw, 82vh);
+@keyframes bk-bubble-rise {
+  from {
+    transform: translate(var(--x), var(--y)) scale(0.6);
+    opacity: 0;
   }
-  20% {
-    transform: translate(30vw, 58vh);
+  12% {
+    transform: translate(var(--x), var(--y)) scale(1);
+    opacity: 0.85;
   }
-  40% {
-    transform: translate(72vw, 70vh);
+  55% {
+    transform: translate(calc(var(--x) + var(--drift)), calc(var(--y) - 24vh));
   }
-  60% {
-    transform: translate(88vw, 34vh);
+  88% {
+    opacity: 0.85;
   }
-  80% {
-    transform: translate(46vw, 22vh);
-  }
-  100% {
-    transform: translate(8vw, 82vh);
+  to {
+    transform: translate(
+      calc(var(--x) - var(--drift) * 0.4),
+      calc(var(--y) - 44vh)
+    );
+    opacity: 0;
   }
 }
 
 @keyframes bk-bubble-flicker {
   0%,
-  91%,
-  93%,
+  96%,
+  98%,
   100% {
-    opacity: 0.9;
+    filter: sepia(0.35) saturate(1.5) hue-rotate(-6deg);
   }
-  92%,
-  94% {
-    opacity: 0.15;
+  97% {
+    filter: sepia(1) saturate(3) brightness(0.8);
   }
 }
 
 .bk-wall .bk-bubble {
   animation-play-state: paused;
+}
+
+.bk-cracks {
+  display: none;
+}
+
+.bk-cracked .bk-cracks {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 301;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  filter: drop-shadow(1px 1px 0 rgba(0, 25, 50, 0.65))
+    drop-shadow(0 0 8px rgba(255, 255, 255, 0.75));
+}
+
+.bk-cracks path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 2.2px;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: bk-crack 0.38s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 18ms);
+}
+
+@keyframes bk-crack {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 html.bk-wall {
@@ -175,30 +208,271 @@ html.bk-wall body::after {
   display: block;
 }
 
-.bk-intro[data-phase="fall"] {
-  background:
-    radial-gradient(
-      ellipse 60% 55% at 50% 50%,
-      rgba(0, 0, 0, 0.95) 0%,
-      rgba(0, 0, 0, 0.55) 60%,
-      rgba(0, 0, 0, 0.1) 100%
-    ),
-    url("/backrooms/wall.webp") 0 0 / 180px 540px repeat;
-  animation: bk-fall 1.15s cubic-bezier(0.5, 0, 1, 1) both;
+.bk-intro[data-phase="pre"] {
+  display: block;
+  background: #050300;
 }
 
-@keyframes bk-fall {
+.bk-shaft {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #050300;
+  perspective: 520px;
+  --W: 150vmax;
+  --L: 2600px;
+}
+
+.bk-intro[data-phase="fall"] .bk-shaft {
+  display: block;
+  animation: bk-fall-shake 0.14s steps(2, end) infinite;
+}
+
+.bk-shaft::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 22%,
+    rgba(5, 3, 0, 0.55) 62%,
+    rgba(5, 3, 0, 0.92) 100%
+  );
+}
+
+@keyframes bk-fall-shake {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 2px -3px;
+  }
+  100% {
+    translate: -2px 2px;
+  }
+}
+
+.bk-tube {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  animation: bk-tumble 1.85s cubic-bezier(0.4, 0, 0.9, 0.6) both;
+}
+
+@keyframes bk-tumble {
+  from {
+    transform: translateZ(-1300px) rotateZ(0deg);
+  }
+  35% {
+    transform: translateZ(-1300px) rotateZ(10deg) translateX(18px);
+  }
+  70% {
+    transform: translateZ(-1300px) rotateZ(-5deg) translateY(-14px);
+  }
+  to {
+    transform: translateZ(-1300px) rotateZ(16deg);
+  }
+}
+
+.bk-face {
+  position: absolute;
+}
+
+.bk-face-l,
+.bk-face-r {
+  width: var(--L);
+  height: var(--W);
+  left: calc(var(--L) / -2);
+  top: calc(var(--W) / -2);
+}
+
+.bk-face-t,
+.bk-face-b {
+  width: var(--W);
+  height: var(--L);
+  left: calc(var(--W) / -2);
+  top: calc(var(--L) / -2);
+}
+
+.bk-face-l {
+  background:
+    linear-gradient(to right, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
+    url("/backrooms/wall-rot.webp") 0 0 / 260px 260px repeat;
+  filter: brightness(0.62);
+  transform: translateX(calc(var(--W) / -2)) rotateY(90deg);
+  animation: bk-rush-l 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+.bk-face-r {
+  background:
+    linear-gradient(to left, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
+    url("/backrooms/wall-rot.webp") 0 0 / 260px 260px repeat;
+  filter: brightness(0.78);
+  transform: translateX(calc(var(--W) / 2)) rotateY(-90deg);
+  animation: bk-rush-r 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+.bk-face-t {
+  background:
+    linear-gradient(to bottom, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
+    url("/backrooms/wall.webp") 0 0 / 260px 260px repeat;
+  filter: brightness(0.95);
+  transform: translateY(calc(var(--W) / -2)) rotateX(-90deg);
+  animation: bk-rush-t 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+.bk-face-b {
+  background:
+    linear-gradient(to top, rgba(5, 3, 0, 0.1), rgba(5, 3, 0, 0.92) 80%),
+    url("/backrooms/wall.webp") 0 0 / 260px 260px repeat;
+  filter: brightness(0.5);
+  transform: translateY(calc(var(--W) / 2)) rotateX(90deg);
+  animation: bk-rush-b 1.85s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+@keyframes bk-rush-l {
   from {
     background-position:
       0 0,
       0 0;
-    filter: blur(2px) brightness(0.8);
   }
   to {
     background-position:
       0 0,
-      0 -5200px;
-    filter: blur(6px) brightness(0.35);
+      -7800px 0;
+  }
+}
+
+@keyframes bk-rush-r {
+  from {
+    background-position:
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      0 0,
+      7800px 0;
+  }
+}
+
+@keyframes bk-rush-t {
+  from {
+    background-position:
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      0 0,
+      0 -7800px;
+  }
+}
+
+@keyframes bk-rush-b {
+  from {
+    background-position:
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      0 0,
+      0 7800px;
+  }
+}
+
+.bk-shaft-end {
+  position: absolute;
+  width: var(--W);
+  height: var(--W);
+  left: calc(var(--W) / -2);
+  top: calc(var(--W) / -2);
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 246, 200, 0.55) 0%,
+      rgba(255, 236, 160, 0.15) 45%,
+      transparent 75%
+    ),
+    url("/backrooms/carpet.webp") 0 0 / 180px 180px repeat;
+  box-shadow: 0 0 140px 50px rgba(255, 238, 170, 0.35);
+  animation: bk-approach 1.85s cubic-bezier(0.5, 0, 0.85, 0.65) both;
+}
+
+@keyframes bk-approach {
+  from {
+    transform: translateZ(-1300px);
+    filter: brightness(1.9) blur(2px);
+  }
+  to {
+    transform: translateZ(1240px);
+    filter: brightness(1.05) blur(0);
+  }
+}
+
+.bk-debris {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  left: calc(var(--size) / -2);
+  top: calc(var(--size) / -2);
+  background: var(--tex) center / cover;
+  clip-path: var(--shape);
+  opacity: 0;
+  filter: brightness(0.8);
+  animation: bk-debris 1.05s linear var(--delay) both;
+}
+
+@keyframes bk-debris {
+  from {
+    transform: translate3d(var(--dx), var(--dy), -1200px)
+      rotate3d(var(--rx), 1, 0, 0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(var(--dx), var(--dy), 1750px)
+      rotate3d(var(--rx), 1, 0, var(--spin));
+    opacity: 1;
+  }
+}
+
+.bk-speed {
+  position: absolute;
+  inset: -25%;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(255, 240, 190, 0.12) 0deg 1.2deg,
+    transparent 1.2deg 7deg
+  );
+  mask-image: radial-gradient(circle, transparent 16%, #000 62%);
+  -webkit-mask-image: radial-gradient(circle, transparent 16%, #000 62%);
+  animation:
+    bk-speed 0.24s steps(3, end) infinite,
+    bk-speed-in 1.85s ease-in both;
+}
+
+@keyframes bk-speed {
+  to {
+    rotate: 5deg;
+  }
+}
+
+@keyframes bk-speed-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -505,14 +779,13 @@ html.bk-wall body::after {
   }
 }
 
-.backrooms .bk-exit {
+.backrooms .bk-exit[data-shown] {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   position: fixed;
   z-index: 62;
-  right: 1.25rem;
-  bottom: 1.5rem;
+  translate: -50% -50%;
   padding: 0.3rem 0.9rem;
   font-family: var(--bk-font);
   font-size: 1.6rem;
@@ -525,15 +798,33 @@ html.bk-wall body::after {
     inset 0 0 10px rgba(120, 255, 150, 0.35);
   text-shadow: 0 0 8px rgba(140, 255, 160, 0.9);
   cursor: pointer;
-  animation: bk-exit-hum 6s steps(1, end) infinite;
+  animation:
+    bk-exit-in 0.9s steps(1, end) both,
+    bk-exit-hum 6s steps(1, end) 0.9s infinite;
 }
 
-.backrooms .bk-exit:hover,
-.backrooms .bk-exit:focus-visible {
+.backrooms .bk-exit[data-shown]:hover,
+.backrooms .bk-exit[data-shown]:focus-visible {
   box-shadow:
     0 0 28px rgba(80, 255, 120, 0.85),
     inset 0 0 14px rgba(120, 255, 150, 0.5);
   outline: none;
+}
+
+@keyframes bk-exit-in {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.7;
+  }
+  40% {
+    opacity: 0.1;
+  }
+  70%,
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes bk-exit-hum {
@@ -548,9 +839,38 @@ html.bk-wall body::after {
   }
 }
 
-@media (max-width: 767px) {
-  .backrooms .bk-exit {
-    bottom: 5.75rem;
+.bk-hud-msg {
+  top: 42%;
+  left: 50%;
+  translate: -50% -50%;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  letter-spacing: 0.18em;
+  color: #ff3b2f;
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.bk-hud-msg-show {
+  animation: bk-msg 1.5s steps(1, end) both;
+}
+
+@keyframes bk-msg {
+  0% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.2;
+  }
+  18%,
+  80% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 0.3;
+  }
+  92%,
+  100% {
+    opacity: 0;
   }
 }
 
@@ -706,5 +1026,36 @@ html.bk-wall body::after {
   .backrooms .bk-room,
   .backrooms [data-glitch] {
     animation: none !important;
+  }
+}
+
+.backrooms
+  :is(main, footer, nav)
+  :is([data-glitch], .chip, h2, .media-frame, .btn, .project-card, .eyebrow),
+.backrooms nav ul {
+  cursor: grab;
+}
+
+.backrooms [data-body] {
+  z-index: 20;
+  position: relative;
+}
+
+.bk-grabbing,
+.bk-grabbing * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bk-bubble[data-live]:is(.aero *) {
+    animation: none;
+    transform: translate(var(--x), var(--y));
+    opacity: 0.85;
+  }
+
+  .bk-cracks path {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }
